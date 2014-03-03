@@ -99,10 +99,10 @@ public class ExtendedSeleniumIDEElement{
 		INPUT_PATTERN_TEXTBOX = iNPUT_PATTERN_TEXTBOX;
 	}
 	public String getPOSSIBLE_LOGIN_PASS_TEX_BOX() {
-		return POSSIBLE_LOGIN_PASS_TEX_BOX;
+		return POSSIBLE_LOGIN_PASS_TEXT_BOX;
 	}
 	public void setPOSSIBLE_LOGIN_PASS_TEX_BOX(String pOSSIBLE_LOGIN_PASS_TEX_BOX) {
-		POSSIBLE_LOGIN_PASS_TEX_BOX = pOSSIBLE_LOGIN_PASS_TEX_BOX;
+		POSSIBLE_LOGIN_PASS_TEXT_BOX = pOSSIBLE_LOGIN_PASS_TEX_BOX;
 	}
 	public String getPOSSIBLE_MASTER_DETAIL() {
 		return POSSIBLE_MASTER_DETAIL;
@@ -129,7 +129,7 @@ public class ExtendedSeleniumIDEElement{
 	String INPUT_PATTERN_TEXTBOX = "";
 	String INPUT_PATTERN_TEXT = "";
 	String LOGIN_WORD_IN_URL = "";
-	String POSSIBLE_LOGIN_PASS_TEX_BOX = "";
+	String POSSIBLE_LOGIN_PASS_TEXT_BOX = "";
 	String POSSIBLE_MASTER_DETAIL = "";
 	
 	public ExtendedSeleniumIDEElement(String action, String link, String parameter) {
@@ -138,21 +138,21 @@ public class ExtendedSeleniumIDEElement{
 		this.parameter=parameter;
 	}
 	public String toString(){
-		String content =  action + "," + link + "," + (parameter.isEmpty() ? "-" : parameter )+ ",";
-		content += URL.isEmpty() ? "-," : URL + ",";
-		content += PRESENT_SORT_KEYWORD.isEmpty() ? "-," : PRESENT_SORT_KEYWORD + ",";
-		content += RATIOTOTAL.isEmpty() ? "0," : RATIOTOTAL + ",";
-		content += RATIOPREVIOUS.isEmpty() ? "0," : RATIOPREVIOUS + ",";
-		content += SELENIUMSTEP.isEmpty() ? "-," : SELENIUMSTEP + ",";
-		content += POSSIBLE_SEARCH_TEXT_BOX.isEmpty() ? "-," : POSSIBLE_SEARCH_TEXT_BOX + ",";
-		content += POSSIBLE_SEARCH_KEYWORD_IN_URL.isEmpty() ? "-," : POSSIBLE_SEARCH_KEYWORD_IN_URL + ",";
-		content += SEARCH_WORD_IN_URL.isEmpty() ? "F," : SEARCH_WORD_IN_URL + ",";
-		content += NUMBER_OF_KEYWORD_IN_HTML.isEmpty() ? "0," : NUMBER_OF_KEYWORD_IN_HTML + ",";
-		content += INPUT_PATTERN_TEXTBOX.isEmpty() ? "0," : INPUT_PATTERN_TEXTBOX + ",";
-		content += INPUT_PATTERN_TEXT.isEmpty() ? "0," : INPUT_PATTERN_TEXT + ",";
-		content += LOGIN_WORD_IN_URL.isEmpty() ? "0," : LOGIN_WORD_IN_URL + ",";
-		content += POSSIBLE_LOGIN_PASS_TEX_BOX.isEmpty() ? "F," : POSSIBLE_LOGIN_PASS_TEX_BOX + ",";
-		content += POSSIBLE_MASTER_DETAIL.isEmpty() ? "F" : POSSIBLE_MASTER_DETAIL;//last line, no comma
+		String content = '\"' + action + "\",\"" + link + "\",\"" + (parameter.isEmpty() ? "-" : parameter )+ "\",";
+		content += URL.isEmpty() ? "-," : '\"' + URL + "\",";
+		content += PRESENT_SORT_KEYWORD.isEmpty() ? "-," : '\"' + PRESENT_SORT_KEYWORD + "\",";
+		content += RATIOTOTAL.isEmpty() ? "0," : '\"' + RATIOTOTAL + "\",";
+		content += RATIOPREVIOUS.isEmpty() ? "0," :'\"' + RATIOPREVIOUS + "\",";
+		content += SELENIUMSTEP.isEmpty() ? "-," : '\"' + SELENIUMSTEP + "\",";
+		content += POSSIBLE_SEARCH_TEXT_BOX.isEmpty() ? "-," : '\"' + POSSIBLE_SEARCH_TEXT_BOX + "\",";
+		content += POSSIBLE_SEARCH_KEYWORD_IN_URL.isEmpty() ? "-," : '\"' + POSSIBLE_SEARCH_KEYWORD_IN_URL + "\",";
+		content += SEARCH_WORD_IN_URL.isEmpty() ? "F," : '\"' + SEARCH_WORD_IN_URL + "\",";
+		content += NUMBER_OF_KEYWORD_IN_HTML.isEmpty() ? "0," : '\"' + NUMBER_OF_KEYWORD_IN_HTML + "\",";
+		content += INPUT_PATTERN_TEXTBOX.isEmpty() ? "0," : '\"' + INPUT_PATTERN_TEXTBOX + "\",";
+		content += INPUT_PATTERN_TEXT.isEmpty() ? "0," : '\"' + INPUT_PATTERN_TEXT + "\",";
+		content += LOGIN_WORD_IN_URL.isEmpty() ? "0," : '\"' + LOGIN_WORD_IN_URL + "\",";
+		content += POSSIBLE_LOGIN_PASS_TEXT_BOX.isEmpty() ? "F," : '\"' + POSSIBLE_LOGIN_PASS_TEXT_BOX + "\",";
+		content += POSSIBLE_MASTER_DETAIL.isEmpty() ? "F" : '\"' + POSSIBLE_MASTER_DETAIL + '\"';//last line, no comma
 		
 		content += "\n";
 		return content;

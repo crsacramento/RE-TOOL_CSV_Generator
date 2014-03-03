@@ -41,7 +41,7 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 	/** Selenium actions */
 	public static ArrayList<ExtendedSeleniumIDEElement> actions;
 	/** Inferred patterns */
-	static PatternRegister patterns=new PatternRegister();
+	static PatternRegister patterns = new PatternRegister();
 
 	/***************************** AUXILIARY METHODS ************************************/
 
@@ -178,9 +178,9 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		pageInfo.add(new PageInfo(driver.getCurrentUrl(),
 				correlationBetweenSeleniumStepAndHtmlFiles));
 
-		//create the file to save the patterns in PARADIGM syntax
+		// create the file to save the patterns in PARADIGM syntax
 		patterns.initializePatternRegister();
-		
+
 		// initializes keyboard event handler
 		try {
 			GlobalScreen.registerNativeHook();
@@ -248,12 +248,16 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 
 	static void writeFinalCSV() {
 		// first come the column names
-		String content = "action,link,parameter,URL,PRESENT_SORT_KEYWORD,RATIOTOTAL,RATIOPREVIOUS,SELENIUMSTEP,POSSIBLE_SEARCH_TEXT_BOX,POSSIBLE_SEARCH_KEYWORD_IN_URL,SEARCH_WORD_IN_URL,NUMBER_OF_KEYWORD_IN_HTML,INPUT_PATTERN_TEXTBOX,INPUT_PATTERN_TEXT,LOGIN_WORD_IN_URL,POSSIBLE_LOGIN_PASS_TEX_BOX,POSSIBLE_MASTER_DETAIL\n";
+		String content = "action,link,parameter,URL,PRESENT_SORT_KEYWORD,RATIOTOTAL,RATIOPREVIOUS,"
+				+ "SELENIUMSTEP,POSSIBLE_SEARCH_TEXT_BOX,POSSIBLE_SEARCH_KEYWORD_IN_URL,SEARCH_WORD_IN_URL,"
+				+ "NUMBER_OF_KEYWORD_IN_HTML,INPUT_PATTERN_TEXTBOX,INPUT_PATTERN_TEXT,LOGIN_WORD_IN_URL,"
+				+ "POSSIBLE_LOGIN_PASS_TEXT_BOX,POSSIBLE_MASTER_DETAIL\n";
 		for (int i = 0; i < actions.size(); ++i)
 			content += actions.get(i).toString();
 
-		//Filesystem.saveToFile("final", "extended.csv", content, false);
-		File file = new File(System.getProperty("user.dir")+"\\HTMLfinal\\extended.csv");
+		// save file
+		File file = new File(System.getProperty("user.dir")
+				+ "\\HTMLfinal\\extended.csv");
 		// if file doesnt exists, then create it
 		if (!file.exists()) {
 			try {
@@ -264,7 +268,7 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		}
 		FileWriter fw;
 		try {
-			fw = new FileWriter(file.getAbsoluteFile(),false);
+			fw = new FileWriter(file.getAbsoluteFile(), false);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(content);
 			bw.close();

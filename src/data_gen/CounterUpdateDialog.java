@@ -6,9 +6,12 @@ import java.awt.GridBagLayout;
 
 import javax.swing.*;
 
+import org.eclipse.jdt.internal.compiler.lookup.UpdatedMethodBinding;
+
 public class CounterUpdateDialog {
 	static JFrame frame;
 	static boolean run = true;
+	static JLabel counters = new JLabel();
 	public static void quit(){
 		run=false;
 	}
@@ -29,12 +32,14 @@ public class CounterUpdateDialog {
         cons.weightx = 1;
         cons.gridx = 0;
         
+        
         JButton incrementCorrelationButton = new javax.swing.JButton();
         incrementCorrelationButton.setText("Inc. corr. between Selenium steps & HTML files");
         incrementCorrelationButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         incrementCorrelationButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ExtendedCSVGenerator.incrementCorrelation();
+                updateLabel();
             }
         });
         
@@ -44,6 +49,7 @@ public class CounterUpdateDialog {
         incrementHTMLButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 ExtendedCSVGenerator.incrementHTML();
+                updateLabel();
             }
         });
         
@@ -52,7 +58,10 @@ public class CounterUpdateDialog {
         escapeProcessButton.setAlignmentX(Component.CENTER_ALIGNMENT);
         escapeProcessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
+            	updateLabel();
+            	frame.dispose();
                 ExtendedCSVGenerator.escapeProcess();
+                ExtendedCSVGenerator.quit();
             }
         });
         
@@ -81,18 +90,28 @@ public class CounterUpdateDialog {
             }
         });
         
+        updateLabel();
+        
         frame.getContentPane().add(incrementCorrelationButton,cons);
         frame.getContentPane().add(incrementHTMLButton,cons);
         frame.getContentPane().add(escapeProcessButton,cons);
-        frame.getContentPane().add(showInstructionsButton,cons);        
+        frame.getContentPane().add(showInstructionsButton,cons); 
+        frame.getContentPane().add(counters,cons);
+        
         
         //Display the window.
         frame.pack();
         frame.setVisible(true);
     }
 	
+	static void updateLabel(){
+		counters.setText("               HTML Index: " + ExtendedCSVGenerator.getHTMLFileIndex() + " | Correlation counter: " + ExtendedCSVGenerator.getCorrelationBetweenSeleniumStepAndHtmlFiles());
+	}
 
 	public static void createGUI() {
         createAndShowGUI();
     }
+	public static void main(String[] args) {
+		createGUI();
+	}
 }

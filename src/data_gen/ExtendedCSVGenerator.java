@@ -216,10 +216,16 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		}
 		//patterns.endPatternRegister();
 		writeFinalCSV();
-		driver.close();
-		System.exit(0);
 	}
 	
+	public static int getHTMLFileIndex() {
+		return HTMLFileIndex;
+	}
+
+	public static int getCorrelationBetweenSeleniumStepAndHtmlFiles() {
+		return correlationBetweenSeleniumStepAndHtmlFiles;
+	}
+
 	public static void quit(){
 		driver.close();
 		GlobalScreen.unregisterNativeHook();

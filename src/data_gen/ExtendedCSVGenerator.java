@@ -1,6 +1,8 @@
 package data_gen;
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -18,6 +20,7 @@ import prev_work.DiffUtility;
 import prev_work.Filesystem;
 import prev_work.PageInfo;
 import prev_work.PatternNonSeleniumFinder;
+import prev_work.PatternRegister;
 import prev_work.SeleniumHTMLInteraction;
 import data_gen.ExtendedSeleniumIDEElement;
 import prev_work.TypeActionHandlers;
@@ -37,6 +40,8 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 	static ArrayList<Patch> pageChanges = new ArrayList<Patch>();
 	/** Selenium actions */
 	public static ArrayList<ExtendedSeleniumIDEElement> actions;
+	/** Inferred patterns */
+	static PatternRegister patterns=new PatternRegister();
 
 	/***************************** AUXILIARY METHODS ************************************/
 
@@ -74,7 +79,8 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 
 	/**
 	 * Iterates through Selenium actions
-	 * @throws IOException 
+	 * 
+	 * @throws IOException
 	 */
 	private static void ProcessSeleniumActions() throws IOException {
 		actions = new ArrayList<ExtendedSeleniumIDEElement>();
@@ -83,6 +89,7 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 			actions = SeleniumHTMLInteraction.parseTableFromSeleniumHTML();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			System.exit(10);
 		}
 
 		// saves the last indexes of "type" actions in Selenium HTML
@@ -92,8 +99,7 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		ArrayList<TypeActionHandlers> lastTypeIndexes = new ArrayList<TypeActionHandlers>();
 
 		for (ExtendedSeleniumIDEElement element : actions) {
-			
-			
+
 			if (element.getAction().equals("type")) {
 				Boolean exists = false;
 				for (int i = 0; i != lastTypeIndexes.size(); i++) {
@@ -102,8 +108,10 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 					// the Selenium step index is replaced by the most recent
 					// in this way, only the most recent string of each text box
 					// is analysed
-					if (lastTypeIndexes.get(i).getTextBoxId().equals(element.getLink())) {
-						lastTypeIndexes.get(i).setIndex(actions.indexOf(element) + 1);
+					if (lastTypeIndexes.get(i).getTextBoxId()
+							.equals(element.getLink())) {
+						lastTypeIndexes.get(i).setIndex(
+								actions.indexOf(element) + 1);
 						exists = true;
 					}
 				}
@@ -111,7 +119,8 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 				// if there is no input on that text box
 				// plus one so it corresponds to Selenium steps
 				if (!exists)
-					lastTypeIndexes.add(new TypeActionHandlers(element.getLink(), actions.indexOf(element) + 1));
+					lastTypeIndexes.add(new TypeActionHandlers(element
+							.getLink(), actions.indexOf(element) + 1));
 
 			}
 
@@ -129,7 +138,7 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 			// at the end of Selenium steps, checks for types that were not
 			// analysed for input patterns
 			if (actions.get(actions.size() - 1).equals(element)
-				&& element.getAction().equals("clickAndWait") != true) {
+					&& element.getAction().equals("clickAndWait") != true) {
 				SeleniumHTMLInteraction.testForInputs(actions, lastTypeIndexes,
 						actions.indexOf(element) + 1, pageInfo);
 			}
@@ -148,7 +157,6 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		// sets first argument of program as pageURL
 		if (args.length > 0)
 			pageURL = args[0];
-		
 
 		// the "default" profile is needed because it is the profile where
 		// Selenium IDE is installed
@@ -156,13 +164,13 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		FirefoxProfile profile = allProfiles.getProfile("default");
 		// opens Firefox
 		driver = new FirefoxDriver(profile);
-		//driver.get(pageURL);
+		// driver.get(pageURL);
 
 		// navigates to given page
 		driver.navigate().to(pageURL);
 
 		System.out.println(driver.getCurrentUrl());
-		
+
 		// save initial HTML source
 		Filesystem.saveToFile("temp", Integer.toString(HTMLFileIndex),
 				getPageSource(driver), false);
@@ -170,6 +178,9 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		pageInfo.add(new PageInfo(driver.getCurrentUrl(),
 				correlationBetweenSeleniumStepAndHtmlFiles));
 
+		//create the file to save the patterns in PARADIGM syntax
+		patterns.initializePatternRegister();
+		
 		// initializes keyboard event handler
 		try {
 			GlobalScreen.registerNativeHook();
@@ -181,17 +192,18 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		}
 
 		// Construct the example object and initialize native hook.
-		GlobalScreen.getInstance().addNativeKeyListener(new ExtendedCSVGenerator());
-		
+		GlobalScreen.getInstance().addNativeKeyListener(
+				new ExtendedCSVGenerator());
+
 		// Start GUI
 		CounterUpdateDialog.createGUI();
 	}
-	
-	public static void incrementCorrelation(){
+
+	public static void incrementCorrelation() {
 		correlationBetweenSeleniumStepAndHtmlFiles++;
 	}
-	
-	public static void incrementHTML(){
+
+	public static void incrementHTML() {
 		// obtains HTML Source code
 		Filesystem.saveToFile("temp", Integer.toString(HTMLFileIndex),
 				getPageSource(driver), false);
@@ -203,21 +215,23 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		// pageSourcesTemp.add(getPageSource(driver));
 		// Calls screenshot function
 	}
-	
-	public static void escapeProcess(){
+
+	public static void escapeProcess() {
 		// when execution trace is finished, list of HTML is processed
 		GlobalScreen.unregisterNativeHook();
 		ProcessList();
-		PatternNonSeleniumFinder.ProcessUrlsAndHTMLSize(pageInfo);
 		try {
 			ProcessSeleniumActions();
 		} catch (IOException e1) {
 			e1.printStackTrace();
+			System.exit(11);
 		}
-		//patterns.endPatternRegister();
+		PatternNonSeleniumFinder.ProcessUrlsAndHTMLSize(pageInfo);
+
+		PatternRegister.endPatternRegister();
 		writeFinalCSV();
 	}
-	
+
 	public static int getHTMLFileIndex() {
 		return HTMLFileIndex;
 	}
@@ -226,22 +240,41 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		return correlationBetweenSeleniumStepAndHtmlFiles;
 	}
 
-	public static void quit(){
+	public static void quit() {
 		driver.close();
 		GlobalScreen.unregisterNativeHook();
 		System.exit(0);
 	}
-	
-	static void writeFinalCSV(){
-		String content = "";
-		for(int i = 0; i < actions.size(); ++i )
+
+	static void writeFinalCSV() {
+		// first come the column names
+		String content = "action,link,parameter,URL,PRESENT_SORT_KEYWORD,RATIOTOTAL,RATIOPREVIOUS,SELENIUMSTEP,POSSIBLE_SEARCH_TEXT_BOX,POSSIBLE_SEARCH_KEYWORD_IN_URL,SEARCH_WORD_IN_URL,NUMBER_OF_KEYWORD_IN_HTML,INPUT_PATTERN_TEXTBOX,INPUT_PATTERN_TEXT,LOGIN_WORD_IN_URL,POSSIBLE_LOGIN_PASS_TEX_BOX,POSSIBLE_MASTER_DETAIL\n";
+		for (int i = 0; i < actions.size(); ++i)
 			content += actions.get(i).toString();
-			
-		Filesystem.saveToFile("final", "extended.csv", content, false);
-		
-	} 
+
+		//Filesystem.saveToFile("final", "extended.csv", content, false);
+		File file = new File(System.getProperty("user.dir")+"\\HTMLfinal\\extended.csv");
+		// if file doesnt exists, then create it
+		if (!file.exists()) {
+			try {
+				file.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		FileWriter fw;
+		try {
+			fw = new FileWriter(file.getAbsoluteFile(),false);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(content);
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/********************* OVERRIDEN METHODS *****************/
-	
+
 	@Override
 	public void nativeKeyPressed(NativeKeyEvent e) {
 		System.out.println("Key Pressed: "
@@ -258,8 +291,10 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 	}
 
 	@Override
-	public void nativeKeyReleased(NativeKeyEvent arg0) {}
+	public void nativeKeyReleased(NativeKeyEvent arg0) {
+	}
 
 	@Override
-	public void nativeKeyTyped(NativeKeyEvent arg0) {}
+	public void nativeKeyTyped(NativeKeyEvent arg0) {
+	}
 }

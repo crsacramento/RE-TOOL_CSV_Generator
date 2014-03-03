@@ -115,7 +115,7 @@ public class CounterUpdateDialog {
         GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
         Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
         int x = (int)rect.getMaxX()-350;
-        frame.setLocation(x,0);
+        frame.setLocation(x,20);
         
         // Display the window.
         frame.pack();

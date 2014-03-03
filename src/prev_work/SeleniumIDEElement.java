@@ -3,9 +3,9 @@ package prev_work;
 public class SeleniumIDEElement {
 
 	
-	String action;
-	String link;
-	String parameter;
+	protected String action;
+	protected String link;
+	protected String parameter;
 	
 	public String getAction() {
 		return action;
@@ -26,7 +26,6 @@ public class SeleniumIDEElement {
 		this.parameter = parameter;
 	}
 	public SeleniumIDEElement(String action, String link, String parameter) {
-		super();
 		this.action = action;
 		this.link = link;
 		this.parameter = parameter;

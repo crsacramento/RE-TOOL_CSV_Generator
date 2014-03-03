@@ -2,8 +2,26 @@ package data_gen;
 
 import prev_work.SeleniumIDEElement;
 
-public class ExtendedSeleniumIDEElement extends SeleniumIDEElement{
+public class ExtendedSeleniumIDEElement{
 
+	public String getAction() {
+		return action;
+	}
+	public void setAction(String action) {
+		this.action = action;
+	}
+	public String getLink() {
+		return link;
+	}
+	public void setLink(String link) {
+		this.link = link;
+	}
+	public String getParameter() {
+		return parameter;
+	}
+	public void setParameter(String parameter) {
+		this.parameter = parameter;
+	}
 	public String getURL() {
 		return URL;
 	}
@@ -115,10 +133,12 @@ public class ExtendedSeleniumIDEElement extends SeleniumIDEElement{
 	String POSSIBLE_MASTER_DETAIL = "";
 	
 	public ExtendedSeleniumIDEElement(String action, String link, String parameter) {
-		super(action,link,parameter);
+		this.action=action;
+		this.link= link;
+		this.parameter=parameter;
 	}
 	public String toString(){
-		String content =  action + "," + link + "," + parameter + ",";
+		String content =  action + "," + link + "," + (parameter.isEmpty() ? "-" : parameter )+ ",";
 		content += URL.isEmpty() ? "-," : URL + ",";
 		content += PRESENT_SORT_KEYWORD.isEmpty() ? "-," : PRESENT_SORT_KEYWORD + ",";
 		content += RATIOTOTAL.isEmpty() ? "0," : RATIOTOTAL + ",";

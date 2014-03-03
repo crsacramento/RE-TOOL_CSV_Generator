@@ -373,6 +373,7 @@ public class SeleniumHTMLInteraction {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(12);
 			}
 		}
 
@@ -535,6 +536,7 @@ public class SeleniumHTMLInteraction {
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
+				System.exit(13);
 			}
 		}
 

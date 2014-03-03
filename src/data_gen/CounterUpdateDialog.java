@@ -1,8 +1,12 @@
 package data_gen;
 
 import java.awt.Component;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Rectangle;
+import java.io.File;
 
 import javax.swing.*;
 
@@ -20,9 +24,11 @@ public class CounterUpdateDialog {
 	 * invoked from the event-dispatching thread.
 	 */
 	private static void createAndShowGUI() {
-        //Create and set up the window.
+        // Create and set up the window.
         frame = new JFrame("CounterUpdateDialog");
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        
+        // Set on close listener
         frame.addWindowListener(new FrameListener(frame));
 
         frame.setAlwaysOnTop(true);
@@ -59,9 +65,15 @@ public class CounterUpdateDialog {
         escapeProcessButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
             	updateLabel();
-            	frame.dispose();
-                ExtendedCSVGenerator.escapeProcess();
-                ExtendedCSVGenerator.quit();
+            	// Search for selenium.html file
+            	File input = new File(System.getProperty("user.dir") + "\\HTMLfinal\\selenium.html");
+            	if(!input.exists())
+            		JOptionPane.showMessageDialog(frame, "ERROR: you haven't saved the selenium.html file yet.");
+            	else{
+	            	frame.dispose();
+	                ExtendedCSVGenerator.escapeProcess();
+	                ExtendedCSVGenerator.quit();
+            	}
             }
         });
         
@@ -98,8 +110,14 @@ public class CounterUpdateDialog {
         frame.getContentPane().add(showInstructionsButton,cons); 
         frame.getContentPane().add(counters,cons);
         
+        // Make frame appear on upper right
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
+        Rectangle rect = defaultScreen.getDefaultConfiguration().getBounds();
+        int x = (int)rect.getMaxX()-350;
+        frame.setLocation(x,0);
         
-        //Display the window.
+        // Display the window.
         frame.pack();
         frame.setVisible(true);
     }

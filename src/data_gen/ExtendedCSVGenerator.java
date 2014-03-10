@@ -26,8 +26,13 @@ import data_gen.ExtendedSeleniumIDEElement;
 import prev_work.TypeActionHandlers;
 
 public class ExtendedCSVGenerator implements NativeKeyListener {
+	static String wikipedia	= "http://en.wikipedia.org/wiki/Main_Page";
+	static String amazon	= "http://www.amazon.com";
+	static String facebook	= "http://www.facebook.com";
+	static String tudu		= "http://app.rasc.ch/tudu/welcome.action";
+	
 	/** Base URL of website to navigate */
-	private static String pageURL = "http://www.amazon.com";
+	private static String pageURL = tudu;
 	/** Firefox driver */
 	private static FirefoxDriver driver;
 	/** Registers the index of the current page that is being visited */
@@ -275,6 +280,11 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		// Convert Selenium html to CSV
+		file = new File(System.getProperty("user.dir")
+				+ "\\HTMLfinal\\selenium.html");
+		HTML_to_CSV.convertFile(file);
 	}
 
 	/********************* OVERRIDEN METHODS *****************/

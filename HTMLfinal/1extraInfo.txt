@@ -1,0 +1,5 @@
+URL:http://app.rasc.ch/tudu/welcome.action
+PRESENT-SORT-KEYWORD:asc
+RATIOTOTAL:0.0
+RATIOPREVIOUS:0.0
+SELENIUMSTEP:1

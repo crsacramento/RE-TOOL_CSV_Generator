@@ -44,11 +44,11 @@ public class PatternRegister {
 		
 		FileWriter fw;
 		try {
-			fw = new FileWriter(file.getAbsoluteFile(),true);
+			fw = new FileWriter(file.getAbsoluteFile(),false);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			bw.write("<Paradigm:Model xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:Paradigm=\"http://www.example.org/Paradigm\" title=\"patterns\"/>");
-			bw.write("<nodes xsi:type=\"Paradigm:Init\" name=\"XInit\" number=\"1.0\"/>");
+			bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+			bw.write("<Paradigm:Model xmi:version=\"2.0\" xmlns:xmi=\"http://www.omg.org/XMI\" xmlns:Paradigm=\"http://www.example.org/Paradigm\" title=\"patterns\"/>\n");
+			bw.write("<nodes xsi:type=\"Paradigm:Init\" name=\"XInit\" number=\"1.0\"/>\n");
 			//bw.newLine();
 			bw.close();
 		} catch (IOException e) {
@@ -70,19 +70,19 @@ public class PatternRegister {
 			BufferedWriter bw = new BufferedWriter(fw);
 			
 			if (patternType2.equals("Sort"))
-				bw.write("<nodes xsi:type=\"Paradigm:Sort\" name=\"Sort"+ number + "\" number=\"" + number + "\"/>");
+				bw.write("<nodes xsi:type=\"Paradigm:Sort\" name=\"Sort"+ number + "\" number=\"" + number + "\"/>\n");
 			
 			if (patternType2.equals("Login"))
-				bw.write("<nodes xsi:type=\"Paradigm:Login\" name=\"Login"+ number + "\" number=\"" + number + "\"/>");
+				bw.write("<nodes xsi:type=\"Paradigm:Login\" name=\"Login"+ number + "\" number=\"" + number + "\"/>\n");
 			
 			if (patternType2.equals("MasterDetail"))
-				bw.write("<nodes xsi:type=\"Paradigm:MasterDetail\" name=\"MasterDetail"+ number + "\" number=\"" + number + "\"/>");
+				bw.write("<nodes xsi:type=\"Paradigm:MasterDetail\" name=\"MasterDetail"+ number + "\" number=\"" + number + "\"/>\n");
 			
 			if (patternType2.equals("Input"))
-				bw.write("<nodes xsi:type=\"Paradigm:Input\" name=\"Input"+ number + "\" number=\"" + number + "\"/>");
+				bw.write("<nodes xsi:type=\"Paradigm:Input\" name=\"Input"+ number + "\" number=\"" + number + "\"/>\n");
 			
 			if (patternType2.equals("Search"))
-				bw.write("<nodes xsi:type=\"Paradigm:Find\" name=\"Find"+ number + "\" number=\"" + number + "\"/>");
+				bw.write("<nodes xsi:type=\"Paradigm:Find\" name=\"Find"+ number + "\" number=\"" + number + "\"/>\n");
 			
 				
 			//bw.write(patternType2);
@@ -105,8 +105,8 @@ public static void endPatternRegister() {
 			fw = new FileWriter(file.getAbsoluteFile(),true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			
-			bw.write("<nodes xsi:type=\"Paradigm:End\" name=\"End\" number=\"" + number + "\"/>");
-			bw.write("</Paradigm:Model>");
+			bw.write("<nodes xsi:type=\"Paradigm:End\" name=\"End\" number=\"" + number + "\"/>\n");
+			bw.write("</Paradigm:Model>\n");
 			
 				
 			//bw.write(patternType2);

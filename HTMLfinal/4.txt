@@ -1,0 +1,3 @@
+[ChangeDelta, position: 674, lines: [   <div align="center" style="display: inline;" class="box" id="editTodoDiv">] to [   <div align="center" style="display: none;" class="box" id="editTodoDiv">]]
+[ChangeDelta, position: 914, lines: [      ] to [       <img alt="" src="http://tudu.sourceforge.net/static/2.2/images/note.png" />]]
+[ChangeDelta, position: 922, lines: [     ] to [     11/10/2014]]

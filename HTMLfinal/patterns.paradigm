@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Paradigm:Model xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:Paradigm="http://www.example.org/Paradigm" title="patterns"/>
+<nodes xsi:type="Paradigm:Init" name="XInit" number="1.0"/>
+<nodes xsi:type="Paradigm:Login" name="Login1" number="1"/>
+<nodes xsi:type="Paradigm:Input" name="Input2" number="2"/>
+<nodes xsi:type="Paradigm:Input" name="Input3" number="3"/>
+<nodes xsi:type="Paradigm:Input" name="Input4" number="4"/>
+<nodes xsi:type="Paradigm:Input" name="Input5" number="5"/>
+<nodes xsi:type="Paradigm:Input" name="Input6" number="6"/>
+<nodes xsi:type="Paradigm:Input" name="Input7" number="7"/>
+<nodes xsi:type="Paradigm:Input" name="Input8" number="8"/>
+<nodes xsi:type="Paradigm:Input" name="Input9" number="9"/>
+<nodes xsi:type="Paradigm:Sort" name="Sort10" number="10"/>
+<nodes xsi:type="Paradigm:Sort" name="Sort11" number="11"/>
+<nodes xsi:type="Paradigm:Sort" name="Sort12" number="12"/>
+<nodes xsi:type="Paradigm:Sort" name="Sort13" number="13"/>
+<nodes xsi:type="Paradigm:Sort" name="Sort14" number="14"/>
+<nodes xsi:type="Paradigm:End" name="End" number="15"/>
+</Paradigm:Model>

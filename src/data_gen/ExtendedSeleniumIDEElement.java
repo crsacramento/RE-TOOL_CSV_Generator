@@ -1,6 +1,5 @@
 package data_gen;
 
-import prev_work.SeleniumIDEElement;
 
 public class ExtendedSeleniumIDEElement{
 
@@ -138,14 +137,14 @@ public class ExtendedSeleniumIDEElement{
 		this.parameter=parameter;
 	}
 	public String toString(){
-		String content = '\"' + action + "\",\"" + link + "\",\"" + (parameter.isEmpty() ? "-" : parameter )+ "\",";
-		content += URL.isEmpty() ? "-," : '\"' + URL + "\",";
-		content += PRESENT_SORT_KEYWORD.isEmpty() ? "-," : '\"' + PRESENT_SORT_KEYWORD + "\",";
+		String content = '\"' + action + "\",\"" + link + "\",\"" + (parameter.isEmpty() ? "NA" : parameter )+ "\",";
+		content += URL.isEmpty() ? "NA," : '\"' + URL + "\",";
+		content += PRESENT_SORT_KEYWORD.isEmpty() ? "NA," : '\"' + PRESENT_SORT_KEYWORD + "\",";
 		content += RATIOTOTAL.isEmpty() ? "0," : '\"' + RATIOTOTAL + "\",";
 		content += RATIOPREVIOUS.isEmpty() ? "0," :'\"' + RATIOPREVIOUS + "\",";
-		content += SELENIUMSTEP.isEmpty() ? "-," : '\"' + SELENIUMSTEP + "\",";
-		content += POSSIBLE_SEARCH_TEXT_BOX.isEmpty() ? "-," : '\"' + POSSIBLE_SEARCH_TEXT_BOX + "\",";
-		content += POSSIBLE_SEARCH_KEYWORD_IN_URL.isEmpty() ? "-," : '\"' + POSSIBLE_SEARCH_KEYWORD_IN_URL + "\",";
+		content += SELENIUMSTEP.isEmpty() ? "NA," : '\"' + SELENIUMSTEP + "\",";
+		content += POSSIBLE_SEARCH_TEXT_BOX.isEmpty() ? "NA," : '\"' + POSSIBLE_SEARCH_TEXT_BOX + "\",";
+		content += POSSIBLE_SEARCH_KEYWORD_IN_URL.isEmpty() ? "NA," : '\"' + POSSIBLE_SEARCH_KEYWORD_IN_URL + "\",";
 		content += SEARCH_WORD_IN_URL.isEmpty() ? "F," : '\"' + SEARCH_WORD_IN_URL + "\",";
 		content += NUMBER_OF_KEYWORD_IN_HTML.isEmpty() ? "0," : '\"' + NUMBER_OF_KEYWORD_IN_HTML + "\",";
 		content += INPUT_PATTERN_TEXTBOX.isEmpty() ? "0," : '\"' + INPUT_PATTERN_TEXTBOX + "\",";

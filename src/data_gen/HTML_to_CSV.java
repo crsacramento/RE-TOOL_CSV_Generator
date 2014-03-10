@@ -117,11 +117,13 @@ public class HTML_to_CSV {
 	
 	public static void main(String[] args) {
 		
-		File[] files = new File("H:\\Dropbox\\DISS_traces\\HTMLs").listFiles();
+		/*File[] files = new File("H:\\Dropbox\\DISS_traces\\HTMLs").listFiles();
 		for (File file : files) {
 			System.out.println(file.getName());
 			convertFile(file);
 			//System.out.println(file.getName() + " done.");
-	    }
+	    }*/
+		File file = new File("H:\\Dropbox\\DISS\\traces\\ruby scripts\\selenium.html");
+		convertFile(file);
 	}
 }

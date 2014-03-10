@@ -1,0 +1,148 @@
+type,element,text
+"clickAndWait","link=Arts",EMPTY
+"clickAndWait","link=Mathematics",EMPTY
+"clickAndWait","link=Category theory",EMPTY
+"clickAndWait","link=Saunders Mac Lane",EMPTY
+"clickAndWait","link=Português",EMPTY
+"clickAndWait","link=Segunda Guerra Mundial",EMPTY
+"clickAndWait","link=English",EMPTY
+"clickAndWait","link=Stalingrad",EMPTY
+"clickAndWait","link=Operation Barbarossa",EMPTY
+"clickAndWait","xpath=(//a[contains(text(),\'Joseph Stalin\')])[2]",EMPTY
+"clickAndWait","link=Random article",EMPTY
+"clickAndWait","link=testosterone",EMPTY
+"clickAndWait","link=Schering",EMPTY
+"clickAndWait","link=German",EMPTY
+"clickAndWait","link=Nazism",EMPTY
+"clickAndWait","css=div.thumbcaption > a[title=\"Adolf Hitler\"]",EMPTY
+"clickAndWait","link=Featured content",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Overviews\"] > span.mw-ui-button.mw-ui-progressive > b",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Outlines\"] > span.mw-ui-button.mw-ui-progressive",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Lists\"] > span.mw-ui-button.mw-ui-progressive > b",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Glossaries\"] > span.mw-ui-button.mw-ui-progressive > b",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Categories\"] > span.mw-ui-button.mw-ui-progressive > b",EMPTY
+"clickAndWait","css=a[title=\"Portal:Contents/Indexes\"] > span.mw-ui-button.mw-ui-progressive",EMPTY
+"click","link=Mathematics and logic",EMPTY
+"clickAndWait","link=Anatomy",EMPTY
+"clickAndWait","link=anterior horn cells",EMPTY
+"clickAndWait","link=Central canal",EMPTY
+"clickAndWait","link=Indiana Central Canal",EMPTY
+"clickAndWait","link=American Water Landmark",EMPTY
+"clickAndWait","xpath=(//a[contains(text(),\'Massachusetts\')])[2]",EMPTY
+"clickAndWait","link=First Great Awakening",EMPTY
+"clickAndWait","link=Current events",EMPTY
+"clickAndWait","link=Tom Finney",EMPTY
+"clickAndWait","css=a[title=\"Visit the main page\"]",EMPTY
+"clickAndWait","link=Featured content",EMPTY
+"clickAndWait","link=Articles",EMPTY
+"clickAndWait","link=Tomb of Antipope John XXIII",EMPTY
+"clickAndWait","xpath=(//a[contains(text(),\'Donatello\')])[2]",EMPTY
+"clickAndWait","link=bas-relief",EMPTY
+"clickAndWait","link=Ellora Caves",EMPTY
+"clickAndWait","link=Kannada",EMPTY
+"clickAndWait","link=Rajkumar (actor)",EMPTY
+"clickAndWait","link=cultural icon",EMPTY
+"clickAndWait","link=Big Ben",EMPTY
+"clickAndWait","link=free-standing",EMPTY
+"clickAndWait","link=One World Trade Center",EMPTY
+"clickAndWait","link=Larry Silverstein",EMPTY
+"clickAndWait","link=alma mater",EMPTY
+"clickAndWait","link=Palatine Hill",EMPTY
+"clickAndWait","link=altar to an unknown deity",EMPTY
+"clickAndWait","link=Archaic Latin",EMPTY
+"clickAndWait","link=Contemporary Latin",EMPTY
+"clickAndWait","link=Ecclesiastical Latin",EMPTY
+"clickAndWait","css=a[title=\"Visit the main page\"]",EMPTY
+"clickAndWait","link=Clovis culture",EMPTY
+"clickAndWait","link=Paleo-Indian",EMPTY
+"clickAndWait","link=first peoples",EMPTY
+"clickAndWait","link=International Labour Organisation",EMPTY
+"clickAndWait","link=Español",EMPTY
+"clickAndWait","link=English",EMPTY
+"clickAndWait","link=member states of the United Nations",EMPTY
+"clickAndWait","link=seat of China in the UN",EMPTY
+"type","id=searchInput","United States"
+"clickAndWait","link=US (disambiguation)",EMPTY
+"clickAndWait","link=\"Us\" (Regina Spektor song)",EMPTY
+"typeAndWait","id=searchInput","regina"
+"clickAndWait","link=Edgar Dewdney",EMPTY
+"clickAndWait","link=civil engineering",EMPTY
+"clickAndWait","link=Geotechnical engineering",EMPTY
+"clickAndWait","link=cone penetration test",EMPTY
+"clickAndWait","link=Soil liquefaction",EMPTY
+"clickAndWait","link=stiffness",EMPTY
+"clickAndWait","link=Flexibility (disambiguation)",EMPTY
+"clickAndWait","link=Flexibility (anatomy)",EMPTY
+"clickAndWait","link=active stretching",EMPTY
+"clickAndWait","link=agonist",EMPTY
+"clickAndWait","link=Random article",EMPTY
+"clickAndWait","link=Pittsburgh",EMPTY
+"clickAndWait","link=deindustrialization",EMPTY
+"type","id=searchInput","Japan national football team"
+"clickAndWait","link=Agony of Doha",EMPTY
+"clickAndWait","link=Iraq",EMPTY
+"clickAndWait","link=Iraq",EMPTY
+"clickAndWait","link=Aragonés",EMPTY
+"clickAndWait","link=?eština",EMPTY
+"clickAndWait","link=Esperanto",EMPTY
+"clickAndWait","link=Gaeilge",EMPTY
+"clickAndWait","link=an Tuirc",EMPTY
+"clickAndWait","link=English",EMPTY
+"clickAndWait","link=Turkic language",EMPTY
+"clickAndWait","link=Trukic languages",EMPTY
+"clickAndWait","link=Woleaian",EMPTY
+"type","id=searchInput","Malaysia"
+"clickAndWait","link=Malesia",EMPTY
+"clickAndWait","link=ice ages",EMPTY
+"clickAndWait","css=a[title=\"Visit the main page\"]",EMPTY
+"type","id=searchInput","ukraine"
+"type","id=searchInput","ukra"
+"clickAndWait","link=Famalicão",EMPTY
+"clickAndWait","link=List of twin towns and sister cities in Portugal",EMPTY
+"clickAndWait","link=Ostrava",EMPTY
+"click","id=collapseButton1",EMPTY
+"click","id=collapseButton2",EMPTY
+"click","id=collapseButton3",EMPTY
+"clickAndWait","link=Zlín",EMPTY
+"clickAndWait","link=Batanagar",EMPTY
+"clickAndWait","css=a[title=\"Visit the main page\"]",EMPTY
+"click","id=p-lang-label",EMPTY
+"click","id=p-lang-label",EMPTY
+"clickAndWait","link=Simple English",EMPTY
+"clickAndWait","css=a[title=\"English\"]",EMPTY
+"clickAndWait","link=Bald Eagles",EMPTY
+"clickAndWait","link=plumage",EMPTY
+"clickAndWait","link=budgerigar",EMPTY
+"clickAndWait","link=cere",EMPTY
+"clickAndWait","link=Anatidae",EMPTY
+"clickAndWait","link=Runa Simi",EMPTY
+"clickAndWait","link=Português",EMPTY
+"clickAndWait","link=Marreca-cricri",EMPTY
+"clickAndWait","css=span > a[title=\"Aves\"]",EMPTY
+"clickAndWait","link=quivi",EMPTY
+"clickAndWait","link=quivi",EMPTY
+"clickAndWait","link=English",EMPTY
+"clickAndWait","css=a[title=\"Visit the main page\"]",EMPTY
+"clickAndWait","link=Afroyim v. Rusk",EMPTY
+"clickAndWait","link=Bancroft Treaties",EMPTY
+"clickAndWait","link=Expatriation",EMPTY
+"clickAndWait","link=Current events",EMPTY
+"clickAndWait","link=Euromaidan",EMPTY
+"clickAndWait","css=a[title=\"Find background information on current events\"]",EMPTY
+"click","link=19",EMPTY
+"click","link=20",EMPTY
+"clickAndWait","link=Pussy Riot",EMPTY
+"clickAndWait","xpath=(//a[contains(text(),\'LGBT rights\')])[2]",EMPTY
+"clickAndWait","link=Theodosian Code",EMPTY
+"clickAndWait","link=Arian",EMPTY
+"clickAndWait","link=Flacilla",EMPTY
+"clickAndWait","link=Eastern Orthodox Church",EMPTY
+"clickAndWait","link=Jesus",EMPTY
+"clickAndWait","link=Christ",EMPTY
+"clickAndWait","link=Messiah",EMPTY
+"clickAndWait","link=Mary",EMPTY
+"clickAndWait","link=Abdul Muttalib",EMPTY
+"type","id=searchInput","prophet"
+"clickAndWait","link=Profit",EMPTY
+"clickAndWait","link=All pages beginning with \"Profit\"",EMPTY
+"clickAndWait","link=Profit-a-pendre",EMPTY

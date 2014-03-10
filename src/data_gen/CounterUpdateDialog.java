@@ -10,7 +10,6 @@ import java.io.File;
 
 import javax.swing.*;
 
-import org.eclipse.jdt.internal.compiler.lookup.UpdatedMethodBinding;
 
 public class CounterUpdateDialog {
 	static JFrame frame;

@@ -62,52 +62,29 @@ public class FilePreprocessor {
 
 				// process 'clickAndWait' variants
 				if (words.contains("clickandwait")) {
+					String[] keywords = {"link","button","submit","img","option","main page","home"};
 					String result = "";
 					Boolean match = false;
-					result = searchAndReturn(words, "clickAndWait", "link");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("link", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "clickAndWait", "button");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("button", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "clickAndWait", "submit");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("submit", "");
-						// eliminate 'text', not necessary
-						words = words.replaceAll("input", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "clickAndWait", "img");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("img", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "clickAndWait", "option");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("option", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "clickAndWait",
-							"main page");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("main page", "");
-						line += "clickAndWaitHome ";
-					}
-					result = searchAndReturn(words, "clickAndWait", "home");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("home", "");
-						line += result;
+					
+					for(int i = 0; i < keywords.length; ++i){
+						result = searchAndReturn(words, "clickAndWait", keywords[i]);
+						if (!result.isEmpty()) {
+							match = true;
+							words = words.replaceAll(keywords[i], "");
+	
+							switch(keywords[i]){
+								case "submit":{
+									words = words.replaceAll("input", "");
+									line += result;
+									break;
+								}
+								case "main home":{
+									line += "clickAndWaitHome ";
+								}
+								default: line += result; 
+							}
+
+						}
 					}
 
 					if (match)
@@ -120,138 +97,51 @@ public class FilePreprocessor {
 				if (words.contains("click ")) {
 					boolean match = false;
 					String result = "";
-					result = searchAndReturn(words, "click", "link");
-					if (!result.isEmpty()) {
-						match = true;
-						line += result;
-
-						// Search for "clickLinkNext"
-						result = searchAndReturn(words, "", "next");
+					String[] keywords = {"link","collapse","button","img","search","sort","persist",
+							"option","next","prev","nav","input","action","edit","about","home"};
+					for (int i = 0; i < keywords.length; ++i) {
+						result = searchAndReturn(words, "click", keywords[i]);
 						if (!result.isEmpty()) {
-							words = words.replaceAll("next", "");
-							line = line.substring(0, line.length() - 1);
-							line += result;
+							match = true;
+							words = words.replaceAll(keywords[i], "");
+
+							switch (keywords[i]) {
+								case "link":{
+									line += result;
+									
+									// Search for "clickLinkNext"
+									result = searchAndReturn(words, "", "next");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("next", "");
+										line += "clickNext ";
+									}
+									
+									// Search for "clickLinkPrev"
+									result = searchAndReturn(words, "", "prev");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("prev", "");
+										line += "clickPrev ";
+									}
+								}
+								case "collapse":{
+									// Search for "clickCollapseButton"
+									result = searchAndReturn(words, "", "button");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("button", "");
+										line += "clickCollapseButton ";
+									}
+								}
+								case "submit":{
+									words = words.replaceAll("input", "");
+									line += result;
+									break;
+								}
+								default:
+									line += result;
+							}
 						}
-						// Search for "clickLinkPrev"
-						result = searchAndReturn(words, "", "prev");
-						if (!result.isEmpty()) {
-							words = words.replaceAll("prev", "");
-							line = line.substring(0, line.length() - 1);
-							line += result;
-						}
-						words = words.replaceAll("link", "");
 					}
 
-					result = searchAndReturn(words, "click", "collapse");
-					if (!result.isEmpty()) {
-						match = true;
-
-						// Search for "clickCollapseButton"
-						result = searchAndReturn(words, "", "button");
-						if (!result.isEmpty()) {
-							words = words.replaceAll("button", "");
-							line += "clickCollapseButton ";
-						}
-						words = words.replaceAll("collapse", "");
-					}
-					result = searchAndReturn(words, "click", "button");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("button", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "submit");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("submit", "");
-						// eliminate 'input', not necessary
-						words = words.replaceAll("input", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "img");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("img", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "search");
-					if (!result.isEmpty()) {
-						match = true;
-						line += result;
-						words = words.replaceAll("search", "");
-					}
-					result = searchAndReturn(words, "click", "sort");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("sort", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "persist");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("persist", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "option");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("option", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "next");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("next", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "click", "prev");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("prev", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "nav");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("nav", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "input");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("input", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "action");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("nav", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "edit");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("edit", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "about");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("about", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "click", "home");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("nav", "");
-						line += result;
-					}
 					if (match)
 						words = words.replaceAll("click", "");
 				} 
@@ -259,86 +149,62 @@ public class FilePreprocessor {
 				if (words.contains("type")) {
 					boolean match = false;
 					String result = "";
-
-					result = searchAndReturn(words, "type", "username");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("username", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "user");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("user", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "password");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("password", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "pass");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("pass", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "search");
-					if (!result.isEmpty()) {
-						match = true;
-						line += result;
-
-						// Search for "typeSearchInput"
-						result = searchAndReturn(words, "", "input");
+					String[] keywords = {"username","user","password","pass","search",
+							"input","email","login","first","last","description","desc","priority","date"};
+					for(int i = 0; i < keywords.length; ++i){
+						result = searchAndReturn(words, "type", keywords[i]);
 						if (!result.isEmpty()) {
-							words = words.replaceAll("input", "");
-							line = line.substring(0, line.length() - 1);
-							line += result;
-
+							match = true;
+							words = words.replaceAll(keywords[i], "");
+							
+							switch(keywords[i]){
+								case "user":
+								case "username":{
+									line += "typeUsername ";
+									break;
+								}
+								case "pass":
+								case "password":{
+									// search for typeVerifyPassword
+									result = searchAndReturn(words, "", "verify");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("verify", "");
+										line += "typeVerifyPassword ";
+									}else{
+										line += "typePassword ";
+									}
+								}
+								case "search":{
+									// Search for "typeSearchInput"
+									result = searchAndReturn(words, "", "input");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("input", "");
+										words = words.replaceAll("text", "");
+										line += "typeSearchInput ";
+									}else{
+										line += "typeSearch ";
+									}
+								}
+								case "input":{
+									// eliminate 'text', not necessary
+									words = words.replaceAll("text", "");
+									line += result;
+								}
+								case "last":
+								case "first":{
+									// search for typeFirstName
+									result = searchAndReturn(words, "", "name");
+									if (!result.isEmpty()) {
+										words = words.replaceAll("name", "");
+										line += "type" + Character.toUpperCase(keywords[i].charAt(0))
+												+ keywords[i].substring(1) + "Name ";
+									}
+								}
+								default: line += result; 
+							}
 						}
-						words = words.replaceAll("search", "");
 					}
 
-					result = searchAndReturn(words, "type", "input");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("input", "");
-						// eliminate 'text', not necessary
-						words = words.replaceAll("text", "");
-						line += result;
-					}
-
-					result = searchAndReturn(words, "type", "email");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("email", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "description");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("description", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "desc");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("desc", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "priority");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("priority", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "type", "date");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("date", "");
-						line += result;
-					}
 					if (match)
 						words = words.replaceAll("type", "");
 				} 
@@ -346,17 +212,14 @@ public class FilePreprocessor {
 				if (words.contains("select")) {
 					boolean match = false;
 					String result = "";
-					result = searchAndReturn(words, "select", "sort");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("sort", "");
-						line += result;
-					}
-					result = searchAndReturn(words, "select", "search");
-					if (!result.isEmpty()) {
-						match = true;
-						words = words.replaceAll("search", "");
-						line += result;
+					String[] keywords = {"sort","search"};
+					for(int i = 0; i < keywords.length; ++i){
+						result = searchAndReturn(words, "select", keywords[i]);
+						if (!result.isEmpty()) {
+							match = true;
+							words = words.replaceAll(keywords[i], "");
+							line += result;
+						}
 					}
 					if (match)
 						words = words.replaceAll("select", "");
@@ -371,6 +234,7 @@ public class FilePreprocessor {
 
 				// Remove noise words
 				words = words.replaceAll("empty", "");
+				words = words.replaceAll(" na ", "");
 				words = words.replaceAll("div ", " ");
 				words = words.replaceAll(" ul ", " ");
 				words = words.replaceAll(" li ", " ");
@@ -398,6 +262,7 @@ public class FilePreprocessor {
 				words = words.replaceAll(" xpath ", " ");
 				words = words.replaceAll(" li ", " ");
 				words = words.replaceAll(" script ", " ");
+				words = words.replaceAll(" ref ", " ");
 				//words = words.replaceAll("all", "All");
 
 				// if not part of a previous pattern, these words are also

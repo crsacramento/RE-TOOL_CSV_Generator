@@ -7,14 +7,18 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class AlphabetGenerator {
-	static HashMap<String, Integer> alphabet = new HashMap<String, Integer>();
-	static HashMap<Integer, String> invertedAlphabet = new HashMap<Integer, String>();
+	private static HashMap<String, Integer> alphabet = new HashMap<String, Integer>();
+	private static HashMap<Integer, String> invertedAlphabet = new HashMap<Integer, String>();
+	private static int NUM_LINES = 5;
 
 	/**
 	 * Reads CSV file, fills alphabet hashmap with alphabet, writes line in
@@ -23,7 +27,7 @@ public class AlphabetGenerator {
 	 * @param absolutePath
 	 *            path to csv file
 	 */
-	static void readCSVFile_WriteSpaceFile(String absolutePath) {
+	static void readFile_WriteIndexFile(String absolutePath) {
 		// open reading file
 		BufferedReader in = null;
 		File file = new File(absolutePath);
@@ -39,43 +43,50 @@ public class AlphabetGenerator {
 		String dirName = file.getParentFile().toPath().toAbsolutePath()
 				.toString();
 		File dir = new File(dirName);
-		File actualOutputFile = new File(dir, file.getName() + ".space");
+		File actualOutputFile = new File(dir, file.getName() + ".num");
 
 		try {
-			output = new FileWriter(actualOutputFile, true);
+			output = new FileWriter(actualOutputFile);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
 
 		// updates line to write
 		String x = "";
-		int lineCounter = 1, lastIndex = 1;
+		int lineCounter = 1;
+		int lastIndex = 1;
+
+		// Regex
+		Pattern pattern = Pattern.compile("[A-Z]?[a-zA-Z0-9]+");
+		Matcher matcher = null;
 
 		try {
 			while ((x = in.readLine()) != null) {
-				String[] parcels = x.split(",");
-				if (parcels.length == 1) {
-					System.err.println("ERROR: Line " + lineCounter
-							+ " is not comma-separated.");
-					output.close();
-					System.exit(1);
+				// Find all words
+				matcher = pattern.matcher(x);
+				ArrayList<String> words = new ArrayList<String>();
+
+				matcher.find();
+				while (matcher.find()) {
+				// Get the matching string
+					words.add(matcher.group());
 				}
 
-				// updates alphabet, writes to alphabet file
 				String line = "";
-				for (int i = 0; i < parcels.length; ++i) {
-					if (!alphabet.containsKey(parcels[i])) {
-						alphabet.put(parcels[i], lastIndex);
+
+				// Processing regex matches
+				for (int i = 0; i < words.size(); ++i) {
+					if (!alphabet.containsKey(words.get(i))) {
+						alphabet.put(words.get(i), lastIndex);
 						++lastIndex;
 					}
-					// line += alphabet.get(parcels[i]) + " -1 ";
-					line += alphabet.get(parcels[i]) + " ";
-
+					line += alphabet.get(words.get(i)) + " ";
+					//line += alphabet.get(words.get(i)) + " -1 ";
 				}
 
-				line = line.substring(0, line.length() - 1);
-				// line += " -2 \n";
-				line += " -1 -2 \n";
+				if ((lineCounter % NUM_LINES) == 0)
+					line += "-1 -2 \n";
+					//line += "-2 \n";
 				output.write(line);
 				line = "";
 				lineCounter++;
@@ -112,7 +123,7 @@ public class AlphabetGenerator {
 		File alphabetFile = new File(dir, file.getName() + ".alphabet");
 		FileWriter alphabetFW = null;
 		try {
-			alphabetFW = new FileWriter(alphabetFile, true);
+			alphabetFW = new FileWriter(alphabetFile);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -127,7 +138,6 @@ public class AlphabetGenerator {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			//it.remove(); // avoids a ConcurrentModificationException
 		}
 
 		try {
@@ -137,9 +147,15 @@ public class AlphabetGenerator {
 		}
 	}
 
-	static void readResultFile_produceSequenceFile(String absolutePath) {
+	static void readResultFile_produceTranslatedFile(String absolutePath) {
 		BufferedReader in = null;
 		File file = new File(absolutePath);
+		if (!file.exists())
+			try {
+				file.createNewFile();
+			} catch (IOException e2) {
+				e2.printStackTrace();
+			}
 		try {
 			in = new BufferedReader(new FileReader(file));
 		} catch (FileNotFoundException e) {
@@ -152,10 +168,10 @@ public class AlphabetGenerator {
 		String dirName = file.getParentFile().toPath().toAbsolutePath()
 				.toString();
 		File dir = new File(dirName);
-		File actualOutputFile = new File(dir, file.getName() + ".sequence");
+		File actualOutputFile = new File(dir, file.getName() + ".translated");
 
 		try {
-			output = new FileWriter(actualOutputFile, true);
+			output = new FileWriter(actualOutputFile);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -165,16 +181,45 @@ public class AlphabetGenerator {
 
 		try {
 			while ((x = in.readLine()) != null) {
-				String support = x.substring(x.indexOf('#'));
-				x = x.substring(0, x.indexOf('#'));
+				// check for #
+				if (x.indexOf('#') != -1)
+					x = x.substring(0, x.indexOf("SUP") - 1)
+							+ x.substring(x.indexOf("SUP"));
+				String support = x.substring(x.indexOf("SUP"));
+				x = x.substring(0, x.indexOf("SUP"));
+
 				String[] parcels = x.split(" ");
 
 				String line = "";
 				for (int i = 0; i < parcels.length; ++i) {
-					if (invertedAlphabet.containsKey(Integer
-									.parseInt(parcels[i]))) {
+					// Sequential rules arrow
+					if (parcels[i].contains("==>"))
+						line += parcels[i] + " ";
+					// Sequential rules comma
+					else if (parcels[i].contains(",")) {
+						String[] numbers = parcels[i].split(",");
+						for (int j = 0; j < numbers.length; ++j) {
+							if (invertedAlphabet.containsKey(Integer
+									.parseInt(numbers[j])))
+								line += invertedAlphabet.get(Integer
+										.parseInt(numbers[j]));
+							else
+								line += numbers[j];
+							if (j != numbers.length - 1)
+								line += ", ";
+							else
+								line += " ";
+						}
+
+					}
+					// Regular number
+					else if (invertedAlphabet.containsKey(Integer
+							.parseInt(parcels[i]))) {
 						line += invertedAlphabet.get(Integer
 								.parseInt(parcels[i])) + " ";
+					}// Number isn't found on alphabet
+					else {
+						line += parcels[i] + " ";
 					}
 				}
 
@@ -194,42 +239,98 @@ public class AlphabetGenerator {
 
 	}
 
+	@SuppressWarnings("resource")
 	static void produceSpaceFilesAndRunAlgorithm(String absolutePath) {
-		readCSVFile_WriteSpaceFile(absolutePath);
-		writeAlphabetFile(absolutePath);
+		readFile_WriteIndexFile(absolutePath);
+		//writeAlphabetFile(absolutePath);
 
-		String command = "java -jar C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\spmf.jar run PrefixSpan "
-				+ absolutePath
-				+ ".space "
-				+ absolutePath
-				+ ".space.result 10% 100";
-		System.out.println("command: " + command);
-		Process proc = null;
-		try {
-			proc = Runtime.getRuntime().exec(command);
-			InputStream in = proc.getInputStream();
-			InputStream err = proc.getErrorStream();
-			java.util.Scanner s = new java.util.Scanner(in).useDelimiter("\\A");
-			System.out.println(s.hasNext() ? s.next() : "");
-			s = new java.util.Scanner(err).useDelimiter("\\A");
-			System.out.println(s.hasNext() ? s.next() : "");
-			s.close();in.close();err.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		String[] algorithms = { "PrefixSpan", "GSP", "CM-SPADE", "CM-SPAM",
+				"CM-ClaSP", "CloSpan", "BIDE+",
+		// "MaxSP",
+		// "VMSP",
+		// "TKS",
+		// "TSP_nonClosed",
+		// "CMRules",
+		// "CMDeo",
+		// "RuleGrowth"
+		};
+
+		String[] results = { ".prefixspan.result", ".gsp.result",
+				".spade.result", ".spam.result",
+				".clasp.result", ".clospan.result",
+				".bide+.result",
+		// ".index.maxsp.result",
+		// ".index.vmsp.result",
+		// ".index.tks.result",
+		// ".index.tspNonClosed.result",
+		// ".index.cmRules.result",
+		// ".index.cmDeo.result",
+		// ".index.ruleGrowth.result"
+		};
+
+		for (int i = 0; i < algorithms.length; ++i) {
+			String command = "java -jar "
+					+ "C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\spmf.jar "
+					+ "run "
+					+ algorithms[i]
+					+ " "
+					+ absolutePath + ".num "
+					+ absolutePath + results[i] 
+					+ " 30% ";
+
+			//if (i == 0 || i == 1 || i == 2 || i == 3 || i == 5)
+			if(algorithms[i].equals("PrefixSpan") ||
+					algorithms[i].equals("GSP") ||
+					algorithms[i].equals("CM-SPADE") ||
+					algorithms[i].equals("CM-SPAM"))
+				// max sequence length
+				command += " 100 ";
+			// else if(i == 10) //K for TSP_nonClosed
+			// command += " 15 ";
+			// else if(i == 7 || i == 8 || i == 9) 
+			// min confidence for sequential rules
+			// command += " 50% ";
+
+			System.out.println("command: " + command + "\n");
+			Process proc = null;
+			try {
+				proc = Runtime.getRuntime().exec(command);
+				InputStream in = proc.getInputStream();
+				InputStream err = proc.getErrorStream();
+				// print jar out stream
+				java.util.Scanner s = new java.util.Scanner(in)
+						.useDelimiter("\\A");
+				System.out.println(s.hasNext() ? s.next() : algorithms[i].toUpperCase()+": No out output.\n");
+				// print jar err stream
+				s = new java.util.Scanner(err).useDelimiter("\\A");
+				System.out.println(s.hasNext() ? s.next() : algorithms[i].toUpperCase()+": No err output.\n");
+				s.close();
+				in.close();
+				err.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+
+			buildInvertedAlphabet();
+			System.out.println("Inverted alphabet built.");
+			readResultFile_produceTranslatedFile(absolutePath + results[i]);
+			System.out
+					.println(algorithms[i] + " sequence file built.\n\t***\n");
 		}
-
-		buildInvertedAlphabet();
-		System.out.println("Inverted alphabet built.");
-		readResultFile_produceSequenceFile(absolutePath + ".space.result");
-		System.out.println("Sequence file built.");
 	}
 
 	public static void main(String[] args) {
 		File file = new File(
-				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\amazon_merge.csv");
+				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\amazon1"
+						//+ "_merge" 
+						+ ".tsv");
 		System.out.println(file.getName());
-		if (!file.isDirectory()) {
-			produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath());
-		}
+		// if not pre processing
+		//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath());
+		
+		// else
+		FilePreprocessor.preprocessFile(file.getAbsolutePath());
+		produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath() + ".processed");
 	}
+
 }

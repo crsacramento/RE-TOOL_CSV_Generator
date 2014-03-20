@@ -1,8 +1,0 @@
-EMPTY #SUP: 160
-"click" #SUP: 110
-"click" EMPTY #SUP: 110
-"clickAndWait" #SUP: 48
-"clickAndWait" EMPTY #SUP: 48
-"id=sort" #SUP: 43
-"select" #SUP: 29
-"select" "id=sort" #SUP: 28

@@ -1,0 +1,712 @@
+type	element	text
+"open"	"/gp/goldbox/ref=cs_top_nav_gb27"	EMPTY
+"click"	"id=twotabsearchtextbox"	EMPTY
+"type"	"id=twotabsearchtextbox"	"boots"
+"clickAndWait"	"css=input.nav-submit-input"	EMPTY
+"click"	"css=span.childRefinementLink"	EMPTY
+"click"	"link=boots women"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: Low to High"
+"click"	"css=img[alt=\"Pleaser\"]"	EMPTY
+"click"	"css=img[alt=\"Qupid\"]"	EMPTY
+"click"	"css=img[alt=\"Nine West\"]"	EMPTY
+"click"	"css=img[alt=\"Soda\"]"	EMPTY
+"click"	"css=img[alt=\"Ellie Shoes\"]"	EMPTY
+"click"	"css=img[alt=\"QueenFashion\"]"	EMPTY
+"click"	"css=img[alt=\"Demonia\"]"	EMPTY
+"clickAndWait"	"css=span.refinementLink.seeMore"	EMPTY
+"clickAndWait"	"//div[@id='ref_2528832011']/ul[3]/li[5]/a/span"	EMPTY
+"click"	"link=Clear"	EMPTY
+"click"	"css=img[alt=\"Ellie Shoes\"]"	EMPTY
+"clickAndWait"	"css=#result_15 > div.image.imageContainer > a > div.imageBox > img.productImage.cfMarker"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY
+"open"	"/656-ST-MARY-Platform-Sandal-Black/dp/B000RA7QRI/ref=sr_1_16?s=shoes&ie=UTF8&qid=1392886694&sr=1-16&keywords=boots+women"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"type"	"id=twotabsearchtextbox"	"coffee machine"
+"click"	"css=input.nav-submit-input"	EMPTY
+"click"	"link=coffee maker"	EMPTY
+"click"	"link=keurig coffee maker"	EMPTY
+"click"	"link=keurig k cups"	EMPTY
+"click"	"link=keurig coffee maker"	EMPTY
+"click"	"link=coffee maker"	EMPTY
+"click"	"//div[@id='kindOfSort_content']/ul/li[4]/a/span"	EMPTY
+"select"	"id=sort"	"label=New and Popular"
+"select"	"id=sort"	"label=Price: Low to High"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: High to Low"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Avg. Customer Review"
+"clickAndWait"	"link=See all sorted results."	EMPTY
+"click"	"//div[@id='refinements']/ul/li[4]/a/span"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"//ul[@id='ref_2821448011']/li[4]/a/span"	EMPTY
+"select"	"id=sort"	"label=Relevance"
+"select"	"id=sort"	"label=New and Popular"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: Low to High"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: High to Low"
+"select"	"id=searchDropdownBox"	"label=Collectibles & Fine Art"
+"click"	"css=option[value=\"search-alias=collectibles\"]"	EMPTY
+"type"	"id=twotabsearchtextbox"	"wall art paintings"
+"click"	"css=input.nav-submit-input"	EMPTY
+"click"	"link=wall art decor"	EMPTY
+"clickAndWait"	"link=wall art paintings"	EMPTY
+"clickAndWait"	"link=wall art"	EMPTY
+"clickAndWait"	"link=wall art paintings flowers"	EMPTY
+"select"	"id=sort"	"label=New and Popular"
+"select"	"id=sort"	"label=Price: High to Low"
+"select"	"id=sort"	"label=Newest Arrivals"
+"type"	"id=twotabsearchtextbox"	"stained glass"
+"click"	"css=input.nav-submit-input"	EMPTY
+"click"	"link=stained glass art"	EMPTY
+"click"	"link=stained glass window"	EMPTY
+"click"	"//ul[@id='ref_4991426011']/li[4]/a/span"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"clickAndWait"	"link=Books"	EMPTY
+"clickAndWait"	"css=img[alt=\"All 150 Love...\"]"	EMPTY
+"clickAndWait"	"css=div.left_nav > ul > li > a"	EMPTY
+"clickAndWait"	"link=Best Books of 2013: Reader’s Guide"	EMPTY
+"clickAndWait"	"link=Kindle eBooks"	EMPTY
+"clickAndWait"	"css=div.left_nav > ul > li > a"	EMPTY
+"clickAndWait"	"link=Newsstand"	EMPTY
+"clickAndWait"	"link=Arts & Entertainment"	EMPTY
+"click"	"//ul[@id='ref_1249099011']/li[2]/a/span"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"css=#ref_1248985011 > li > a > span.expand"	EMPTY
+"click"	"css=#ref_2460163011 > li > a > span.expand"	EMPTY
+"clickAndWait"	"css=#result_1 > h3.newaps > a > span.lrg.bold"	EMPTY
+"clickAndWait"	"link=Locked On (Jack Ryan)"	EMPTY
+"clickAndWait"	"//img[contains(@src	'http://ecx.images-amazon.com/images/I/41VWhmhm8gL._AA135_.jpg')]"	EMPTY
+"clickAndWait"	"//img[@alt='Cross-Body Bags']"	EMPTY
+"click"	"//ul[@id='ref_679781011']/li[5]/a/span"	EMPTY
+"click"	"//ul[@id='ref_679792011']/li[4]/a/span"	EMPTY
+"click"	"link=‹ Clear"	EMPTY
+"click"	"link=Designer Italian Bags"	EMPTY
+"click"	"link=Clear"	EMPTY
+"click"	"css=img[alt=\"Bag Lady Collection\"]"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"css=img[alt=\"Cole Haan\"]"	EMPTY
+"click"	"link=‹ Any Price"	EMPTY
+"click"	"link=Clear"	EMPTY
+"click"	"link=‹ Clear"	EMPTY
+"click"	"css=img[alt=\"NALUCK APPAREL N MORE USA\"]"	EMPTY
+"click"	"css=img[alt=\"AccessStyle\"]"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"clickAndWait"	"link=Cycling"	EMPTY
+"type"	"id=twotabsearchtextbox"	"bycicles"
+"clickAndWait"	"css=input.nav-submit-input"	EMPTY
+"click"	"//ul[@id='ref_386589011']/li[4]/a/span"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"//div[@id='refinements']/ul/li[6]/a/span"	EMPTY
+"click"	"css=#ref_1248955011 > li > a > span.expand"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"//ul[@id='ref_3375301']/li[4]/a/span"	EMPTY
+"click"	"css=#ref_1248955011 > li > a > span.expand"	EMPTY
+"click"	"//div[@id='refinements']/ul/li[6]/a/span"	EMPTY
+"type"	"id=twotabsearchtextbox"	"cicles"
+"click"	"css=input.nav-submit-input"	EMPTY
+"clickAndWait"	"link=cycles"	EMPTY
+"click"	"//div[@id='refinements']/ul/li[4]/a/span"	EMPTY
+"click"	"//ul[@id='ref_2761557011']/li[4]/a"	EMPTY
+"click"	"css=img[alt=\"Medium\"]"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"click"	"css=img[alt=\"Adult\"]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Video Games')])[2]"	EMPTY
+"clickAndWait"	"css=a[alt=\"3DS Games\"] > p"	EMPTY
+"clickAndWait"	"//ul[@id='ref_7909609011']/li[2]/a/span"	EMPTY
+"click"	"//ul[@id='ref_2224364011']/li[2]/a/span"	EMPTY
+"click"	"link=Include Out of Stock"	EMPTY
+"click"	"//ul[@id='ref_2055857011']/li[2]/a/span"	EMPTY
+"click"	"//ul[@id='ref_2528832011']/li[6]/a/span"	EMPTY
+"click"	"//ul[@id='ref_2528832011']/li[4]/a/span"	EMPTY
+"click"	"//ul[@id='ref_345754011']/li[2]/a/span"	EMPTY
+"type"	"id=twotabsearchtextbox"	"pokémon"
+"click"	"css=input.nav-submit-input"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"click"	"//ul[@id='ref_1249087011']/li[2]/a/span"	EMPTY
+"clickAndWait"	"link=Bravely Default - Nintendo 3DS"	EMPTY
+"click"	"css=img[alt=\"Click to watch this video\"]"	EMPTY
+"clickAndWait"	"link=Xbox 360"	EMPTY
+"clickAndWait"	"//ul[@id='ref_14220161']/li[6]/a/span"	EMPTY
+"click"	"//ul[@id='ref_7834559011']/li[2]/a/span"	EMPTY
+"clickAndWait"	"//ul[@id='ref_2528832011']/li[3]/a/span"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"type"	"id=twotabsearchtextbox"	"diapers"
+"clickAndWait"	"css=input.nav-submit-input"	EMPTY
+"click"	"link=Cloth Diapers"	EMPTY
+"click"	"//ul[@id='ref_2528832011']/li[2]/a/span"	EMPTY
+"click"	"css=#ref_2364746011 > li.refinementImage > a.. > span.refinementLink"	EMPTY
+"click"	"css=span.refinementLinkSelected"	EMPTY
+"click"	"css=#ref_1248865011 > li.refinementImage > a.. > span.refinementLink"	EMPTY
+"click"	"css=#ref_2364746011 > li.refinementImage > a.. > span.refinementLink"	EMPTY
+"click"	"link=Clear"	EMPTY
+"click"	"//ul[@id='ref_2528832011']/li[8]/a/span"	EMPTY
+"click"	"css=img[alt=\"Charlie Banana\"]"	EMPTY
+"clickAndWait"	"css=#result_1 > div.image.imageContainer > a > div.imageBox > img.productImage.cfMarker"	EMPTY
+"clickAndWait"	"link=Explore similar items"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Clothing')])[3]"	EMPTY
+"clickAndWait"	"css=#nav_subnav_flyout_0 > div.nav_dynamic > div.nav_sv_fo_scheduled > div.softlines-subnav-flyout-wrapper > div.softlines-subnav-flyout > ul.softlines-subnav-flyout-itemgroup > li.softlines-subnav-flyout-item > a.softlines-subnav-flyout-link > img.softlines-subnav-flyout-image"	EMPTY
+"clickAndWait"	"css=span.refinementLink"	EMPTY
+"clickAndWait"	"//ul[@id='ref_386534011']/li[2]/a/span"	EMPTY
+"click"	"css=img[alt=\"4 Stars & Up\"]"	EMPTY
+"clickAndWait"	"//div[@id='bestRefinement']/a[3]/div/div/span"	EMPTY
+"click"	"//ul[@id='ref_2368343011']/li[2]/a/span"	EMPTY
+"click"	"//ul[@id='ref_1040660']/li[7]/a/span"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"type"	"id=twotabsearchtextbox"	"laptop"
+"clickAndWait"	"css=input.nav-submit-input"	EMPTY
+"click"	"css=span.childRefinementLink"	EMPTY
+"select"	"id=sort"	"label=Most Popular"
+"select"	"id=sort"	"label=Price: Low to High"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: High to Low"
+"select"	"id=sort"	"label=Avg. Customer Review"
+"click"	"css=span.refinementLink"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Relevance"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Most Popular"
+"click"	"css=option[value=\"popularity-rank\"]"	EMPTY
+"select"	"id=sort"	"label=Price: Low to High"
+"select"	"id=sort"	"label=Price: High to Low"
+"select"	"id=sort"	"label=Price: Low to High"
+"select"	"id=sort"	"label=Relevance"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Avg. Customer Review"
+"click"	"id=sort"	EMPTY
+"clickAndWait"	"//div[@id='bestRefinement']/a[2]/div/div"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: High to Low"
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Relevance"
+"click"	"id=rightContainerATF"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Avg. Customer Review"
+"click"	"id=sort"	EMPTY
+"clickAndWait"	"css=span.bestLink"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Most Popular"
+"click"	"css=option[value=\"popularity-rank\"]"	EMPTY
+"select"	"id=sort"	"label=Price: High to Low"
+"click"	"css=option[value=\"-price\"]"	EMPTY
+"click"	"//div[@id='bestRefinement']/a[3]/div/div/span"	EMPTY
+"click"	"//ul[@id='ref_6819964011']/li[3]/a/span"	EMPTY
+"clickAndWait"	"id=nav-logo"	EMPTY
+"clickAndWait"	"link=Arts"	EMPTY
+"clickAndWait"	"link=Mathematics"	EMPTY
+"clickAndWait"	"link=Category theory"	EMPTY
+"clickAndWait"	"link=Saunders Mac Lane"	EMPTY
+"clickAndWait"	"link=Português"	EMPTY
+"clickAndWait"	"link=Segunda Guerra Mundial"	EMPTY
+"clickAndWait"	"link=English"	EMPTY
+"clickAndWait"	"link=Stalingrad"	EMPTY
+"clickAndWait"	"link=Operation Barbarossa"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	\'Joseph Stalin\')])[2]"	EMPTY
+"clickAndWait"	"link=Random article"	EMPTY
+"clickAndWait"	"link=testosterone"	EMPTY
+"clickAndWait"	"link=Schering"	EMPTY
+"clickAndWait"	"link=German"	EMPTY
+"clickAndWait"	"link=Nazism"	EMPTY
+"clickAndWait"	"css=div.thumbcaption > a[title=\"Adolf Hitler\"]"	EMPTY
+"clickAndWait"	"link=Featured content"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Overviews\"] > span.mw-ui-button.mw-ui-progressive > b"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Outlines\"] > span.mw-ui-button.mw-ui-progressive"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Lists\"] > span.mw-ui-button.mw-ui-progressive > b"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Glossaries\"] > span.mw-ui-button.mw-ui-progressive > b"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Categories\"] > span.mw-ui-button.mw-ui-progressive > b"	EMPTY
+"clickAndWait"	"css=a[title=\"Portal:Contents/Indexes\"] > span.mw-ui-button.mw-ui-progressive"	EMPTY
+"click"	"link=Mathematics and logic"	EMPTY
+"clickAndWait"	"link=Anatomy"	EMPTY
+"clickAndWait"	"link=anterior horn cells"	EMPTY
+"clickAndWait"	"link=Central canal"	EMPTY
+"clickAndWait"	"link=Indiana Central Canal"	EMPTY
+"clickAndWait"	"link=American Water Landmark"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	\'Massachusetts\')])[2]"	EMPTY
+"clickAndWait"	"link=First Great Awakening"	EMPTY
+"clickAndWait"	"link=Current events"	EMPTY
+"clickAndWait"	"link=Tom Finney"	EMPTY
+"clickAndWait"	"css=a[title=\"Visit the main page\"]"	EMPTY
+"clickAndWait"	"link=Featured content"	EMPTY
+"clickAndWait"	"link=Articles"	EMPTY
+"clickAndWait"	"link=Tomb of Antipope John XXIII"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	\'Donatello\')])[2]"	EMPTY
+"clickAndWait"	"link=bas-relief"	EMPTY
+"clickAndWait"	"link=Ellora Caves"	EMPTY
+"clickAndWait"	"link=Kannada"	EMPTY
+"clickAndWait"	"link=Rajkumar (actor)"	EMPTY
+"clickAndWait"	"link=cultural icon"	EMPTY
+"clickAndWait"	"link=Big Ben"	EMPTY
+"clickAndWait"	"link=free-standing"	EMPTY
+"clickAndWait"	"link=One World Trade Center"	EMPTY
+"clickAndWait"	"link=Larry Silverstein"	EMPTY
+"clickAndWait"	"link=alma mater"	EMPTY
+"clickAndWait"	"link=Palatine Hill"	EMPTY
+"clickAndWait"	"link=altar to an unknown deity"	EMPTY
+"clickAndWait"	"link=Archaic Latin"	EMPTY
+"clickAndWait"	"link=Contemporary Latin"	EMPTY
+"clickAndWait"	"link=Ecclesiastical Latin"	EMPTY
+"clickAndWait"	"css=a[title=\"Visit the main page\"]"	EMPTY
+"clickAndWait"	"link=Clovis culture"	EMPTY
+"clickAndWait"	"link=Paleo-Indian"	EMPTY
+"clickAndWait"	"link=first peoples"	EMPTY
+"clickAndWait"	"link=International Labour Organisation"	EMPTY
+"clickAndWait"	"link=Español"	EMPTY
+"clickAndWait"	"link=English"	EMPTY
+"clickAndWait"	"link=member states of the United Nations"	EMPTY
+"clickAndWait"	"link=seat of China in the UN"	EMPTY
+"type"	"id=searchInput"	"United States"
+"clickAndWait"	"link=US (disambiguation)"	EMPTY
+"clickAndWait"	"link=\"Us\" (Regina Spektor song)"	EMPTY
+"typeAndWait"	"id=searchInput"	"regina"
+"clickAndWait"	"link=Edgar Dewdney"	EMPTY
+"clickAndWait"	"link=civil engineering"	EMPTY
+"clickAndWait"	"link=Geotechnical engineering"	EMPTY
+"clickAndWait"	"link=cone penetration test"	EMPTY
+"clickAndWait"	"link=Soil liquefaction"	EMPTY
+"clickAndWait"	"link=stiffness"	EMPTY
+"clickAndWait"	"link=Flexibility (disambiguation)"	EMPTY
+"clickAndWait"	"link=Flexibility (anatomy)"	EMPTY
+"clickAndWait"	"link=active stretching"	EMPTY
+"clickAndWait"	"link=agonist"	EMPTY
+"clickAndWait"	"link=Random article"	EMPTY
+"clickAndWait"	"link=Pittsburgh"	EMPTY
+"clickAndWait"	"link=deindustrialization"	EMPTY
+"type"	"id=searchInput"	"Japan national football team"
+"clickAndWait"	"link=Agony of Doha"	EMPTY
+"clickAndWait"	"link=Iraq"	EMPTY
+"clickAndWait"	"link=Iraq"	EMPTY
+"clickAndWait"	"link=Aragonés"	EMPTY
+"clickAndWait"	"link=?eština"	EMPTY
+"clickAndWait"	"link=Esperanto"	EMPTY
+"clickAndWait"	"link=Gaeilge"	EMPTY
+"clickAndWait"	"link=an Tuirc"	EMPTY
+"clickAndWait"	"link=English"	EMPTY
+"clickAndWait"	"link=Turkic language"	EMPTY
+"clickAndWait"	"link=Trukic languages"	EMPTY
+"clickAndWait"	"link=Woleaian"	EMPTY
+"type"	"id=searchInput"	"Malaysia"
+"clickAndWait"	"link=Malesia"	EMPTY
+"clickAndWait"	"link=ice ages"	EMPTY
+"clickAndWait"	"css=a[title=\"Visit the main page\"]"	EMPTY
+"type"	"id=searchInput"	"ukraine"
+"type"	"id=searchInput"	"ukra"
+"clickAndWait"	"link=Famalicão"	EMPTY
+"clickAndWait"	"link=List of twin towns and sister cities in Portugal"	EMPTY
+"clickAndWait"	"link=Ostrava"	EMPTY
+"click"	"id=collapseButton1"	EMPTY
+"click"	"id=collapseButton2"	EMPTY
+"click"	"id=collapseButton3"	EMPTY
+"clickAndWait"	"link=Zlín"	EMPTY
+"clickAndWait"	"link=Batanagar"	EMPTY
+"clickAndWait"	"css=a[title=\"Visit the main page\"]"	EMPTY
+"click"	"id=p-lang-label"	EMPTY
+"click"	"id=p-lang-label"	EMPTY
+"clickAndWait"	"link=Simple English"	EMPTY
+"clickAndWait"	"css=a[title=\"English\"]"	EMPTY
+"clickAndWait"	"link=Bald Eagles"	EMPTY
+"clickAndWait"	"link=plumage"	EMPTY
+"clickAndWait"	"link=budgerigar"	EMPTY
+"clickAndWait"	"link=cere"	EMPTY
+"clickAndWait"	"link=Anatidae"	EMPTY
+"clickAndWait"	"link=Runa Simi"	EMPTY
+"clickAndWait"	"link=Português"	EMPTY
+"clickAndWait"	"link=Marreca-cricri"	EMPTY
+"clickAndWait"	"css=span > a[title=\"Aves\"]"	EMPTY
+"clickAndWait"	"link=quivi"	EMPTY
+"clickAndWait"	"link=quivi"	EMPTY
+"clickAndWait"	"link=English"	EMPTY
+"clickAndWait"	"css=a[title=\"Visit the main page\"]"	EMPTY
+"clickAndWait"	"link=Afroyim v. Rusk"	EMPTY
+"clickAndWait"	"link=Bancroft Treaties"	EMPTY
+"clickAndWait"	"link=Expatriation"	EMPTY
+"clickAndWait"	"link=Current events"	EMPTY
+"clickAndWait"	"link=Euromaidan"	EMPTY
+"clickAndWait"	"css=a[title=\"Find background information on current events\"]"	EMPTY
+"click"	"link=19"	EMPTY
+"click"	"link=20"	EMPTY
+"clickAndWait"	"link=Pussy Riot"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	\'LGBT rights\')])[2]"	EMPTY
+"clickAndWait"	"link=Theodosian Code"	EMPTY
+"clickAndWait"	"link=Arian"	EMPTY
+"clickAndWait"	"link=Flacilla"	EMPTY
+"clickAndWait"	"link=Eastern Orthodox Church"	EMPTY
+"clickAndWait"	"link=Jesus"	EMPTY
+"clickAndWait"	"link=Christ"	EMPTY
+"clickAndWait"	"link=Messiah"	EMPTY
+"clickAndWait"	"link=Mary"	EMPTY
+"clickAndWait"	"link=Abdul Muttalib"	EMPTY
+"type"	"id=searchInput"	"prophet"
+"clickAndWait"	"link=Profit"	EMPTY
+"clickAndWait"	"link=All pages beginning with \"Profit\""	EMPTY
+"clickAndWait"	"link=Profit-a-pendre"	EMPTY
+"clickAndWait"	"link=Answers"	EMPTY
+"click"	"id=mnp-search_box"	EMPTY
+"type"	"id=mnp-search_box"	"fibonacci"
+"clickAndWait"	"id=yucs-sprop_button"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_20_1392891683721_95"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_2_1392891702581_141"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_16_1392891741158_98"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_3_1392891776150_140"	EMPTY
+"click"	"id=yui_3_9_1_16_1392891788403_75"	EMPTY
+"click"	"id=yui_3_9_1_10_1392891788403_161"	EMPTY
+"click"	"id=yui_3_9_1_2_1392891788403_166"	EMPTY
+"type"	"id=mnp-search_box"	"hair"
+"clickAndWait"	"id=yucs-sprop_button"	EMPTY
+"click"	"id=q-20090926055213AAud1nu"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_20_1392891888342_52"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_2_1392891897993_140"	EMPTY
+"click"	"id=yui_3_9_1_10_1392892000148_107"	EMPTY
+"click"	"id=yui_3_9_1_2_1392892000148_141"	EMPTY
+"clickAndWait"	"link=O Primeiro-Ministro"	EMPTY
+"clickAndWait"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div/a[2]/span"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Os Secretários de Estado')])[2]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'O que é?')])[2]"	EMPTY
+"clickAndWait"	"link=OS MINISTROS"	EMPTY
+"clickAndWait"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div/ul/li[13]/a/em"	EMPTY
+"clickAndWait"	"css=img[alt=\"Ministro da Saúde	 Paulo Macedo	 na abertura da...\"]"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'2')])[3]"	EMPTY
+"clickAndWait"	"//a[contains(text()	'3')]"	EMPTY
+"clickAndWait"	"css=img[alt=\"Ministro da Saúde	 Paulo Macedo	 preside à...\"]"	EMPTY
+"clickAndWait"	"link=O Governo"	EMPTY
+"clickAndWait"	"link=SIMULADOR DE PENSÕES"	EMPTY
+"click"	"link=CALCULAR"	EMPTY
+"click"	"link=CALCULAR"	EMPTY
+"click"	"link=CALCULAR"	EMPTY
+"type"	"css=input[type=\"text\"]"	"15000"
+"click"	"css=a.submitPension > span"	EMPTY
+"click"	"link=CALCULAR"	EMPTY
+"type"	"css=input[type=\"text\"]"	"1.500	00"
+"clickAndWait"	"link=LINKS RÁPIDOS"	EMPTY
+"click"	"css=a.farewell.seeAll > span"	EMPTY
+"clickAndWait"	"link=QUESTÕES FREQUENTES"	EMPTY
+"clickAndWait"	"link=Site do Governo Português"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=Next"	EMPTY
+"click"	"link=DOCUMENTOS OFICIAIS"	EMPTY
+"clickAndWait"	"link=Comunicado do Conselho de Ministros de 6 de fevereiro de 2014"	EMPTY
+"clickAndWait"	"link=LINKS RÁPIDOS"	EMPTY
+"clickAndWait"	"link=exact:O que é?"	EMPTY
+"clickAndWait"	"link=QUESTÕES FREQUENTES"	EMPTY
+"clickAndWait"	"link=Fotos"	EMPTY
+"typeAndWait"	"id=freeSearch"	"ministro"
+"typeAndWait"	"id=freeSearch"	"fevereiro"
+"click"	"link=VÍDEOS"	EMPTY
+"click"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div[3]/div"	EMPTY
+"clickAndWait"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div[3]/div/div/ul/li[7]/a"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'8')])[2]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'10')])[2]"	EMPTY
+"click"	"link=FOTOS"	EMPTY
+"clickAndWait"	"link=Site do Governo Português"	EMPTY
+"clickAndWait"	"css=em.darkPlus"	EMPTY
+"clickAndWait"	"link=3"	EMPTY
+"clickAndWait"	"link=Site do Governo Português"	EMPTY
+"clickAndWait"	"css=img[alt=\"20140220 orcamento cidadao\"]"	EMPTY
+"clickAndWait"	"link=OS TEMAS"	EMPTY
+"clickAndWait"	"link=Ministro da Presidência e dos Assuntos Parlamentares"	EMPTY
+"clickAndWait"	"link=A Constituição da República"	EMPTY
+"clickAndWait"	"link=A Democracia Portuguesa"	EMPTY
+"click"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div/div"	EMPTY
+"click"	"css=div.acc-header.inactive-header > div.seeAll"	EMPTY
+"click"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div/div[5]/div/em"	EMPTY
+"clickAndWait"	"css=div.lista > ul > li > ul > li > a"	EMPTY
+"clickAndWait"	"link=«A especialização é a matriz» da reforma do sistema judiciário"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Ministra da Justiça')])[3]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Ministra da Agricultura e do Mar')])[2]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Ministra de Estado e das Finanças')])[2]"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Os Secretários de Estado')])[2]"	EMPTY
+"clickAndWait"	"//form[@id='mainForm']/div[2]/div/div[2]/div/div[3]/div/ul/li[40]/a/span[2]"	EMPTY
+"click"	"css=div.leaf"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Europa')])[2]"	EMPTY
+"clickAndWait"	"link=O voto"	EMPTY
+"clickAndWait"	"link=Os Tribunais"	EMPTY
+"click"	"//form[@id='mainForm']/div[2]/div/div[2]/div[2]/div[2]/div/h4[2]"	EMPTY
+"click"	"xpath=(//a[contains(text()	'Xbox 360')])[2]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'Xbox One')])[3]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'PS3')])[2]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'PS4')])[5]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'Wii U')])[2]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"link=PS Vita"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'PC')])[2]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"click"	"xpath=(//a[contains(text()	'3DS')])[2]"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"css=body"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"//div[3]/ul/li[9]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"xpath=(//a[contains(text()	'3DS')])[2]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"id=disqus-comments-script-id"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=New Pokemon Revealed: Get Ready to Catch Diance"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Diancie')])[2]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Walkthroughs"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Images"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Review"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"//img[contains(@src	'http://assets1.ignimgs.com/vid/thumbnails/user/2014/02/14/southparkthumb_160w.jpg')]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Comics"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Batman Get a New Sidekick in Batman #28!"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"//div[@id='outbrain_widget_0']/div/div/div/div[3]/a[2]/div"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=3DS"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Characters"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"css=img[alt=\"User icon for GamingMedia\"]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"css=img[alt=\"Kirby's Dream Collection: Special Edition\"]"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Tech"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Review Guide"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"clickAndWait"	"link=Database Team"	EMPTY
+"selectWindow"	"name=2TXtGIgF"	EMPTY
+"click"	"css=div.item-container.ob-recIdx-1> div.ob-rec-link-img.ob-tcolor > img.strip-img"	EMPTY
+"click"	"link=Read Manga"	EMPTY
+"clickAndWait"	"link=Full List"	EMPTY
+"clickAndWait"	"link=Air Gear"	EMPTY
+"clickAndWait"	"link=2 days ago Area D 68The Hamelin Twins 2"	EMPTY
+"click"	"link=Read Manga"	EMPTY
+"clickAndWait"	"link=Fairy Tail"	EMPTY
+"clickAndWait"	"link=Recruitment"	EMPTY
+"clickAndWait"	"link=Privacy Policy"	EMPTY
+"clickAndWait"	"link=RSS Feed"	EMPTY
+"select"	"id=c_16203_drpOrigem"	"label=Árvore"
+"select"	"id=c_16203_drpDestino"	"label=Carreira"
+"clickAndWait"	"id=c_16203_btnSubmit"	EMPTY
+"clickAndWait"	"link=Tarifários"	EMPTY
+"waitForPopUpAndWait"	"_self"	"30000"
+"clickAndWait"	"link=Estacionamento"	EMPTY
+"waitForPopUpAndWait"	"_self"	"30000"
+"clickAndWait"	"link=Direitos e Deveres"	EMPTY
+"waitForPopUpAndWait"	"_self"	"30000"
+"clickAndWait"	"link=FAQ’s"	EMPTY
+"waitForPopUpAndWait"	"_self"	"30000"
+"clickAndWait"	"link=Rotas Turísticas"	EMPTY
+"waitForPopUpAndWait"	"_self"	"30000"
+"click"	"link=Horários e Frequências"	EMPTY
+"click"	"link=Andante"	EMPTY
+"click"	"link=Mapa da Rede"	EMPTY
+"click"	"link=Metro no Facebook"	EMPTY
+"click"	"link=Metro no Twitter"	EMPTY
+"clickAndWait"	"link=ASSOCIATIVISMO"	EMPTY
+"clickAndWait"	"link=CIDADANIA"	EMPTY
+"clickAndWait"	"link=CULTURA"	EMPTY
+"clickAndWait"	"link=EDUCAÇÃO E FORMAÇÃO"	EMPTY
+"clickAndWait"	"link=EMPREGO E EMPREENDEDORISMO"	EMPTY
+"clickAndWait"	"link=HABITAÇÃO"	EMPTY
+"clickAndWait"	"link=SAÚDE E SEXUALIDADE"	EMPTY
+"clickAndWait"	"link=TECNOLOGIA"	EMPTY
+"clickAndWait"	"link=Obter Formação"	EMPTY
+"clickAndWait"	"link=A pílula"	EMPTY
+"click"	"link=exact:A pílula - Como actua?"	EMPTY
+"click"	"link=exact:Como tomar a pílula?"	EMPTY
+"click"	"link=exact:Que fazer no caso de vómitos e/ou diarreia?"	EMPTY
+"clickAndWait"	"xpath=(//a[contains(text()	'Sexualidade')])[5]"	EMPTY
+"clickAndWait"	"//form[@id='aspnetForm']/table/tbody/tr/td[3]/div[2]/div[4]/div[19]/div[2]/a/span"	EMPTY
+"clickAndWait"	"link=Formar uma associação"	EMPTY
+"clickAndWait"	"link=Programa de Incentivo ao Desenvolvimento Associativo (IDA)"	EMPTY
+"clickAndWait"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_btnSearchEvents"	EMPTY
+"select"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_ddlDistrict"	"label=Porto"
+"clickAndWait"	"css=option[value=\"PT\"]"	EMPTY
+"select"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_ddlCounty"	"label=Porto"
+"clickAndWait"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_btnSearchEvents"	EMPTY
+"select"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_ddlCounty"	"label=Santo Tirso"
+"clickAndWait"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_btnSearchEvents"	EMPTY
+"select"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_ddlCounty"	"label=Selecciona..."
+"clickAndWait"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_btnSearchEvents"	EMPTY
+"type"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_txtBeginDate"	"27-11-2000"
+"type"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_txtEndDate"	"17-02-2014"
+"clickAndWait"	"id=ctl00_PlaceHolderOuterMain_PlaceHolderMain_displaymodepanel1_IpjEventsSearch_btnSearchEvents"	EMPTY
+"clickAndWait"	"link=Ter a minha casa"	EMPTY
+"clickAndWait"	"link=CULTURA"	EMPTY
+"clickAndWait"	"css=img[alt=\"INOV- Art\"]"	EMPTY
+"clickAndWait"	"link=CENTRO DE CONHECIMENTO DA JUVENTUDE"	EMPTY
+"clickAndWait"	"link=VOLUNTARIADO"	EMPTY
+"clickAndWait"	"link=Sobre o Portal"	EMPTY
+"clickAndWait"	"css=#yui_3_8_1_1_1392891554956_667 > span"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_548"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_2313"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_3169"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_4026"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_4895"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_5763"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_6711"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_7164"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_4026"	EMPTY
+"click"	"id=yui_3_9_1_1_1392891563683_9059"	EMPTY
+"clickAndWait"	"css=#yui_3_8_1_1_1392891254798_791 > span"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_1_1392891346368_1270"	EMPTY
+"clickAndWait"	"id=yui_3_9_1_1_1392891362404_1044"	EMPTY
+"clickAndWait"	"link=Injuries"	EMPTY
+"click"	"id=mnp-search_box"	EMPTY
+"type"	"id=mnp-search_box"	"soccer"
+"clickAndWait"	"id=yucs-sprop_button"	EMPTY
+"clickAndWait"	"id=yui_3_8_1_1_1392891462964_515"	EMPTY
+"clickAndWait"	"id=yui_3_8_1_1_1392891468403_457"	EMPTY
+"clickAndWait"	"id=yui_3_8_1_1_1392891471050_515"	EMPTY
+"clickAndWait"	"id=yui_3_8_1_1_1392891474347_515"	EMPTY
+"click"	"id=yui_3_8_1_1_1392891479379_475"	EMPTY
+"clickAndWait"	"id=yui_3_8_1_1_1392891479379_486"	EMPTY
+"click"	"link=Yahoo Games"	EMPTY
+"clickAndWait"	"link=new edits"	EMPTY
+"clickAndWait"	"link=liveblogs"	EMPTY
+"clickAndWait"	"link=reviews"	EMPTY
+"clickAndWait"	"link=YKTTW"	EMPTY
+"clickAndWait"	"link=workshops"	EMPTY
+"clickAndWait"	"link=wiki search"	EMPTY
+"clickAndWait"	"link=recently new"	EMPTY
+"clickAndWait"	"css=img[alt=\"TV Tropes Org\"]"	EMPTY
+"clickAndWait"	"link=There Is No Such Thing As Notability"	EMPTY
+"click"	"css=div.buttoninterior"	EMPTY
+"clickAndWait"	"link=Welcome To TV Tropes"	EMPTY
+"click"	"css=div.folderlabelopen"	EMPTY
+"click"	"css=div.folderlabel"	EMPTY
+"click"	"css=div.folderlabel"	EMPTY
+"clickAndWait"	"link=Paratext"	EMPTY
+"clickAndWait"	"link=Epigraph"	EMPTY
+"clickAndWait"	"link=Pretentious Latin Motto"	EMPTY
+"click"	"//div[@onclick=\"togglefolder('folder10');\"]"	EMPTY
+"clickAndWait"	"link=Madness Mantra"	EMPTY
+"clickAndWait"	"link=Cluster F-Bomb"	EMPTY
+"clickAndWait"	"link=The Scottish Trope"	EMPTY
+"clickAndWait"	"link=Fake Trap"	EMPTY
+"typeAndWait"	"name=q"	"word"
+"clickAndWait"	"xpath=(//div[@onclick=\"window.location.href=this.getElementsByTagName('a')[0].href;\"])[7]"	EMPTY
+"type"	"id=spot-a"	"estádio do dragão"
+"click"	"id=spot-a"	EMPTY
+"type"	"id=spot-b"	"faculdade engenharia"
+"click"	"id=ui-active-menuitem"	EMPTY
+"type"	"id=spot-b"	"faculdade enge"
+"click"	"id=ui-active-menuitem"	EMPTY
+"type"	"id=spot-a"	"Estádio Do Dragão (futebol Club Do Porto)"
+"click"	"css=input.floatRight"	EMPTY
+"click"	"css=input.route-calculate"	EMPTY
+"click"	"css=tr.odd > td > input[type=\"checkbox\"]"	EMPTY
+"click"	"css=td > input[type=\"checkbox\"]"	EMPTY
+"click"	"link=Pesquisa Avançada"	EMPTY
+"click"	"css=input.route-calculate"	EMPTY
+"click"	"link=Pesquisa Avançada"	EMPTY
+"click"	"id=iti-linhas-proximas"	EMPTY
+"click"	"css=input.route-view-lines"	EMPTY
+"click"	"//input[@value='L02_1']"	EMPTY
+"click"	"//input[@value='L02_0']"	EMPTY
+"click"	"//input[@value='L01_1']"	EMPTY
+"click"	"//input[@value='L06_0']"	EMPTY
+"click"	"//input[@value='L06_1']"	EMPTY
+"click"	"css=tr.odd > td > input[type=\"checkbox\"]"	EMPTY
+"click"	"//input[@value='401_1']"	EMPTY
+"click"	"//input[@value='700_0']"	EMPTY
+"click"	"//input[@value='700_1']"	EMPTY
+"click"	"//input[@value='V94_0']"	EMPTY
+"click"	"//input[@value='V94_1']"	EMPTY
+"click"	"//input[@value='800_0']"	EMPTY
+"click"	"//input[@value='800_1']"	EMPTY
+"click"	"//input[@value='800_1']"	EMPTY
+"click"	"//input[@value='800_0']"	EMPTY
+"click"	"//input[@value='800_1']"	EMPTY
+"click"	"//input[@value='801_0']"	EMPTY
+"click"	"//input[@value='801_1']"	EMPTY
+"click"	"//input[@value='806_0']"	EMPTY
+"click"	"//input[@value='806_1']"	EMPTY
+"click"	"//input[@value='7M_0']"	EMPTY
+"click"	"id=iti-paragens"	EMPTY
+"click"	"css=input.route-view-stops"	EMPTY
+"click"	"id=iti-pontos-de-venda"	EMPTY
+"click"	"css=input.route-view-sellers"	EMPTY
+"click"	"link=Preciso de ajuda para começar"	EMPTY
+"click"	"//div[@id='itinerarium-top']/a[3]/img"	EMPTY
+"clickAndWait"	"link=Sobre a FEUP"	EMPTY
+"clickAndWait"	"link=Órgãos de Gestão"	EMPTY
+"clickAndWait"	"link=Departamentos"	EMPTY
+"clickAndWait"	"link=Serviços"	EMPTY
+"clickAndWait"	"link=Estudantes"	EMPTY
+"clickAndWait"	"link=Pessoal"	EMPTY
+"clickAndWait"	"link=Cursos"	EMPTY
+"clickAndWait"	"link=I&D e Inovação"	EMPTY
+"clickAndWait"	"link=Cooperação"	EMPTY
+"clickAndWait"	"link=Candidatos"	EMPTY
+"clickAndWait"	"link=Alumni"	EMPTY
+"clickAndWait"	"link=Empresas"	EMPTY
+"clickAndWait"	"link=Notícias"	EMPTY
+"clickAndWait"	"link=Pesquisa"	EMPTY
+"clickAndWait"	"css=td.topo > ul > li > a"	EMPTY
+"type"	"name=PV_NOME"	"clara sacramento"
+"click"	"css=a.cursormao > img.border0"	EMPTY
+"selectWindow"	"name=lov921FEUP"	EMPTY
+"type"	"xpath=(//input[@name='p_search'])[3]"	"MIEIC"
+"clickAndWait"	"css=input[type=\"submit\"]"	EMPTY
+"clickAndWait"	"link=Mestrado Integrado"	EMPTY
+"selectWindow"	"null"	EMPTY
+"clickAndWait"	"css=input[type=\"submit\"]"	EMPTY
+"clickAndWait"	"link=Mestrado Integrado em Engenharia Informática e Computação"	EMPTY
+"clickAndWait"	"link=Plano de estudos a partir de 2009/10"	EMPTY
+"click"	"link=Unidades Curriculares Optativas - 1.º Grupo"	EMPTY
+"clickAndWait"	"link=Engenharia de Requisitos de Sistemas de Software"	EMPTY
+"clickAndWait"	"link=Outras ocorrências"	EMPTY
+"clickAndWait"	"link=2012/2013 (2S)"	EMPTY
+"clickAndWait"	"link=Exames"	EMPTY
+"clickAndWait"	"css=input[type=\"submit\"]"	EMPTY
+"clickAndWait"	"link=Departamento de Engenharia Informática"	EMPTY
+"clickAndWait"	"link=Raul Moreira Vidal"	EMPTY
+"clickAndWait"	"link=I136"	EMPTY
+"clickAndWait"	"css=a[title=\"Piso abaixo\"] > img.border0"	EMPTY
+"clickAndWait"	"css=a[title=\"Piso acima\"] > img.border0"	EMPTY
+"clickAndWait"	"css=a[title=\"Piso acima\"] > img.border0"	EMPTY
+"clickAndWait"	"name=Mapa"	EMPTY
+"clickAndWait"	"css=area[alt=\"Edifício G (Civil)\"]"	EMPTY
+"clickAndWait"	"css=area[alt=\"Edifício F (Minas e Metalurgia)\"]"	EMPTY
+"clickAndWait"	"css=area[alt=\"Edifício E (Química)\"]"	EMPTY
+"clickAndWait"	"css=area[alt=\"Edifício H (Civil)\"]"	EMPTY
+"click"	"css=#nav_desporto > a > span.txt"	EMPTY
+"click"	"css=#nav_economia > a > span.txt"	EMPTY
+"click"	"css=#nav_vida > a > span.txt"	EMPTY
+"click"	"css=#nav_sociedade > a > span.txt"	EMPTY
+"click"	"css=#nav_tecnologia > a > span.txt"	EMPTY
+"click"	"css=#videos-launcher > span.txt"	EMPTY
+"click"	"css=#nav_local > a > span.txt"	EMPTY
+"select"	"id=municipalities"	"label=Albergaria-a-Velha"
+"clickAndWait"	"link=Aveiro - GNR deteve 7 condutores em operações na última madrugada na Região. (www.terranova.pt)"	EMPTY
+"click"	"link=Sociedade"	EMPTY
+"click"	"link=Politica"	EMPTY
+"click"	"link=Actualidade"	EMPTY
+"clickAndWait"	"link=PROGRAMAÇÃO"	EMPTY
+"clickAndWait"	"link=Site Conceptualizado pela Universidade de Aveiro"	EMPTY
+"type"	"id=txtpesquisa1"	"palavra"
+"clickAndWait"	"id=lnk"	EMPTY
+"type"	"id=txtpesquisa1"	"palavras"
+"clickAndWait"	"id=lnk"	EMPTY

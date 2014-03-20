@@ -1,0 +1,26 @@
+"open"	"/gp/goldbox/ref=cs_top_nav_gb27"	EMPTY
+"click"	"id=twotabsearchtextbox"	EMPTY
+"type"	"id=twotabsearchtextbox"	"boots"
+"clickAndWait"	"css=input.nav-submit-input"	EMPTY
+"click"	"css=span.childRefinementLink"	EMPTY
+"click"	"link=boots women"	EMPTY
+"click"	"id=sort"	EMPTY
+"select"	"id=sort"	"label=Price: Low to High"
+"click"	"css=img[alt=\"Pleaser\"]"	EMPTY
+"click"	"css=img[alt=\"Qupid\"]"	EMPTY
+"click"	"css=img[alt=\"Nine West\"]"	EMPTY
+"click"	"css=img[alt=\"Soda\"]"	EMPTY
+"click"	"css=img[alt=\"Ellie Shoes\"]"	EMPTY
+"click"	"css=img[alt=\"QueenFashion\"]"	EMPTY
+"click"	"css=img[alt=\"Demonia\"]"	EMPTY
+"clickAndWait"	"css=span.refinementLink.seeMore"	EMPTY
+"clickAndWait"	"//div[@id='ref_2528832011']/ul[3]/li[5]/a/span"	EMPTY
+"click"	"link=Clear"	EMPTY
+"click"	"css=img[alt=\"Ellie Shoes\"]"	EMPTY
+"clickAndWait"	"css=#result_15 > div.image.imageContainer > a > div.imageBox > img.productImage.cfMarker"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY
+"open"	"/656-ST-MARY-Platform-Sandal-Black/dp/B000RA7QRI/ref=sr_1_16?s=shoes&ie=UTF8&qid=1392886694&sr=1-16&keywords=boots+women"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY
+"click"	"id=dp"	EMPTY

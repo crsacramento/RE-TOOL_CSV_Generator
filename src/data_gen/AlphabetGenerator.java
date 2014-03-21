@@ -242,7 +242,7 @@ public class AlphabetGenerator {
 	@SuppressWarnings("resource")
 	static void produceSpaceFilesAndRunAlgorithm(String absolutePath) {
 		readFile_WriteIndexFile(absolutePath);
-		//writeAlphabetFile(absolutePath);
+		writeAlphabetFile(absolutePath);
 
 		String[] algorithms = { "PrefixSpan", "GSP", "CM-SPADE", "CM-SPAM",
 				"CM-ClaSP", "CloSpan", "BIDE+",
@@ -284,7 +284,7 @@ public class AlphabetGenerator {
 					algorithms[i].equals("CM-SPADE") ||
 					algorithms[i].equals("CM-SPAM"))
 				// max sequence length
-				command += " 100 ";
+				command += " 10 ";
 			// else if(i == 10) //K for TSP_nonClosed
 			// command += " 15 ";
 			// else if(i == 7 || i == 8 || i == 9) 
@@ -315,22 +315,27 @@ public class AlphabetGenerator {
 			System.out.println("Inverted alphabet built.");
 			readResultFile_produceTranslatedFile(absolutePath + results[i]);
 			System.out
-					.println(algorithms[i] + " sequence file built.\n\t***\n");
+					.println(algorithms[i] + " sequence file built.\n************************************************\n");
 		}
 	}
 
 	public static void main(String[] args) {
-		File file = new File(
-				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\amazon1"
+		File[] files = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\CSVs").listFiles();
+				//"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\tudu_1"
+						//+ ".html"
 						//+ "_merge" 
-						+ ".tsv");
-		System.out.println(file.getName());
+						//+ ".csv");
+		for(File file : files){
 		// if not pre processing
 		//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath());
 		
 		// else
-		FilePreprocessor.preprocessFile(file.getAbsolutePath());
-		produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath() + ".processed");
+			if(!file.isDirectory() && !file.getAbsolutePath().matches("(.)*processed(.)*")){
+				System.out.println(file.getName());
+				FilePreprocessor.preprocessFile(file.getAbsolutePath());
+			}
+		}
+		//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath() + ".processed");
 	}
 
 }

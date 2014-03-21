@@ -15,7 +15,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 public class HTML_to_CSV {
-
+	private static char SEPARATOR = ',';
 	/**
 	 * Takes Selenium HTML action table file and converts to a CSV file
 	 * 
@@ -85,16 +85,16 @@ public class HTML_to_CSV {
 				for (int x = 0; x < tdList.getLength(); ++x) {
 					Element tdElement = (Element)tdList.item(x);
 					String content = tdElement.getTextContent().trim();
-					content = content.replace("\"","\\\"");
+					content = content.replace("\"","\\\" ");
 					if(!content.isEmpty())
 						lineToWrite += '\"' + content + '\"';
 					else
 						lineToWrite += "EMPTY";
 					if(x != tdList.getLength() - 1 && !content.isEmpty())
-						lineToWrite += ",";
+						lineToWrite += SEPARATOR;
 				}
 				lineToWrite += "\n";
-				lineToWrite = lineNumber + "," + lineToWrite;
+				lineToWrite = lineNumber + SEPARATOR + lineToWrite;
 				// writes line to file
 				try {
 					output.write(lineToWrite);

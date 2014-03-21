@@ -60,28 +60,53 @@ public class FilePreprocessor {
 
 				String line = "";
 
+				if (words.contains("homepage")) {
+					words = words.replaceAll("homepage", "");
+					line += "Home ";
+				}
+				if (words.contains("main page")) {
+					words = words.replaceAll("main page", "");
+					line += "Home ";
+				}
+
 				// process 'clickAndWait' variants
-				if (words.contains("clickandwait")) {
-					String[] keywords = {"link","button","submit","img","option","main page","home"};
+				if (words.contains("clickandwait")) {/*"checkbox", "submit", "collapse", "btn","button",
+							"img", "search", "sort", "persist", "option",
+							 "nav", "action", "edit",
+							"add", "delete", "create", "about", "home","link","next", "prev",
+							"refine", "lang",  "input" */
+					String[] keywords = {"btn","button", "submit", "img",
+							"option", "main page", "home","login","refine","link" };
 					String result = "";
 					Boolean match = false;
-					
-					for(int i = 0; i < keywords.length; ++i){
-						result = searchAndReturn(words, "clickAndWait", keywords[i]);
+
+					for (int i = 0; i < keywords.length; ++i) {
+						result = searchAndReturn(words, "clickAndWait",
+								keywords[i]);
 						if (!result.isEmpty()) {
 							match = true;
 							words = words.replaceAll(keywords[i], "");
-	
-							switch(keywords[i]){
-								case "submit":{
-									words = words.replaceAll("input", "");
-									line += result;
-									break;
-								}
-								case "main home":{
-									line += "clickAndWaitHome ";
-								}
-								default: line += result; 
+
+							switch (keywords[i]) {
+							case "btn": {
+								line += "clickAndWaitButton ";
+								break;
+							}
+							case "refine":
+							case "img":
+							case "login": {
+								words = words.replaceAll("link", "");
+								line += result;
+								break;
+							}
+							case "submit": {
+								words = words.replaceAll("input", "");
+								words = words.replaceAll(" nav ", "");
+								line += result;
+								break;
+							}
+							default:
+								line += result;
 							}
 
 						}
@@ -92,13 +117,16 @@ public class FilePreprocessor {
 					else
 						words = words
 								.replaceAll("clickandwait", "clickAndWait");
-				} 
+				}
 				// process 'click' variants
 				if (words.contains("click ")) {
 					boolean match = false;
 					String result = "";
-					String[] keywords = {"link","collapse","button","img","search","sort","persist",
-							"option","next","prev","nav","input","action","edit","about","home"};
+					String[] keywords = { "checkbox", "submit", "collapse", "btn","button",
+							"img", "search", "sort", "persist", "option",
+							 "nav", "action", "edit",
+							"add", "delete", "create", "about", "home","refine","link","next", "prev",
+							 "lang",  "input" };
 					for (int i = 0; i < keywords.length; ++i) {
 						result = searchAndReturn(words, "click", keywords[i]);
 						if (!result.isEmpty()) {
@@ -106,114 +134,160 @@ public class FilePreprocessor {
 							words = words.replaceAll(keywords[i], "");
 
 							switch (keywords[i]) {
-								case "link":{
-									line += result;
-									
-									// Search for "clickLinkNext"
-									result = searchAndReturn(words, "", "next");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("next", "");
-										line += "clickNext ";
-									}
-									
-									// Search for "clickLinkPrev"
-									result = searchAndReturn(words, "", "prev");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("prev", "");
-										line += "clickPrev ";
-									}
+							case "btn": {
+								line += "clickButton ";
+								break;
+							}
+							case "home": {
+								line += "Home ";
+								break;
+							}
+							case "edit":
+							case "add":
+							case "delete":
+							case "create": {
+								words = words.replaceAll("link", "");
+								line += result;
+								break;
+							}
+							case "link": {
+								boolean matchSpecialCase = false;
+								// Search for "clickLinkNext"
+								result = searchAndReturn(words, "", "next");
+								if (!result.isEmpty()) {
+									matchSpecialCase = true;
+									words = words.replaceAll("next", "");
+									line += "clickNext ";
+									result = "";
 								}
-								case "collapse":{
-									// Search for "clickCollapseButton"
-									result = searchAndReturn(words, "", "button");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("button", "");
-										line += "clickCollapseButton ";
-									}
+
+								// Search for "clickLinkPrev"
+								result = searchAndReturn(words, "", "prev");
+								if (!result.isEmpty()) {
+									matchSpecialCase = true;
+									words = words.replaceAll("prev", "");
+									line += "clickPrev ";
+									result = "";
 								}
-								case "submit":{
-									words = words.replaceAll("input", "");
-									line += result;
-									break;
+
+								if (!matchSpecialCase)
+									line += "clickLink ";
+								break;
+							}
+							case "collapse": {
+								// Search for "clickCollapseButton"
+								result = searchAndReturn(words, "", "button");
+								if (!result.isEmpty()) {
+									words = words.replaceAll("button", "");
+									line += "clickCollapseButton ";
 								}
-								default:
-									line += result;
+								break;
+							}
+							case "checkbox":
+							case "submit": {
+								words = words.replaceAll("input", "");
+								words = words.replaceAll(" nav ", " ");
+								line += result;
+								break;
+							}
+							case "refine": {
+								words = words.replaceAll("link", "");
+								line += "clickRefine ";
+								break;
+							}
+							case "lang": {
+								line += "clickLanguage ";
+								break;
+							}
+							default:
+								line += result;
 							}
 						}
 					}
 
 					if (match)
 						words = words.replaceAll("click", "");
-				} 
+				}
 				// process 'type' variants
 				if (words.contains("type")) {
 					boolean match = false;
 					String result = "";
-					String[] keywords = {"username","user","password","pass","search",
-							"input","email","login","first","last","description","desc","priority","date"};
-					for(int i = 0; i < keywords.length; ++i){
+					String[] keywords = { "username", "user", "password",
+							"pass", "search", "input", "email", "login",
+							"first", "last", "description", "desc", "priority",
+							"date", "edit", "add", "delete", "create" };
+					for (int i = 0; i < keywords.length; ++i) {
 						result = searchAndReturn(words, "type", keywords[i]);
 						if (!result.isEmpty()) {
 							match = true;
 							words = words.replaceAll(keywords[i], "");
-							
-							switch(keywords[i]){
-								case "user":
-								case "username":{
-									line += "typeUsername ";
-									break;
+
+							switch (keywords[i]) {
+							case "edit":
+							case "add":
+							case "delete":
+							case "create": {
+								words = words.replaceAll("link", "");
+								line += result;
+								break;
+							}
+							case "user":
+							case "username": {
+								line += "typeUsername ";
+								break;
+							}
+							case "pass":
+							case "password": {
+								// search for typeVerifyPassword
+								result = searchAndReturn(words, "", "verify");
+								if (!result.isEmpty()) {
+									words = words.replaceAll("verify", "");
+									line += "typeVerifyPassword ";
+								} else {
+									line += "typePassword ";
 								}
-								case "pass":
-								case "password":{
-									// search for typeVerifyPassword
-									result = searchAndReturn(words, "", "verify");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("verify", "");
-										line += "typeVerifyPassword ";
-									}else{
-										line += "typePassword ";
-									}
+								break;
+							}
+							case "search": {
+								words = words.replaceAll("input", "");
+								line += "typeSearch ";
+								break;
+							}
+							case "input": {
+								// eliminate 'text', not necessary
+								words = words.replaceAll("text", "");
+								line += result;
+								break;
+							}
+							case "last":
+							case "first": {
+								// search for typeFirstName
+								result = searchAndReturn(words, "", "name");
+								if (!result.isEmpty()) {
+									words = words.replaceAll("name", "");
+									line += "type"
+											+ Character.toUpperCase(keywords[i]
+													.charAt(0))
+											+ keywords[i].substring(1)
+											+ "Name ";
 								}
-								case "search":{
-									// Search for "typeSearchInput"
-									result = searchAndReturn(words, "", "input");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("input", "");
-										words = words.replaceAll("text", "");
-										line += "typeSearchInput ";
-									}else{
-										line += "typeSearch ";
-									}
-								}
-								case "input":{
-									// eliminate 'text', not necessary
-									words = words.replaceAll("text", "");
-									line += result;
-								}
-								case "last":
-								case "first":{
-									// search for typeFirstName
-									result = searchAndReturn(words, "", "name");
-									if (!result.isEmpty()) {
-										words = words.replaceAll("name", "");
-										line += "type" + Character.toUpperCase(keywords[i].charAt(0))
-												+ keywords[i].substring(1) + "Name ";
-									}
-								}
-								default: line += result; 
+								break;
+							}
+							default:
+								line += result;
 							}
 						}
 					}
 
 					if (match)
 						words = words.replaceAll("type", "");
-				} 
+				}
 				// process 'select' variants
 				if (words.contains("select")) {
 					boolean match = false;
 					String result = "";
-					String[] keywords = {"sort","search"};
-					for(int i = 0; i < keywords.length; ++i){
+					String[] keywords = { "sort", "search" };
+					for (int i = 0; i < keywords.length; ++i) {
 						result = searchAndReturn(words, "select", keywords[i]);
 						if (!result.isEmpty()) {
 							match = true;
@@ -224,13 +298,18 @@ public class FilePreprocessor {
 					if (match)
 						words = words.replaceAll("select", "");
 				}
-
+				
 				// Substitute some Selenium words
 				if (words.contains("waitforpopupandwait"))
 					words = words.replaceAll("waitforpopupandwait",
 							"waitForPopupAndWait");
 				if (words.contains("selectwindow"))
 					words = words.replaceAll("selectwindow", "selectWindow");
+				if (words.contains("typeandwait"))
+					words = words.replaceAll("typeandwait", "typeAndWait");
+				if (words.contains("assertconfirmation"))
+					words = words.replaceAll("assertconfirmation",
+							"assertConfirmation");
 
 				// Remove noise words
 				words = words.replaceAll("empty", "");
@@ -252,7 +331,7 @@ public class FilePreprocessor {
 				words = words.replaceAll(" src ", " ");
 				words = words.replaceAll(" http ", " ");
 				words = words.replaceAll(" com ", " ");
-				words = words.replaceAll(" text ", " ");
+				// words = words.replaceAll(" text ", " ");
 				words = words.replaceAll(" em ", " ");
 				words = words.replaceAll(" form ", " ");
 				words = words.replaceAll(" www ", " ");
@@ -263,7 +342,9 @@ public class FilePreprocessor {
 				words = words.replaceAll(" li ", " ");
 				words = words.replaceAll(" script ", " ");
 				words = words.replaceAll(" ref ", " ");
-				//words = words.replaceAll("all", "All");
+				words = words.replaceAll(" tr ", " ");
+				words = words.replaceAll(" td ", " ");
+				// words = words.replaceAll("all", "All");
 
 				// if not part of a previous pattern, these words are also
 				// garbage
@@ -271,10 +352,10 @@ public class FilePreprocessor {
 				words = words.replaceAll(" subnav ", " ");
 
 				// remove typeAndWait garbage
-				words = words.replaceAll(" andwait ", " ");
+				words = words.replaceAll(" ?andwait ", " ");
 
 				// Remove excess spaces
-				words = words.replaceAll(" +", " ");
+				words = words.trim().replaceAll(" +", " ");
 
 				// write rest of words to line
 				line += words + " ";

@@ -12,13 +12,15 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class FilePreprocessor {
+	static DicTrie dictionary = new DicTrie();
+	
 	public static void preprocessFile(String absolutePath) {
 		// open reading file in UTF8
 		BufferedReader in = null;
 		File file = new File(absolutePath);
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream(
-					file), "UTF8"));
+					file), /*"UTF8"*/ "ISO-8859-1"));
 		} catch (FileNotFoundException | UnsupportedEncodingException e) {
 			e.printStackTrace();
 			System.exit(2);
@@ -41,8 +43,10 @@ public class FilePreprocessor {
 		String x = "";
 
 		// Regex (also catches accented characters)
-		Pattern pattern = Pattern.compile("[A-Z]?[\\p{L}]+");
-		// Pattern pattern = Pattern.compile("[A-Z]?[\\p{L}]+|[0-9]+");
+		//Pattern pattern = Pattern.compile("[A-Z]?[\\p{L}]+");
+		//Pattern  pattern = Pattern.compile("[A-Z]?[[\\p{L}]|[0-9]]+");
+		 //Pattern pattern = Pattern.compile("[a-zA-Z0-9]+");
+		Pattern pattern = Pattern.compile("([0-9]+)?[a-zA-Z]+([0-9]+)?");
 		Matcher matcher = null;
 
 		try {
@@ -55,11 +59,14 @@ public class FilePreprocessor {
 
 				while (matcher.find()) {
 					// Get the matching string, add in lower case
-					words += matcher.group().toLowerCase() + " ";
+					words += org.apache.commons.lang3.StringUtils.stripAccents(matcher.group().toLowerCase()) + " ";
 				}
 
 				String line = "";
-
+				
+				//TODO remove
+				//output.write("words:"+words+"|");
+				
 				if (words.contains("homepage")) {
 					words = words.replaceAll("homepage", "");
 					line += "Home ";
@@ -112,11 +119,11 @@ public class FilePreprocessor {
 						}
 					}
 
-					if (match)
-						words = words.replaceAll("clickandwait", "");
-					else
-						words = words
-								.replaceAll("clickandwait", "clickAndWait");
+					
+					words = words.replaceAll("clickandwait", "");
+					if (!match)
+						line += "clickAndWait ";
+					
 				}
 				// process 'click' variants
 				if (words.contains("click ")) {
@@ -205,15 +212,16 @@ public class FilePreprocessor {
 						}
 					}
 
-					if (match)
-						words = words.replaceAll("click", "");
+					words = words.replaceAll("click", "");
+					if (!match)
+						line += "click ";
 				}
 				// process 'type' variants
 				if (words.contains("type")) {
 					boolean match = false;
 					String result = "";
 					String[] keywords = { "username", "user", "password",
-							"pass", "search", "input", "email", "login",
+							"pass","q", "search","pesquisa", "input", "email", "login",
 							"first", "last", "description", "desc", "priority",
 							"date", "edit", "add", "delete", "create" };
 					for (int i = 0; i < keywords.length; ++i) {
@@ -248,6 +256,8 @@ public class FilePreprocessor {
 								}
 								break;
 							}
+							case "pesquisa":
+							case "q":
 							case "search": {
 								words = words.replaceAll("input", "");
 								line += "typeSearch ";
@@ -270,6 +280,9 @@ public class FilePreprocessor {
 													.charAt(0))
 											+ keywords[i].substring(1)
 											+ "Name ";
+								}else{
+									line+="type"+ Character.toUpperCase(keywords[i].charAt(0))
+										+ keywords[i].substring(1) + " ";
 								}
 								break;
 							}
@@ -279,8 +292,9 @@ public class FilePreprocessor {
 						}
 					}
 
-					if (match)
-						words = words.replaceAll("type", "");
+					words = words.replaceAll("type", "");
+					if (!match)
+						line += "type ";
 				}
 				// process 'select' variants
 				if (words.contains("select")) {
@@ -295,56 +309,36 @@ public class FilePreprocessor {
 							line += result;
 						}
 					}
-					if (match)
-						words = words.replaceAll("select", "");
+					words = words.replaceAll("select", "");
+					if (!match) 
+						line += "select ";
 				}
 				
 				// Substitute some Selenium words
-				if (words.contains("waitforpopupandwait"))
+				if (words.contains("waitforpopupandwait")){
+					line += "waitForPopupAndWait ";
 					words = words.replaceAll("waitforpopupandwait",
-							"waitForPopupAndWait");
-				if (words.contains("selectwindow"))
-					words = words.replaceAll("selectwindow", "selectWindow");
-				if (words.contains("typeandwait"))
-					words = words.replaceAll("typeandwait", "typeAndWait");
-				if (words.contains("assertconfirmation"))
+							"");
+				}
+				if (words.contains("select window")){
+					line += "selectWindow ";
+					words = words.replaceAll("select window", "");
+				}
+				if (words.contains("typeandwait")){
+					line += "typeAndWait ";
+					words = words.replaceAll("typeandwait", "");
+				}
+				if (words.contains("assertconfirmation")){
+					line += "assertConfirmation ";
 					words = words.replaceAll("assertconfirmation",
-							"assertConfirmation");
+							"");
+				}
 
 				// Remove noise words
 				words = words.replaceAll("empty", "");
-				words = words.replaceAll(" na ", "");
-				words = words.replaceAll("div ", " ");
-				words = words.replaceAll(" ul ", " ");
-				words = words.replaceAll(" li ", " ");
-				words = words.replaceAll(" [a-zA-Z] ", " ");
-				words = words.replaceAll(" span ", " ");
-				words = words.replaceAll(" css ", " ");
 				words = words.replaceAll(" alt ", " ");
-				words = words.replaceAll(" id ", " ");
-				words = words.replaceAll(" txt ", " ");
-				words = words.replaceAll(" jpg ", " ");
-				words = words.replaceAll(" type ", " ");
-				words = words.replaceAll(" value ", " ");
-				words = words.replaceAll(" label ", " ");
-				words = words.replaceAll(" bold ", " ");
-				words = words.replaceAll(" src ", " ");
-				words = words.replaceAll(" http ", " ");
-				words = words.replaceAll(" com ", " ");
-				// words = words.replaceAll(" text ", " ");
-				words = words.replaceAll(" em ", " ");
-				words = words.replaceAll(" form ", " ");
-				words = words.replaceAll(" www ", " ");
-				words = words.replaceAll(" href ", " ");
-				words = words.replaceAll(" ui ", " ");
-				words = words.replaceAll(" mw ", " ");
-				words = words.replaceAll(" xpath ", " ");
 				words = words.replaceAll(" li ", " ");
-				words = words.replaceAll(" script ", " ");
-				words = words.replaceAll(" ref ", " ");
-				words = words.replaceAll(" tr ", " ");
-				words = words.replaceAll(" td ", " ");
-				// words = words.replaceAll("all", "All");
+				words = words.replaceAll(" span ", " ");
 
 				// if not part of a previous pattern, these words are also
 				// garbage
@@ -353,12 +347,24 @@ public class FilePreprocessor {
 
 				// remove typeAndWait garbage
 				words = words.replaceAll(" ?andwait ", " ");
-
+				
+				// remove single letters
+				words = words.replaceAll(" [a-z] ", "");
+				
 				// Remove excess spaces
-				words = words.trim().replaceAll(" +", " ");
-
-				// write rest of words to line
-				line += words + " ";
+				words = words.trim().replaceAll("\\ +", " ");
+				
+				// remove invalid words
+				String[] wordArray = words.split(" ");
+				for(String w : wordArray){
+					if(!w.matches(".*\\d.*")){
+						if(DicTrie.find(w))
+							line += w+" ";
+						//else line += '\"'+w+"\" ";
+						words = words.replaceAll(" "+w+" ", " ");
+					}
+					else line += '\"'+w+"\" ";
+				}
 
 				// write line to file
 				line += "\n";
@@ -392,5 +398,19 @@ public class FilePreprocessor {
 					+ keyword.substring(1) + " ";
 		}
 		return line;
+	}
+	
+	public static void main(String[] args) {
+		//File[] files = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\CSVs").listFiles();
+		DicTrie.setupTrie("C:\\Users\\gekka_000\\workspace\\re-tool_continued\\dictionaries\\dic_EN.txt");
+		DicTrie.setupTrie("C:\\Users\\gekka_000\\workspace\\re-tool_continued\\dictionaries\\pt-PT.txt");
+		
+		//for(File file : files){
+		File file = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\merge.csv");
+			if(!file.isDirectory() && !file.getAbsolutePath().matches("(.)*processed(.)*")){
+				System.out.println(file.getName());
+				FilePreprocessor.preprocessFile(file.getAbsolutePath());
+			}
+		//}
 	}
 }

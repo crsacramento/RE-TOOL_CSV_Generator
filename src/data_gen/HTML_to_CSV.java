@@ -22,7 +22,7 @@ public class HTML_to_CSV {
 	 * @param args
 	 *            path to file
 	 */
-	public static void convertFile(File file) {
+	public static void convertFile(File file, File output) {
 		/*
 		 * if (args.length >= 2) {
 		 * System.err.println("Usage: HTML_to_CSV <filePath>"); System.exit(1);
@@ -40,16 +40,16 @@ public class HTML_to_CSV {
 
 		DocumentBuilder builder = null;
 		Document doc = null;
-		FileWriter output = null;
+		FileWriter outputFW = null;
 		String lineToWrite = "";
 		int lineNumber = 1;
 		
 		try {
-			String dirName = file.getParentFile().toPath().toAbsolutePath().toString();
-			String fileName = file.getName() + ".csv";
-			File dir = new File (dirName);
-			File actualFile = new File (dir, fileName);
-			output = new FileWriter(actualFile);
+			//String dirName = file.getParentFile().toPath().toAbsolutePath().toString();
+			//String fileName = file.getName() + ".csv";
+			//File dir = new File (dirName);
+			//File actualFile = new File (dir, fileName);
+			outputFW = new FileWriter(output);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -85,19 +85,19 @@ public class HTML_to_CSV {
 				for (int x = 0; x < tdList.getLength(); ++x) {
 					Element tdElement = (Element)tdList.item(x);
 					String content = tdElement.getTextContent().trim();
-					content = content.replace("\"","\\\" ");
+					content = content.replace("\"","\\\"");
 					if(!content.isEmpty())
-						lineToWrite += '\"' + content + '\"';
+						lineToWrite += '\"' + org.apache.commons.lang3.StringUtils.stripAccents(content) + '\"';
 					else
 						lineToWrite += "EMPTY";
 					if(x != tdList.getLength() - 1 && !content.isEmpty())
 						lineToWrite += SEPARATOR;
 				}
 				lineToWrite += "\n";
-				lineToWrite = lineNumber + SEPARATOR + lineToWrite;
+				//lineToWrite = lineNumber + SEPARATOR + lineToWrite;
 				// writes line to file
 				try {
-					output.write(lineToWrite);
+					outputFW.write(lineToWrite);
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -109,7 +109,7 @@ public class HTML_to_CSV {
 
 		// close file writer
 		try {
-			output.close();
+			outputFW.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -117,13 +117,13 @@ public class HTML_to_CSV {
 	
 	public static void main(String[] args) {
 		
-		/*File[] files = new File("H:\\Dropbox\\DISS_traces\\HTMLs").listFiles();
+		File[] files = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\HTMLs").listFiles();
 		for (File file : files) {
 			System.out.println(file.getName());
-			convertFile(file);
+			convertFile(file,new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\CSVs\\"+file.getName()+".csv"));
 			//System.out.println(file.getName() + " done.");
-	    }*/
-		File file = new File("H:\\Dropbox\\DISS\\traces\\ruby scripts\\selenium.html");
-		convertFile(file);
+	    }
+		//File file = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\HTMLs\\revistabrasileiros.html");
+		//convertFile(file);
 	}
 }

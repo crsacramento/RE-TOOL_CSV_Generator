@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class AlphabetGenerator {
 	private static HashMap<String, Integer> alphabet = new HashMap<String, Integer>();
 	private static HashMap<Integer, String> invertedAlphabet = new HashMap<Integer, String>();
-	private static int NUM_LINES = 5;
+	private static int NUM_LINES = 10;
 
 	/**
 	 * Reads CSV file, fills alphabet hashmap with alphabet, writes line in
@@ -27,6 +27,7 @@ public class AlphabetGenerator {
 	 * @param absolutePath
 	 *            path to csv file
 	 */
+	
 	static void readFile_WriteIndexFile(String absolutePath) {
 		// open reading file
 		BufferedReader in = null;
@@ -57,7 +58,8 @@ public class AlphabetGenerator {
 		int lastIndex = 1;
 
 		// Regex
-		Pattern pattern = Pattern.compile("[A-Z]?[a-zA-Z0-9]+");
+		Pattern pattern = Pattern.compile("[a-zA-Z0-9]+");
+		//Pattern pattern = Pattern.compile("(?<!-)[0-9a-zA-Z]+");
 		Matcher matcher = null;
 
 		try {
@@ -66,12 +68,16 @@ public class AlphabetGenerator {
 				matcher = pattern.matcher(x);
 				ArrayList<String> words = new ArrayList<String>();
 
-				matcher.find();
 				while (matcher.find()) {
 				// Get the matching string
-					words.add(matcher.group());
+					String s = matcher.group();
+					words.add(s);
 				}
-
+				ArrayList<String> words_ = new ArrayList<String>();
+				words_.add(words.get(0));
+				if(words.size() >= 2)
+					words_.add(words.get(1));
+				words=words_;
 				String line = "";
 
 				// Processing regex matches
@@ -80,14 +86,16 @@ public class AlphabetGenerator {
 						alphabet.put(words.get(i), lastIndex);
 						++lastIndex;
 					}
-					line += alphabet.get(words.get(i)) + " ";
-					//line += alphabet.get(words.get(i)) + " -1 ";
+					//line += alphabet.get(words.get(i)) + " ";
+					line += alphabet.get(words.get(i)) + " -1 ";
 				}
 
-				if ((lineCounter % NUM_LINES) == 0)
-					line += "-1 -2 \n";
-					//line += "-2 \n";
+				if ((lineCounter % NUM_LINES) == 0){
+					//line += "-1 -2 \n";
+					line += "-2 \n";
+				}
 				output.write(line);
+				
 				line = "";
 				lineCounter++;
 			}
@@ -96,7 +104,13 @@ public class AlphabetGenerator {
 		}
 
 		System.out.println(lastIndex + " sequences found.");
-
+		
+		try {
+			output.write("-1 -2 \n");
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		try {
 			output.close();
 		} catch (IOException e) {
@@ -203,8 +217,6 @@ public class AlphabetGenerator {
 									.parseInt(numbers[j])))
 								line += invertedAlphabet.get(Integer
 										.parseInt(numbers[j]));
-							else
-								line += numbers[j];
 							if (j != numbers.length - 1)
 								line += ", ";
 							else
@@ -217,9 +229,6 @@ public class AlphabetGenerator {
 							.parseInt(parcels[i]))) {
 						line += invertedAlphabet.get(Integer
 								.parseInt(parcels[i])) + " ";
-					}// Number isn't found on alphabet
-					else {
-						line += parcels[i] + " ";
 					}
 				}
 
@@ -245,7 +254,8 @@ public class AlphabetGenerator {
 		writeAlphabetFile(absolutePath);
 
 		String[] algorithms = { "PrefixSpan", "GSP", "CM-SPADE", "CM-SPAM",
-				"CM-ClaSP", "CloSpan", "BIDE+",
+				"CM-ClaSP", "BIDE+"
+		// "CloSpan", 
 		// "MaxSP",
 		// "VMSP",
 		// "TKS",
@@ -257,15 +267,16 @@ public class AlphabetGenerator {
 
 		String[] results = { ".prefixspan.result", ".gsp.result",
 				".spade.result", ".spam.result",
-				".clasp.result", ".clospan.result",
-				".bide+.result",
-		// ".index.maxsp.result",
-		// ".index.vmsp.result",
-		// ".index.tks.result",
-		// ".index.tspNonClosed.result",
-		// ".index.cmRules.result",
-		// ".index.cmDeo.result",
-		// ".index.ruleGrowth.result"
+				".clasp.result",
+				".bide+.result"
+		//".clospan.result",
+		// "maxsp.result",
+		// ".vmsp.result",
+		// ".tks.result",
+		// ".tspNonClosed.result",
+		// ".cmRules.result",
+		// ".cmDeo.result",
+		// ".ruleGrowth.result"
 		};
 
 		for (int i = 0; i < algorithms.length; ++i) {
@@ -276,7 +287,7 @@ public class AlphabetGenerator {
 					+ " "
 					+ absolutePath + ".num "
 					+ absolutePath + results[i] 
-					+ " 30% ";
+					+ " 40% ";
 
 			//if (i == 0 || i == 1 || i == 2 || i == 3 || i == 5)
 			if(algorithms[i].equals("PrefixSpan") ||
@@ -320,22 +331,26 @@ public class AlphabetGenerator {
 	}
 
 	public static void main(String[] args) {
-		File[] files = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\CSVs").listFiles();
+		//File[] files = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\CSVs").listFiles();
 				//"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\alphabets\\tudu_1"
 						//+ ".html"
 						//+ "_merge" 
 						//+ ".csv");
-		for(File file : files){
-		// if not pre processing
-		//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath());
-		
-		// else
-			if(!file.isDirectory() && !file.getAbsolutePath().matches("(.)*processed(.)*")){
-				System.out.println(file.getName());
-				FilePreprocessor.preprocessFile(file.getAbsolutePath());
+		//for(File file : files){
+		File file = new File("H:\\Dropbox\\DISS\\traces\\selenium_traces\\merge.csv");
+			if(!file.isDirectory() 
+					&& !file.getAbsolutePath().matches("(.)*processed(.)*")
+					&& !file.getAbsolutePath().matches("(.)*translated(.)*")
+					&& !file.getAbsolutePath().matches("(.)*num(.)*")
+					&& !file.getAbsolutePath().matches("(.)*result(.)*")
+					&& !file.getAbsolutePath().matches("(.)*alphabet(.)*")){
+				//System.out.println("FILENAME: "+file.getName());
+				//FilePreprocessor.preprocessFile(file.getAbsolutePath());
+				//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath() + ".processed");
+
+				produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath());
 			}
-		}
-		//produceSpaceFilesAndRunAlgorithm(file.getAbsolutePath() + ".processed");
+		//}
 	}
 
 }

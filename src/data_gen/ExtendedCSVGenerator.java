@@ -282,9 +282,9 @@ public class ExtendedCSVGenerator implements NativeKeyListener {
 		}
 		
 		// Convert Selenium html to CSV
-		file = new File(System.getProperty("user.dir")
-				+ "\\HTMLfinal\\selenium.html");
-		HTML_to_CSV.convertFile(file);
+		HTML_to_CSV.convertFile(new File(System.getProperty("user.dir")
+				+ "\\HTMLfinal\\selenium.html"),new File(System.getProperty("user.dir")
+				+ "\\HTMLfinal\\selenium.html.csv"));
 	}
 
 	/********************* OVERRIDEN METHODS *****************/

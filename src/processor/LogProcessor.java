@@ -12,6 +12,8 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.sun.jna.platform.win32.SetupApi;
+
 public class LogProcessor {
 	static DicTrie dictionary = new DicTrie();
 
@@ -77,6 +79,7 @@ public class LogProcessor {
 	}
 
 	public static void processFile(String absolutePath) {
+		defaultSetupPatternList();
 		// open reading file in UTF8
 		BufferedReader in = null;
 		File file = new File(absolutePath);
@@ -107,7 +110,7 @@ public class LogProcessor {
 		try {
 			while ((lineBuffer = in.readLine()) != null) {
 				line = processLine(lineBuffer);
-				output.write(line + "\n");
+				output.write(lineBuffer + ";" + line + "\n");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -170,7 +173,6 @@ public class LogProcessor {
 	}
 
 	public static void main(String[] args) {
-		defaultSetupPatternList();
 		File file = new File(
 				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
 						//+ "crawler_histories\\portaldajuventude.csv");

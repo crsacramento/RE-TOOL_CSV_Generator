@@ -21,19 +21,22 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import processor.LogProcessor;
+
 public class WebsiteExplorer {
 	/**
 	 * the URL where the crawler will start and the domain to which it will
 	 * restrict itself
 	 */
-	static String BASE_URL = "https://www.amazon.com/";
-	// static String BASE_URL = "https://www.yahoo.com/";
+	static String BASE_URL = "https://www.amazon.com/"
+			+ "ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fcss%2Fhomepage.html%3Fie%3DUTF8%26ref_%3Dgno_yam_ya";
+	//static String BASE_URL = "https://www.yahoo.com/";
 	// static String BASE_URL =
 	// "http://www.juventude.gov.pt/Paginas/default.aspx";
 	// static String BASE_URL = "http://www.fe.up.pt/";
-	// static String BASE_URL = "http://en.wikipedia.org";
+	//static String BASE_URL = "http://en.wikipedia.org";
 	//static String BASE_URL = "http://www.ebay.com/";
-	//static String BASE_URL = "http://www.facebook.com/";
+	//static String BASE_URL = "http://www.youtube.com/";
 	// static String BASE_URL = "http://store.steampowered.com/";
 
 	/** keywords that identify search elements */
@@ -47,7 +50,7 @@ public class WebsiteExplorer {
 	/** keywords that identify elements that SHOULD NOT BE ACCESSED */
 	static String generalWordsToExclude = "(buy|sell|edit|delete|mailto|add\\sto\\scart)";
 	/** number of actions the crawler will execute before stopping */
-	static final int NUM_ACTIONS = 20;
+	static final int NUM_ACTIONS = 1;
 	/** number of redirects to the home page the crawler will do before stopping */
 	static final int NUM_ERRORS = 3;
 
@@ -132,7 +135,7 @@ public class WebsiteExplorer {
 			// link is visible, not a link to a file, and doesn't have login
 			// or general keywords
 			if (itPassesAllGeneralChecks(e)
-					&& !allFileExtensions.matcher(lower).matches()
+					&& !allFileExtensions.matcher(e.getAttribute("href")).matches()
 					&& !lower.matches(".*" + loginKeywords + ".*")) {
 				// verify if it belongs to the home page's domain and
 				// subdomain, or href starts with a '/', aka a subpage
@@ -347,11 +350,11 @@ public class WebsiteExplorer {
 		List<List<WebElement>> list = new ArrayList<List<WebElement>>();
 
 		// Get relevant elements
-		list.add(getTextFields());
-		list.add(getSelectFields());
-		list.add(getLinks());
-		list.add(getSearchFields());
-		list.add(getSortFields());
+		//list.add(getTextFields());
+		//list.add(getSelectFields());
+		//list.add(getLinks());
+		//list.add(getSearchFields());
+		//list.add(getSortFields());
 		list.add(getLoginFields());
 
 		ArrayList<Integer> nonEmpties = new ArrayList<Integer>();
@@ -368,8 +371,7 @@ public class WebsiteExplorer {
 				// System.out.println(e.toString());
 				// }
 
-			} else
-				System.out.println(type + ": empty");
+			} 
 		}
 		System.out.println("non_empty: " + type);
 		if (nonEmpties.size() != 0) {
@@ -738,7 +740,7 @@ public class WebsiteExplorer {
 		System.out.println(history.get(0).toString());
 
 		while (currAction < NUM_ACTIONS) {
-			currentPage = driver.getTitle();
+			currentPage = driver.getCurrentUrl();
 			System.out.println("Action #" + currAction + " | Page title is: "
 					+ driver.getTitle());
 
@@ -799,5 +801,6 @@ public class WebsiteExplorer {
 		}
 
 		driver.quit();
+		LogProcessor.processFile(new File("history.csv").getAbsolutePath());
 	}
 }

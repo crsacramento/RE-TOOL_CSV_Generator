@@ -149,7 +149,7 @@ public class HTMLLocatorBuilder {
 		}*/
 		
 		try{
-			while (!PatternSeeker.driver.findElement(By.cssSelector(sub_path))
+			while (!WebsiteExplorer.driver.findElement(By.cssSelector(sub_path))
 					.toString().equals(e.toString())
 					&& !current.getTagName().toLowerCase().equals("html")) {
 				sub_path = getCSSSubPath(current.findElement(By.xpath("..")))

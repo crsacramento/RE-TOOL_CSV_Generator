@@ -21,18 +21,19 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
-public class PatternSeeker {
+public class WebsiteExplorer {
 	/**
 	 * the URL where the crawler will start and the domain to which it will
 	 * restrict itself
 	 */
-	// static String BASE_URL = "https://www.amazon.com/";
+	static String BASE_URL = "https://www.amazon.com/";
 	// static String BASE_URL = "https://www.yahoo.com/";
 	// static String BASE_URL =
 	// "http://www.juventude.gov.pt/Paginas/default.aspx";
-	static String BASE_URL = "http://www.fe.up.pt/";
+	// static String BASE_URL = "http://www.fe.up.pt/";
 	// static String BASE_URL = "http://en.wikipedia.org";
-	// static String BASE_URL = "http://www.ebay.com/";
+	//static String BASE_URL = "http://www.ebay.com/";
+	//static String BASE_URL = "http://www.facebook.com/";
 	// static String BASE_URL = "http://store.steampowered.com/";
 
 	/** keywords that identify search elements */
@@ -128,26 +129,23 @@ public class PatternSeeker {
 		for (WebElement e : links) {
 			String lower = e.toString().toLowerCase();
 
-			if (!isElementAlreadyVisited(currentPage, e)) {
-				// link is visible, not a link to a file, and doesn't have login
-				// or general keywords
-				if (e.isDisplayed()
-						&& !allFileExtensions.matcher(lower).matches()
-						&& !lower.matches(".*" + loginKeywords + ".*")
-						&& !lower.matches(".*" + generalWordsToExclude + ".*")) {
-					// verify if it belongs to the home page's domain and
-					// subdomain, or href starts with a '/', aka a subpage
-					m = matchesDomainAndSubdomain.matcher(lower);
-					String x = "";
-					if (m.find()) {
-						x = m.group();
+			// link is visible, not a link to a file, and doesn't have login
+			// or general keywords
+			if (itPassesAllGeneralChecks(e)
+					&& !allFileExtensions.matcher(lower).matches()
+					&& !lower.matches(".*" + loginKeywords + ".*")) {
+				// verify if it belongs to the home page's domain and
+				// subdomain, or href starts with a '/', aka a subpage
+				m = matchesDomainAndSubdomain.matcher(lower);
+				String x = "";
+				if (m.find()) {
+					x = m.group();
 
-						if (baseUrlDomainAndSubdomain.equals(x)) {
-							retList.add(e);
-						}
-					} else if (startWithSlash.matcher(lower).find()) {
+					if (baseUrlDomainAndSubdomain.equals(x)) {
 						retList.add(e);
 					}
+				} else if (startWithSlash.matcher(lower).find()) {
+					retList.add(e);
 				}
 			}
 		}
@@ -167,14 +165,11 @@ public class PatternSeeker {
 		// get all form inputs
 		text = driver.findElements(By.xpath("//input[@type='text']"));
 		for (WebElement e : text) {
-			if (e.isDisplayed()
-					&& !isElementAlreadyVisited(currentPage, e)
+			if (itPassesAllGeneralChecks(e)
 					&& !e.toString().toLowerCase()
 							.matches(".*" + loginKeywords + ".*")
 					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + generalWordsToExclude + ".*")) {
+							.matches(".*" + annoyingAttributes + ".*")) {
 				retList.add(e);
 			}
 
@@ -183,45 +178,50 @@ public class PatternSeeker {
 		// cover HTML5 types
 		text = driver.findElements(By.xpath("//input[@type='search']"));
 		for (WebElement e : text) {
-			if (e.isDisplayed()
-					&& !isElementAlreadyVisited(currentPage, e)
+			if (itPassesAllGeneralChecks(e)
 					&& !e.toString().toLowerCase()
 							.matches(".*" + loginKeywords + ".*")
 					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + generalWordsToExclude + ".*"))
+							.matches(".*" + annoyingAttributes + ".*"))
 				retList.add(e);
 		}
-		
+
 		text = driver.findElements(By.xpath("//input[@type='number']"));
 		for (WebElement e : text) {
-			if (e.isDisplayed()
-					&& !isElementAlreadyVisited(currentPage, e)
+			if (itPassesAllGeneralChecks(e)
 					&& !e.toString().toLowerCase()
 							.matches(".*" + loginKeywords + ".*")
 					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + generalWordsToExclude + ".*"))
+							.matches(".*" + annoyingAttributes + ".*"))
 				retList.add(e);
 		}
 
 		// get all textareas
 		text = driver.findElements(By.tagName("textarea"));
 		for (WebElement e : text) {
-			if (e.isDisplayed()
-					&& !isElementAlreadyVisited(currentPage, e)
+			if (itPassesAllGeneralChecks(e)
 					&& !e.toString().toLowerCase()
 							.matches(".*" + loginKeywords + ".*")
 					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + generalWordsToExclude + ".*"))
+							.matches(".*" + annoyingAttributes + ".*"))
 				retList.add(e);
 		}
 
 		return retList;
+	}
+
+	/**
+	 * Does all checks that all elements have to respect (not visited, not
+	 * hidden, doesn't have keywords that no element should have)
+	 * 
+	 * @param e
+	 * @return
+	 */
+	static boolean itPassesAllGeneralChecks(WebElement e) {
+		return e.isDisplayed()
+				&& !isElementAlreadyVisited(currentPage, e)
+				&& !e.toString().toLowerCase()
+						.matches(".*" + generalWordsToExclude + ".*");
 	}
 
 	/**
@@ -236,10 +236,7 @@ public class PatternSeeker {
 		// get all textareas
 		text = driver.findElements(By.tagName("select"));
 		for (WebElement e : text) {
-			if (e.isDisplayed()
-					&& !isElementAlreadyVisited(currentPage, e)
-					&& !e.toString().toLowerCase()
-							.matches(".*" + generalWordsToExclude + ".*"))
+			if (itPassesAllGeneralChecks(e))
 				retList.add(e);
 		}
 
@@ -259,8 +256,9 @@ public class PatternSeeker {
 		Iterator<WebElement> it = textInputs.iterator();
 		while (it.hasNext()) {
 			WebElement e = it.next();
-			if (e.toString().toLowerCase()
-					.matches(".*" + searchKeywords + ".*")) {
+			if (itPassesAllGeneralChecks(e)
+					&& e.toString().toLowerCase()
+							.matches(".*" + searchKeywords + ".*")) {
 				searchInputs.add(e);
 				it.remove();
 				break;
@@ -288,7 +286,9 @@ public class PatternSeeker {
 		Iterator<WebElement> it = selectInputs.iterator();
 		while (it.hasNext()) {
 			WebElement e = it.next();
-			if (e.toString().toLowerCase().matches(".*" + sortKeywords + ".*")) {
+			if (itPassesAllGeneralChecks(e)
+					&& e.toString().toLowerCase()
+							.matches(".*" + sortKeywords + ".*")) {
 				sortInputs.add(e);
 				it.remove();
 				break;
@@ -311,20 +311,20 @@ public class PatternSeeker {
 		List<WebElement> text = driver.findElements(By
 				.xpath("//input[@type='password']"));
 		for (WebElement e : text) {
-			if (e.isDisplayed() && !isElementAlreadyVisited(currentPage, e))
-				textInputs.add(e);
+			textInputs.add(e);
 		}
 
 		text = driver.findElements(By.xpath("//input[@type='email']"));
 		for (WebElement e : text) {
-			if (e.isDisplayed() && !isElementAlreadyVisited(currentPage, e))
-				textInputs.add(e);
+			textInputs.add(e);
 		}
 
 		Iterator<WebElement> it = textInputs.iterator();
 		while (it.hasNext()) {
 			WebElement e = it.next();
-			if (e.toString().toLowerCase().matches(".*" + loginKeywords + ".*")) {
+			if (itPassesAllGeneralChecks(e)
+					&& e.toString().toLowerCase()
+							.matches(".*" + loginKeywords + ".*")) {
 				loginInputs.add(e);
 				it.remove();
 				break;
@@ -341,7 +341,7 @@ public class PatternSeeker {
 	 * @return random element
 	 */
 	static WebElement chooseNextElement() {
-		String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT" };
+		String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT", "LOGIN" };
 
 		// Find the text input element by its name
 		List<List<WebElement>> list = new ArrayList<List<WebElement>>();
@@ -352,18 +352,18 @@ public class PatternSeeker {
 		list.add(getLinks());
 		list.add(getSearchFields());
 		list.add(getSortFields());
-		// list.add(getLoginFields(driver));
+		list.add(getLoginFields());
 
 		ArrayList<Integer> nonEmpties = new ArrayList<Integer>();
 		String type = "";
 
 		for (int i = 0; i < list.size(); ++i) {
-			type = TYPES[i];
+			// type = TYPES[i];
 			// System.out.println(i + ": " + type);
 
 			if (!list.get(i).isEmpty()) {
 				nonEmpties.add(i);
-				System.out.println(type + ": not empty");
+				type += TYPES[i] + "|";
 				// for (WebElement e : list.get(i)) {
 				// System.out.println(e.toString());
 				// }
@@ -371,7 +371,7 @@ public class PatternSeeker {
 			} else
 				System.out.println(type + ": empty");
 		}
-
+		System.out.println("non_empty: " + type);
 		if (nonEmpties.size() != 0) {
 			// Choose random element of random list
 			int rand1 = (int) Math.round(Math.random()
@@ -410,13 +410,24 @@ public class PatternSeeker {
 	}
 
 	/**
+	 * Checks if HTML element has something to do with logins.
+	 * 
+	 * @param e
+	 *            element to check
+	 */
+	static boolean isElementRelatedToLogin(WebElement e) {
+		return e.toString().toLowerCase()
+				.matches(".*" + loginKeywords + ".*");
+	}
+
+	/**
 	 * Checks if text input element is expecting numbers
 	 * 
 	 * @param e
 	 *            element to check
 	 */
 	static boolean isInputElementExpectingNumbers(WebElement e) {
-		String types = "((type=\\\")*number|price|quantity|qty\\s\")";
+		String types = "((type=\\\")*number|price|quantity|qty\\s|zip\\s?code)";
 		if (e.toString().matches(".*" + types + ".*"))
 			return true;
 
@@ -452,10 +463,7 @@ public class PatternSeeker {
 		String identifier = HTMLLocatorBuilder.getElementIdentifier(element);
 		SeleniumTableRow row;
 
-		// clean inside text
-		// TODO test
-		// HtmlInput box = (HtmlInput) driver.f;
-		// box.setValueAttribute("");
+		// clear inside text
 		element.clear();
 
 		// verify if input wants numbers or words
@@ -501,7 +509,7 @@ public class PatternSeeker {
 			// element.submit();
 			submit.get(0).click();
 			visitedElements.put(currentPage, submit.get(0));
-		}else{
+		} else {
 			// search for elements that dynamically submit forms
 			List<WebElement> dynamicSubmits = element.findElements(By
 					.xpath("//*[contains(@onclick,'submit')]"));
@@ -509,8 +517,8 @@ public class PatternSeeker {
 				for (WebElement sub : dynamicSubmits)
 					System.out.println("DYN_SELECT:SUBMIT: " + sub.toString());
 				SeleniumTableRow row = new SeleniumTableRow("clickAndWait",
-						HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits.get(0)),
-						"EMPTY");
+						HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits
+								.get(0)), "EMPTY");
 				history.add(row);
 				writeToHistoryFile(row, true);
 				// element.submit();
@@ -567,6 +575,103 @@ public class PatternSeeker {
 				visitedElements.put(currentPage, element);
 			}
 		}
+	}
+
+	private static void processLogin(WebElement element) {
+		WebElement form = findParentForm(element);
+		List<WebElement> children = findInputChildNodes(form);
+		SeleniumTableRow row = null;
+		
+		for (WebElement e : children) {
+			if(e.getTagName().toLowerCase().equals("input")) {
+		        switch(e.getAttribute("type")) {
+		        case "text":
+		        case "password": 
+		        case "email":
+		        	e.clear();
+		        	int rand = (int) (Math.random() * (typedKeywords.length - 1));
+		        	e.sendKeys(typedKeywords[rand]);
+		        	row = new SeleniumTableRow("type",
+							HTMLLocatorBuilder.getElementIdentifier(e), 
+							typedKeywords[rand]);
+					System.out.println("row: " + row.toString());
+					history.add(row);
+					writeToHistoryFile(row, true);
+		            break;
+		        case "radio":
+		        case "checkbox":
+		            e.click();
+		            row = new SeleniumTableRow("click",
+							HTMLLocatorBuilder.getElementIdentifier(e), 
+							"EMPTY");
+					System.out.println("row: " + row.toString());
+					history.add(row);
+					writeToHistoryFile(row, true);
+		            break;
+		        }
+		    }
+		    else if(e.getTagName().toLowerCase().equals("select")) {
+		    	List<WebElement> options = element.findElements(By.xpath(".//option"));
+				if (options.size() != 0) {
+					int rand1 = (int) Math.round(Math.random() * (options.size() - 1));
+					Select select = new Select(e);
+					select.selectByIndex(rand1);
+					row = new SeleniumTableRow("select",
+							HTMLLocatorBuilder.getElementIdentifier(e), 
+							"label=\"" + options.get(rand1).getText()
+									+ '"');
+					System.out.println("row: " + row.toString());
+					history.add(row);
+					writeToHistoryFile(row, true);
+				}
+		    }  
+		}
+		
+		handleFormSubmission(form);
+	}
+
+	private static List<WebElement> findInputChildNodes(WebElement form) {
+		List<WebElement> all = form.findElements(By.xpath("*"));
+		List<WebElement> descendants = null;
+		if(all.isEmpty()){
+			return null;
+		}
+		
+		List<WebElement> ret = new ArrayList<WebElement>();
+		for (WebElement item : all) {
+			if (item.getTagName().toLowerCase().equals("input")) {
+				 switch(item.getAttribute("type")) {
+			        case "text":
+			        case "password": 
+			        case "email":
+			        case "radio":
+			        case "checkbox":{
+			        	ret.add(item);
+			        }
+				 }
+			}else if (item.getTagName().toLowerCase().equals("select")) {
+				ret.add(item);
+			}
+			else{
+				descendants = findInputChildNodes(item);
+				if(!(descendants == null || descendants.isEmpty())){
+					for (WebElement i : descendants) {
+						ret.add(i);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private static WebElement findParentForm(WebElement element) {
+		WebElement current = element;
+		while (!(current == null
+				|| current.getTagName().toLowerCase().equals("form") || current
+				.getTagName().toLowerCase().equals("html"))) {
+			current = current.findElement(By.xpath(".."));
+		}
+		return current;
 	}
 
 	/**
@@ -662,14 +767,14 @@ public class PatternSeeker {
 				System.out.println("ELEMENT: "
 						+ element.toString()
 						+ "\""
-						+ (!element.getText().isEmpty() ? "\n\t(text:"
-								+ element.getText() + ")" : "(no text)"));
+						+ (!element.getText().isEmpty() ? " (text)" : "(no text)"));
 
 				System.out.println("LOCATOR:"
 						+ HTMLLocatorBuilder.getElementIdentifier(element));
-
-				// dropdown list
-				if (element.getTagName().toLowerCase().equals("select")) {
+				if (isElementRelatedToLogin(element)) {
+					processLogin(element);
+				}// dropdown list
+				else if (element.getTagName().toLowerCase().equals("select")) {
 					processSelectElement(element);
 				} else if (isElementTextInputable(element)) {
 					processInputElement(element);
@@ -695,5 +800,4 @@ public class PatternSeeker {
 
 		driver.quit();
 	}
-
 }

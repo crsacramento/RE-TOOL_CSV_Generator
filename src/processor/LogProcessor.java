@@ -46,7 +46,7 @@ public class LogProcessor {
 				"submit|input|nav"));
 		patterns.add(new PatternMapEntry("imageLink", "img", "link|img"));
 		patterns.add(new PatternMapEntry("option", "option", "option"));
-		patterns.add(new PatternMapEntry("refine", "refine", "refine|link"));
+		patterns.add(new PatternMapEntry("searchRefine", "refine", "refine|link"));
 		// mostly related to 'click' actions
 		patterns.add(new PatternMapEntry("checkbox", "checkbox",
 				"input|nav|checkbox"));
@@ -66,13 +66,14 @@ public class LogProcessor {
 		patterns.add(new PatternMapEntry("lastName", "last(.*)name",
 				"name|last"));
 		// CRUD ops
-		patterns.add(new PatternMapEntry("create", "add|create|new",
-				"add|create|new|link"));
+		//patterns.add(new PatternMapEntry("create", "add\\s|create\\s|new\\s",
+			//	"add|create|new|link"));
 
 		patterns.add(new PatternMapEntry("language", "lang", "lang"));
-		patterns.add(new PatternMapEntry("link", "link|a\\s|href",
+		patterns.add(new PatternMapEntry("link", "link|a(\\.|\\[)|href",
 				"link|a\\s|href"));
 		patterns.add(new PatternMapEntry("input", "input|text", "input|text"));
+		patterns.add(new PatternMapEntry("clear", "clear", "clear"));
 	}
 
 	public static void processFile(String absolutePath) {
@@ -143,7 +144,7 @@ public class LogProcessor {
 				words += org.apache.commons.lang3.StringUtils
 						.stripAccents(matcher.group().toLowerCase()) + " ";
 		}
-		// System.out.println("ORIGINAL_LINE="+words);
+		//System.out.println("ORIGINAL_LINE="+words);
 		// process all patterns
 		for (PatternMapEntry p : patterns) {
 			if (words.matches(".*(" + p.getIdentifyingRegex() + ").*")) {
@@ -151,10 +152,10 @@ public class LogProcessor {
 				line += action
 						+ Character.toUpperCase(p.getPatternName().charAt(0))
 						+ p.getPatternName().substring(1) + " ";
-				// System.out.println("LINE="+line);
-				words = words.replaceAll(".*(" + p.getGarbageRemovalRegex()
-						+ ").*", "");
-				// System.out.println("WORDS_AFTER_REMOVAL="+words+"\n");
+				//System.out.println("LINE="+line);
+				words = words.replaceAll("(" + p.getGarbageRemovalRegex()
+						+ ")", " ");
+				//System.out.println("WORDS_AFTER_REMOVAL="+words+"\n");
 				if (!atLeastOne)
 					atLeastOne = true;
 			}
@@ -163,7 +164,7 @@ public class LogProcessor {
 		if (!atLeastOne)
 			line = action + " ";
 		if (pageChange)
-			line += "PageChange";
+			line += "pageChange";
 
 		return line;
 	}
@@ -171,8 +172,11 @@ public class LogProcessor {
 	public static void main(String[] args) {
 		defaultSetupPatternList();
 		File file = new File(
-				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\"
-						+ "crawler_histories\\portaldajuventude.csv");
+				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
+						//+ "crawler_histories\\portaldajuventude.csv");
+				//"H:\\Dropbox\\DISS\\"
+						//+ "traces\\selenium_traces\\merge.csv"
+				);
 		if (!file.isDirectory()
 				&& !file.getAbsolutePath().matches("(.)*processed(.)*")) {
 			LogProcessor.processFile(file.getAbsolutePath());

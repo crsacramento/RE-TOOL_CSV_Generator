@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -28,29 +26,19 @@ public class WebsiteExplorer {
 	 * the URL where the crawler will start and the domain to which it will
 	 * restrict itself
 	 */
-	static String BASE_URL = "https://www.amazon.com/"
-			+ "ap/signin?_encoding=UTF8&openid.assoc_handle=usflex&openid.claimed_id=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.identity=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0%2Fidentifier_select&openid.mode=checkid_setup&openid.ns=http%3A%2F%2Fspecs.openid.net%2Fauth%2F2.0&openid.ns.pape=http%3A%2F%2Fspecs.openid.net%2Fextensions%2Fpape%2F1.0&openid.pape.max_auth_age=0&openid.return_to=https%3A%2F%2Fwww.amazon.com%2Fgp%2Fcss%2Fhomepage.html%3Fie%3DUTF8%26ref_%3Dgno_yam_ya";
+	//static String BASE_URL = "https://www.amazon.com/";
 	//static String BASE_URL = "https://www.yahoo.com/";
 	// static String BASE_URL =
 	// "http://www.juventude.gov.pt/Paginas/default.aspx";
-	// static String BASE_URL = "http://www.fe.up.pt/";
+	//static String BASE_URL = "http://www.fe.up.pt/";
 	//static String BASE_URL = "http://en.wikipedia.org";
 	//static String BASE_URL = "http://www.ebay.com/";
 	//static String BASE_URL = "http://www.youtube.com/";
 	// static String BASE_URL = "http://store.steampowered.com/";
+	private String baseUrl = "";
 
-	/** keywords that identify search elements */
-	static String searchKeywords = "(\"q\"|query|search|pesq(uisa)*|procura(r)*|busca(dor)*)";
-
-	/** keywords that identify sort elements */
-	static String sortKeywords = "(sort|asc\\s|desc\\s)";
-
-	/** keywords that identify login elements */
-	static String loginKeywords = "(user(name)*|pass(word)*|email|(sign(ed)?(\\s|_)*(in|out)|log(ged)?(\\s|_)*(in|out)))";
-	/** keywords that identify elements that SHOULD NOT BE ACCESSED */
-	static String generalWordsToExclude = "(buy|sell|edit|delete|mailto|add\\sto\\scart)";
 	/** number of actions the crawler will execute before stopping */
-	static final int NUM_ACTIONS = 1;
+	static final int NUM_ACTIONS = 20;
 	/** number of redirects to the home page the crawler will do before stopping */
 	static final int NUM_ERRORS = 3;
 
@@ -73,8 +61,39 @@ public class WebsiteExplorer {
 	/** says if politeness delay is to be done (false if error occurs) */
 	private static boolean wait = true;
 
-	public static WebDriver driver = null;
+	private WebDriver driver = null;
 
+	public WebDriver getDriver(){
+		return driver;
+	}
+	public String getBaseUrl(){
+		return baseUrl;
+	}
+	
+	private static WebsiteExplorer instance = null;
+	
+	/**
+	 * Singleton enforcement.
+	 * @return WebsiteExplorer instance
+	 */
+	public static WebsiteExplorer getInstance(){
+		if(instance == null){
+			instance = new WebsiteExplorer();
+		}
+		return instance;
+	}
+	
+	/**
+	 * Initialize base url.
+	 * @param URL
+	 */
+	public static void initialize(String URL){
+		WebsiteExplorer.instance.baseUrl = URL;
+	}
+	
+	private WebsiteExplorer(){
+		driver = new HtmlUnitDriver();
+	}
 	/**
 	 * Checks crawling history to see if element e was visited in page with URL
 	 * p.
@@ -101,240 +120,6 @@ public class WebsiteExplorer {
 		return false;
 	}
 
-	/**
-	 * Searches page for all suitable anchor HTML elements.
-	 * 
-	 * @return list of suitable elements
-	 */
-	static List<WebElement> getLinks() {
-
-		List<WebElement> links, retList = new ArrayList<WebElement>();
-
-		Pattern allFileExtensions = Pattern
-				.compile(".*(\\.(css|js|bmp|gif|jpe?g"
-						+ "|png|tiff?|mid|mp2|mp3|mp4"
-						+ "|wav|avi|mov|mpeg|ram|m4v|pdf"
-						+ "|rm|smil|wmv|swf|wma|zip|rar|gz))$");
-
-		Pattern startWithSlash = Pattern.compile("(href=\"/.+\")");
-		Pattern matchesDomainAndSubdomain = Pattern
-				.compile("[^\\.\\/\\s]+\\.\\w+(?=\\/|$)");
-
-		Matcher m = matchesDomainAndSubdomain.matcher(BASE_URL);
-		String baseUrlDomainAndSubdomain = "";
-		if (m.find())
-			baseUrlDomainAndSubdomain = m.group();
-
-		// System.out.println("baseUrlDomainAndSubdomain: "
-		// + baseUrlDomainAndSubdomain);
-		// get all links that dont go out the website
-		links = driver.findElements(By.xpath("//a[@href]"));
-		for (WebElement e : links) {
-			String lower = e.toString().toLowerCase();
-
-			// link is visible, not a link to a file, and doesn't have login
-			// or general keywords
-			if (itPassesAllGeneralChecks(e)
-					&& !allFileExtensions.matcher(e.getAttribute("href")).matches()
-					&& !lower.matches(".*" + loginKeywords + ".*")) {
-				// verify if it belongs to the home page's domain and
-				// subdomain, or href starts with a '/', aka a subpage
-				m = matchesDomainAndSubdomain.matcher(lower);
-				String x = "";
-				if (m.find()) {
-					x = m.group();
-
-					if (baseUrlDomainAndSubdomain.equals(x)) {
-						retList.add(e);
-					}
-				} else if (startWithSlash.matcher(lower).find()) {
-					retList.add(e);
-				}
-			}
-		}
-
-		return retList;
-	}
-
-	/**
-	 * Searches page for all suitable input HTML elements.
-	 * 
-	 * @return list of suitable elements
-	 */
-	static List<WebElement> getTextFields() {
-		String annoyingAttributes = "(disabled|readonly)";
-
-		List<WebElement> text, retList = new ArrayList<WebElement>();
-		// get all form inputs
-		text = driver.findElements(By.xpath("//input[@type='text']"));
-		for (WebElement e : text) {
-			if (itPassesAllGeneralChecks(e)
-					&& !e.toString().toLowerCase()
-							.matches(".*" + loginKeywords + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")) {
-				retList.add(e);
-			}
-
-		}
-
-		// cover HTML5 types
-		text = driver.findElements(By.xpath("//input[@type='search']"));
-		for (WebElement e : text) {
-			if (itPassesAllGeneralChecks(e)
-					&& !e.toString().toLowerCase()
-							.matches(".*" + loginKeywords + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*"))
-				retList.add(e);
-		}
-
-		text = driver.findElements(By.xpath("//input[@type='number']"));
-		for (WebElement e : text) {
-			if (itPassesAllGeneralChecks(e)
-					&& !e.toString().toLowerCase()
-							.matches(".*" + loginKeywords + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*"))
-				retList.add(e);
-		}
-
-		// get all textareas
-		text = driver.findElements(By.tagName("textarea"));
-		for (WebElement e : text) {
-			if (itPassesAllGeneralChecks(e)
-					&& !e.toString().toLowerCase()
-							.matches(".*" + loginKeywords + ".*")
-					&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*"))
-				retList.add(e);
-		}
-
-		return retList;
-	}
-
-	/**
-	 * Does all checks that all elements have to respect (not visited, not
-	 * hidden, doesn't have keywords that no element should have)
-	 * 
-	 * @param e
-	 * @return
-	 */
-	static boolean itPassesAllGeneralChecks(WebElement e) {
-		return e.isDisplayed()
-				&& !isElementAlreadyVisited(currentPage, e)
-				&& !e.toString().toLowerCase()
-						.matches(".*" + generalWordsToExclude + ".*");
-	}
-
-	/**
-	 * Searches page for all suitable select HTML elements.
-	 * 
-	 * @return list of suitable elements
-	 */
-	static List<WebElement> getSelectFields() {
-
-		List<WebElement> text, retList = new ArrayList<WebElement>();
-
-		// get all textareas
-		text = driver.findElements(By.tagName("select"));
-		for (WebElement e : text) {
-			if (itPassesAllGeneralChecks(e))
-				retList.add(e);
-		}
-
-		return retList;
-	}
-
-	/**
-	 * Searches page for all suitable search-related HTML elements.
-	 * 
-	 * @return list of suitable elements
-	 */
-	static ArrayList<WebElement> getSearchFields() {
-		List<WebElement> textInputs = getTextFields();
-		// List<WebElement> selectInputs = getSelectFields(driver);
-		ArrayList<WebElement> searchInputs = new ArrayList<WebElement>();
-
-		Iterator<WebElement> it = textInputs.iterator();
-		while (it.hasNext()) {
-			WebElement e = it.next();
-			if (itPassesAllGeneralChecks(e)
-					&& e.toString().toLowerCase()
-							.matches(".*" + searchKeywords + ".*")) {
-				searchInputs.add(e);
-				it.remove();
-				break;
-			}
-		}
-		/*
-		 * it = selectInputs.iterator(); while (it.hasNext()) { WebElement e =
-		 * it.next(); for (String s : searchKeywords) { if
-		 * (e.toString().toLowerCase().matches(".*" + s + ".*")) {
-		 * searchInputs.add(e); it.remove(); break; } } }
-		 */
-		return searchInputs;
-	}
-
-	/**
-	 * Searches page for all suitable sorting-related HTML elements.
-	 * 
-	 * @param driver
-	 * @return list of suitable elements
-	 */
-	static ArrayList<WebElement> getSortFields() {
-		List<WebElement> selectInputs = getSelectFields();
-		ArrayList<WebElement> sortInputs = new ArrayList<WebElement>();
-
-		Iterator<WebElement> it = selectInputs.iterator();
-		while (it.hasNext()) {
-			WebElement e = it.next();
-			if (itPassesAllGeneralChecks(e)
-					&& e.toString().toLowerCase()
-							.matches(".*" + sortKeywords + ".*")) {
-				sortInputs.add(e);
-				it.remove();
-				break;
-			}
-		}
-		return sortInputs;
-	}
-
-	/**
-	 * Searches page for all suitable login-related HTML elements.
-	 * 
-	 * @param driver
-	 * @return
-	 */
-	static ArrayList<WebElement> getLoginFields() {
-		List<WebElement> textInputs = driver.findElements(By
-				.xpath("//input[@type='text']"));
-		ArrayList<WebElement> loginInputs = new ArrayList<WebElement>();
-
-		List<WebElement> text = driver.findElements(By
-				.xpath("//input[@type='password']"));
-		for (WebElement e : text) {
-			textInputs.add(e);
-		}
-
-		text = driver.findElements(By.xpath("//input[@type='email']"));
-		for (WebElement e : text) {
-			textInputs.add(e);
-		}
-
-		Iterator<WebElement> it = textInputs.iterator();
-		while (it.hasNext()) {
-			WebElement e = it.next();
-			if (itPassesAllGeneralChecks(e)
-					&& e.toString().toLowerCase()
-							.matches(".*" + loginKeywords + ".*")) {
-				loginInputs.add(e);
-				it.remove();
-				break;
-			}
-		}
-		return loginInputs;
-	}
 
 	// -------------------------------------------------------------------------
 	/**
@@ -343,34 +128,18 @@ public class WebsiteExplorer {
 	 * @param driver
 	 * @return random element
 	 */
-	static WebElement chooseNextElement() {
+	private static WebElement chooseNextElement() {
 		String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT", "LOGIN" };
 
-		// Find the text input element by its name
-		List<List<WebElement>> list = new ArrayList<List<WebElement>>();
-
-		// Get relevant elements
-		//list.add(getTextFields());
-		//list.add(getSelectFields());
-		//list.add(getLinks());
-		//list.add(getSearchFields());
-		//list.add(getSortFields());
-		list.add(getLoginFields());
+		List<ArrayList<WebElement>> list = WebElementOrganizer.setupElementList();
 
 		ArrayList<Integer> nonEmpties = new ArrayList<Integer>();
 		String type = "";
 
 		for (int i = 0; i < list.size(); ++i) {
-			// type = TYPES[i];
-			// System.out.println(i + ": " + type);
-
 			if (!list.get(i).isEmpty()) {
 				nonEmpties.add(i);
 				type += TYPES[i] + "|";
-				// for (WebElement e : list.get(i)) {
-				// System.out.println(e.toString());
-				// }
-
 			} 
 		}
 		System.out.println("non_empty: " + type);
@@ -419,7 +188,7 @@ public class WebsiteExplorer {
 	 */
 	static boolean isElementRelatedToLogin(WebElement e) {
 		return e.toString().toLowerCase()
-				.matches(".*" + loginKeywords + ".*");
+				.matches(".*" + GlobalConstants.loginKeywords + ".*");
 	}
 
 	/**
@@ -515,6 +284,7 @@ public class WebsiteExplorer {
 			// search for elements that dynamically submit forms
 			List<WebElement> dynamicSubmits = element.findElements(By
 					.xpath("//*[contains(@onclick,'submit')]"));
+			
 			if (dynamicSubmits.size() > 0) {
 				for (WebElement sub : dynamicSubmits)
 					System.out.println("DYN_SELECT:SUBMIT: " + sub.toString());
@@ -706,8 +476,9 @@ public class WebsiteExplorer {
 			e.printStackTrace();
 		}
 	}
-
-	public static void main(String[] args) {
+	
+	
+	public void exploreWebsite() {
 		int homeRedirections = 0;
 
 		// Create a new instance of the html unit driver
@@ -718,7 +489,7 @@ public class WebsiteExplorer {
 		// set logger config
 		java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
 				.setLevel(java.util.logging.Level.SEVERE);
-		driver.get(BASE_URL);
+		driver.get(baseUrl);
 
 		try {
 			System.setErr(new PrintStream(new File("err.txt")));
@@ -732,7 +503,7 @@ public class WebsiteExplorer {
 		}
 
 		// write 'open' action
-		String r = BASE_URL.replaceFirst(
+		String r = baseUrl.replaceFirst(
 				"/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
 		SeleniumTableRow row = new SeleniumTableRow("open", r, "EMPTY");
 		history.add(row);
@@ -748,7 +519,7 @@ public class WebsiteExplorer {
 
 			if (element == null) {
 				// if no element is found, go back to home page
-				driver.get(BASE_URL);
+				driver.get(baseUrl);
 				row = new SeleniumTableRow("open", r, "EMPTY");
 				history.add(row);
 				writeToHistoryFile(row, true);

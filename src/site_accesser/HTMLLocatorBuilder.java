@@ -66,6 +66,7 @@ public class HTMLLocatorBuilder {
 		if (e.getTagName().toLowerCase().equals("a")) {
 			String text = e.getText();
 			if (text != null) {
+				// if there's any white space
 				if (!text.matches("^\\s*$")) {
 					return "link=\""
 							+ text.replace("^\\s+", "").replace("\\s+$", "")
@@ -82,6 +83,7 @@ public class HTMLLocatorBuilder {
 			// identify link by text
 			String text = e.getText();
 			if (!text.isEmpty()) {
+				// if there's any white space
 				if (!text.matches("^\\s*$")) {
 					return "//a[contains(text(),\'"
 							+ text.replace("^\\s+", "").replace("\\s+$", "")
@@ -89,6 +91,7 @@ public class HTMLLocatorBuilder {
 				}
 			} else if (e.getAttribute("href") != null) {
 				String href = e.getAttribute("href");
+				// if absolute url (distinction done cuz of IE)
 				if (href.matches("^https?:\\/\\/.*")) {
 					return "//a[@href=" + href + ']';
 				} else {
@@ -134,6 +137,7 @@ public class HTMLLocatorBuilder {
 	}
 
 	private static String getCSSIdentifier(WebElement e) {
+		WebsiteExplorer we = WebsiteExplorer.getInstance();
 		String sub_path = getCSSSubPath(e);
 		WebElement current = e;
 		WebElement parent = current.findElement(By.xpath(".."));
@@ -149,7 +153,7 @@ public class HTMLLocatorBuilder {
 		}*/
 		
 		try{
-			while (!WebsiteExplorer.driver.findElement(By.cssSelector(sub_path))
+			while (!we.getDriver().findElement(By.cssSelector(sub_path))
 					.toString().equals(e.toString())
 					&& !current.getTagName().toLowerCase().equals("html")) {
 				sub_path = getCSSSubPath(current.findElement(By.xpath("..")))

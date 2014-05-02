@@ -12,8 +12,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.sun.jna.platform.win32.SetupApi;
-
 public class LogProcessor {
 	static DicTrie dictionary = new DicTrie();
 

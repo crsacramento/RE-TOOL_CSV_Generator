@@ -38,7 +38,7 @@ public class WebElementOrganizer {
 		 * 4 -> sort 
 		 * 5 -> login
 		 */
-		for(int i = 0; i != 5;++i)
+		for(int i = 0; i < 6;++i)
 			elemList.add(new ArrayList<WebElement>());
 		return elemList;
 	}
@@ -46,7 +46,6 @@ public class WebElementOrganizer {
 	private static ArrayList<ArrayList<WebElement>> distributeElementsOverTheLists(
 		List<WebElement> elementsToDistribute, 
 		ArrayList<ArrayList<WebElement>> masterElemList) {
-		String annoyingAttributes = "(disabled|readonly)";
 
 		//List<WebElement> text = fields;
 		ArrayList<ArrayList<WebElement>> retList = masterElemList;
@@ -61,9 +60,7 @@ public class WebElementOrganizer {
 		 */
 		// get all form inputs
 		for (WebElement e : elementsToDistribute) {
-			if (itPassesAllGeneralChecks(e) 
-				&& !e.toString().toLowerCase()
-							.matches(".*" + annoyingAttributes + ".*")){
+			if (itPassesAllGeneralChecks(e)){
 				// test for search
 				if(e.toString().toLowerCase()
 							.matches(".*" + GlobalConstants.searchKeywords + ".*")){
@@ -82,16 +79,19 @@ public class WebElementOrganizer {
 							// doesn't go into a pattern, check for element type
 							if(e.getTagName().toLowerCase().equals("textarea")
 								|| e.getTagName().toLowerCase()
-									.equals("input"))
+									.equals("input")){
 								// text input
 								retList.get(0).add(e);
+							}
 							else if(e.getTagName().toLowerCase()
-								.equals("select"))
+								.equals("select")){
 								// dropdown
 								retList.get(1).add(e);
-							else if(e.getTagName().toLowerCase().equals("a"))
+							}
+							else if(e.getTagName().toLowerCase().equals("a")){
 								// link
 								retList.get(2).add(e);
+							}
 						}
 					}
 				}

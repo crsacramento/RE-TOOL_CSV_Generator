@@ -1,19 +1,21 @@
 package site_accesser;
 
-public class Main {
-	// String BASE_URL = "https://www.amazon.com/";
-	// String BASE_URL = "https://www.yahoo.com/";
-	// String BASE_URL = "http://www.juventude.gov.pt/Paginas/default.aspx";
-	// String BASE_URL = "http://www.fe.up.pt/";
-	// String BASE_URL = "http://en.wikipedia.org";
-	// String BASE_URL = "http://www.ebay.com/";
-	// String BASE_URL = "http://www.youtube.com/";
+import org.openqa.selenium.WebElement;
 
-	
+public class Main {
 	public static void main(String[] args) {
-		String baseURL = "http://store.steampowered.com/";
-		WebsiteExplorer.initialize(baseURL);
+		String baseURL = "https://www.amazon.com/";
+		// String baseURL = "https://www.yahoo.com/";
+		// String baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
+		// String baseURL = "http://www.fe.up.pt/";
+		// String baseURL = "http://en.wikipedia.org";
+		// String baseURL = "http://www.ebay.com/";
+		// String baseURL = "http://www.youtube.com/";
+		// String baseURL = "http://store.steampowered.com/";
 		WebsiteExplorer we = WebsiteExplorer.getInstance();
-		we.exploreWebsite();
+		WebsiteExplorer.initialize(baseURL);
+		we.getDriver().get(baseURL);
+		WebElement e = we.chooseNextElement();
+		System.out.println("result: " + (e == null ? "null" : e.toString()));
 	}
 }

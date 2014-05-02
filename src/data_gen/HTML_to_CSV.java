@@ -42,7 +42,7 @@ public class HTML_to_CSV {
 		Document doc = null;
 		FileWriter outputFW = null;
 		String lineToWrite = "";
-		int lineNumber = 1;
+		//int lineNumber = 1;
 		
 		try {
 			//String dirName = file.getParentFile().toPath().toAbsolutePath().toString();
@@ -103,7 +103,7 @@ public class HTML_to_CSV {
 				}
 				
 				lineToWrite = "";
-				lineNumber++;
+				//lineNumber++;
 			}
 		}
 

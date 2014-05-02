@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.sql.Driver;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -38,7 +39,7 @@ public class WebsiteExplorer {
 	private String baseUrl = "";
 
 	/** number of actions the crawler will execute before stopping */
-	static final int NUM_ACTIONS = 20;
+	static final int NUM_ACTIONS = 30;
 	/** number of redirects to the home page the crawler will do before stopping */
 	static final int NUM_ERRORS = 3;
 
@@ -128,7 +129,7 @@ public class WebsiteExplorer {
 	 * @param driver
 	 * @return random element
 	 */
-	private static WebElement chooseNextElement() {
+	public static WebElement chooseNextElement() {
 		String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT", "LOGIN" };
 
 		List<ArrayList<WebElement>> list = WebElementOrganizer.setupElementList();
@@ -491,7 +492,7 @@ public class WebsiteExplorer {
 				.setLevel(java.util.logging.Level.SEVERE);
 		driver.get(baseUrl);
 
-		try {
+		/*try {
 			System.setErr(new PrintStream(new File("err.txt")));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
@@ -500,7 +501,7 @@ public class WebsiteExplorer {
 			System.setOut(new PrintStream(new File("out.txt")));
 		} catch (FileNotFoundException e1) {
 			e1.printStackTrace();
-		}
+		}*/
 
 		// write 'open' action
 		String r = baseUrl.replaceFirst(

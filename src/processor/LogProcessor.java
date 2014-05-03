@@ -15,8 +15,8 @@ import java.util.regex.Pattern;
 public class LogProcessor {
 	static DicTrie dictionary = new DicTrie();
 
-	static String imageKeywords = "(img)";
-	static String refineKeywords = "(refine)";
+	//static String imageKeywords = "(img)";
+	//static String refineKeywords = "(refine)";
 
 	static ArrayList<PatternMapEntry> patterns;
 
@@ -30,7 +30,7 @@ public class LogProcessor {
 				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)",
 				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link)"));
 		// login related patterns
-		patterns.add(new PatternMapEntry("username", "user(name)?", ""));
+		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?", ""));
 		patterns.add(new PatternMapEntry("password", "pass(word)?", ""));
 		patterns.add(new PatternMapEntry("verifyPassword",
 				"verify(\\s|_)?pass(word)?", "verify|pass(word)?"));
@@ -72,7 +72,7 @@ public class LogProcessor {
 		patterns.add(new PatternMapEntry("language", "lang", "lang"));
 		patterns.add(new PatternMapEntry("link", "link|a(\\.|\\[)|href",
 				"link|a\\s|href"));
-		patterns.add(new PatternMapEntry("input", "input|text", "input|text"));
+		patterns.add(new PatternMapEntry("input", "input", "input"));
 		patterns.add(new PatternMapEntry("clear", "clear", "clear"));
 	}
 
@@ -108,7 +108,8 @@ public class LogProcessor {
 		try {
 			while ((lineBuffer = in.readLine()) != null) {
 				line = processLine(lineBuffer);
-				output.write(lineBuffer + ";" + line + "\n");
+				//output.write(lineBuffer + ";" + line + "\n");
+				output.write(line + "\n");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -171,8 +172,8 @@ public class LogProcessor {
 	}
 
 	public static void main(String[] args) {
-		File file = new File(
-				"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
+		File file = new File(System.getProperty("user.dir")+File.separator+"history.csv"
+				//"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
 						//+ "crawler_histories\\portaldajuventude.csv");
 				//"H:\\Dropbox\\DISS\\"
 						//+ "traces\\selenium_traces\\merge.csv"

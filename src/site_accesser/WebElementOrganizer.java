@@ -16,12 +16,12 @@ public class WebElementOrganizer {
 	 * @param e
 	 * @return
 	 */
-	
+	 
 	static WebsiteExplorer we = WebsiteExplorer.getInstance();
 	
 	private static boolean itPassesAllGeneralChecks(WebElement e) {
 		return e.isDisplayed()
-				&& !WebsiteExplorer.isElementAlreadyVisited(WebsiteExplorer.currentPage, e)
+				&& !WebsiteExplorer.isElementAlreadyVisited(/*WebsiteExplorer.currentPage,*/ e)
 				&& !e.toString().toLowerCase()
 						.matches(".*" + GlobalConstants.generalWordsToExclude + ".*")
 				&& !e.toString().toLowerCase().matches(".*(disabled|readonly).*");

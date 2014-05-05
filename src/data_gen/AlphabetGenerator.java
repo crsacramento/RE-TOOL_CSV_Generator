@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class AlphabetGenerator {
 	private static HashMap<String, Integer> alphabet = new HashMap<String, Integer>();
 	private static HashMap<Integer, String> invertedAlphabet = new HashMap<Integer, String>();
-	private static int NUM_LINES = 10;
+	private static final int NUM_LINES = 10;
 
 	/**
 	 * Reads CSV file, fills alphabet hashmap with alphabet, writes line in

@@ -11,9 +11,9 @@ public class Main {
 		// String baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
 		// String baseURL = "http://www.fe.up.pt/";
 		// String baseURL = "http://en.wikipedia.org";
-		String baseURL = "http://www.ebay.com/";
+		// String baseURL = "http://www.ebay.com/";
 		// String baseURL = "http://www.youtube.com/";
-		// String baseURL = "http://store.steampowered.com/";
+		String baseURL = "http://store.steampowered.com/";
 		WebsiteExplorer we = WebsiteExplorer.getInstance();
 		WebsiteExplorer.initialize(baseURL);
 		//we.getDriver().get(baseURL);

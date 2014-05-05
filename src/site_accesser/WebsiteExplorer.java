@@ -5,13 +5,9 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.sql.Driver;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -19,8 +15,6 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
-
-import processor.LogProcessor;
 
 public class WebsiteExplorer {
 	/**
@@ -284,8 +278,8 @@ public class WebsiteExplorer {
 			history.add(row);
 			writeToHistoryFile(row, true);
 			// element.submit();
-			submit.get(0).click();
 			visitedElements.add(submit.get(0).toString());
+			submit.get(0).click();
 		} else {
 			// search for elements that dynamically submit forms
 			List<WebElement> dynamicSubmits = element.findElements(By
@@ -301,8 +295,8 @@ public class WebsiteExplorer {
 				history.add(row);
 				writeToHistoryFile(row, true);
 				// element.submit();
-				dynamicSubmits.get(0).click();
 				visitedElements.add(dynamicSubmits.get(0).toString());
+				dynamicSubmits.get(0).click();
 			}
 		}
 
@@ -369,20 +363,20 @@ public class WebsiteExplorer {
 				case "email":
 					e.clear();
 					int rand = (int) (Math.random() * (typedKeywords.length - 1));
-					e.sendKeys(typedKeywords[rand]);
 					row = new SeleniumTableRow("type",//e.toString(),
 							HTMLLocatorBuilder.getElementIdentifier(e),
 							typedKeywords[rand]);
 					System.out.println("row: " + row.toString());
 					history.add(row);
 					writeToHistoryFile(row, true);
+					e.sendKeys(typedKeywords[rand]);
 					break;
 				case "radio":
 				case "checkbox":
-					e.click();
 					row = new SeleniumTableRow("click",//e.toString(),
 							HTMLLocatorBuilder.getElementIdentifier(e), "EMPTY");
 					System.out.println("row: " + row.toString());
+					e.click();
 					history.add(row);
 					writeToHistoryFile(row, true);
 					break;
@@ -394,13 +388,13 @@ public class WebsiteExplorer {
 					int rand1 = (int) Math.round(Math.random()
 							* (options.size() - 1));
 					Select select = new Select(e);
-					select.selectByIndex(rand1);
 					row = new SeleniumTableRow("select",//e.toString(),
 							HTMLLocatorBuilder.getElementIdentifier(e),
 							"label=\"" + options.get(rand1).getText() + '"');
 					System.out.println("row: " + row.toString());
 					history.add(row);
 					writeToHistoryFile(row, true);
+					select.selectByIndex(rand1);
 				}
 			}
 		}

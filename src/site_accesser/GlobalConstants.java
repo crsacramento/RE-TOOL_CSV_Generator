@@ -8,5 +8,5 @@ public class GlobalConstants {
 	/** keywords that identify login elements */
 	public static final String loginKeywords = "(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)*(in|out)|log(ged)?(\\s|_)*(in|out)))";
 	/** keywords that identify elements that SHOULD NOT BE ACCESSED */
-	public static final String generalWordsToExclude = "(buy|sell|edit|delete|mailto|add\\sto\\scart)";
+	public static final String generalWordsToExclude = "(buy|sell|edit|delete|mailto|add\\sto\\scart|checkout)";
 }

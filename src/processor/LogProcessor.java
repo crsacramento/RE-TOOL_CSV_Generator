@@ -22,28 +22,28 @@ public class LogProcessor {
 
 	public static void defaultSetupPatternList() {
 		patterns = new ArrayList<PatternMapEntry>();
+		patterns.add(new PatternMapEntry("formSubmit", "submit",
+				"submit|input|nav|search|button|btn"));
 		// identify home page
 		patterns.add(new PatternMapEntry("home", "(home|main\\s?page|index)",
 				""));
 		// session start links
 		patterns.add(new PatternMapEntry("login",
 				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)",
-				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link)"));
+				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link|href)"));
 		// login related patterns
 		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?", ""));
 		patterns.add(new PatternMapEntry("password", "pass(word)?", ""));
 		patterns.add(new PatternMapEntry("verifyPassword",
 				"verify(\\s|_)?pass(word)?", "verify|pass(word)?"));
 		patterns.add(new PatternMapEntry("email", "e?mail", "e?mail"));
+		//patterns.add(new PatternMapEntry("searchResult", _identifyingRegex, _garageRemovalRegex));
 		patterns.add(new PatternMapEntry("search",
 				"\\sq\\s|query|search|pesq(uisa)?|procura(r)?|busca(dor)?",
 				"\\sq\\s|query|search|pesq(uisa)?|procura(r)?|busca(dor)?|input"));
 		patterns.add(new PatternMapEntry("sort", "sort|asc\\s|desc\\s",
 				"sort|asc\\s|desc\\s"));
-		patterns.add(new PatternMapEntry("button", "button|btn", "button|btn"));
 
-		patterns.add(new PatternMapEntry("formSubmit", "submit",
-				"submit|input|nav"));
 		patterns.add(new PatternMapEntry("imageLink", "img", "link|img"));
 		patterns.add(new PatternMapEntry("option", "option", "option"));
 		patterns.add(new PatternMapEntry("searchRefine", "refine", "refine|link"));
@@ -55,11 +55,11 @@ public class LogProcessor {
 		patterns.add(new PatternMapEntry("navigation", "\\s?nav\\s",
 				"\\s?nav\\s"));
 		// specific types of links (next,previous,first,last)
-		patterns.add(new PatternMapEntry("next", "link(.*)next", "link|next"));
-		patterns.add(new PatternMapEntry("previous", "link(.*)prev(ious)?",
-				"link|prev(ious)?"));
-		patterns.add(new PatternMapEntry("firstLink", "link(.*)first", "link|first"));
-		patterns.add(new PatternMapEntry("lastLink", "link(.*)last", "link|last"));
+		patterns.add(new PatternMapEntry("nextLink", "link(.*)next", "link|next|button|btn"));
+		patterns.add(new PatternMapEntry("previousLink", "link(.*)prev(ious)?",
+				"link|prev(ious)?|button|btn"));
+		patterns.add(new PatternMapEntry("firstLink", "link(.*)first", "link|first|button|btn"));
+		patterns.add(new PatternMapEntry("lastLink", "link(.*)last", "link|last|button|btn"));
 		// first/last name
 		patterns.add(new PatternMapEntry("firstName", "first(.*)name",
 				"name|first"));
@@ -69,9 +69,14 @@ public class LogProcessor {
 		//patterns.add(new PatternMapEntry("create", "add\\s|create\\s|new\\s",
 			//	"add|create|new|link"));
 
-		patterns.add(new PatternMapEntry("language", "lang", "lang"));
-		patterns.add(new PatternMapEntry("link", "link|a(\\.|\\[)|href",
-				"link|a\\s|href"));
+		patterns.add(new PatternMapEntry("languageLink", "lang", "lang|button|btn|link"));
+		patterns.add(new PatternMapEntry("buttonLink", "href.*(button|btn)", "href|button|btn|link"));
+		patterns.add(new PatternMapEntry("link", "link|href|button|btn",
+				"link|href|button|btn"));
+		patterns.add(new PatternMapEntry("button", "button|btn", "button|btn"));
+		
+		patterns.add(new PatternMapEntry("captchaInput", "captcha", "captcha|input"));
+		patterns.add(new PatternMapEntry("authInput", "auth", "auth|input"));
 		patterns.add(new PatternMapEntry("input", "input", "input"));
 		patterns.add(new PatternMapEntry("clear", "clear", "clear"));
 	}
@@ -160,6 +165,7 @@ public class LogProcessor {
 				//System.out.println("WORDS_AFTER_REMOVAL="+words+"\n");
 				if (!atLeastOne)
 					atLeastOne = true;
+				break;
 			}
 		}
 

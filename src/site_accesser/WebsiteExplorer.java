@@ -26,7 +26,7 @@ public class WebsiteExplorer {
 	/** number of actions the crawler will execute before stopping */
 	static final int NUM_ACTIONS = 30;
 	/** number of redirects to the home page the crawler will do before stopping */
-	static final int NUM_ERRORS = 3;
+	static final int NUM_ERRORS = 5;
 
 	/** words to insert in text input elements */
 	static String[] typedKeywords = { "curtains", "coffee", "phone", "shirt",
@@ -43,6 +43,9 @@ public class WebsiteExplorer {
 
 	/** index of current action */
 	private static int currAction = 0;
+
+	/** number of times explorer went back to home page */
+	int homeRedirections = 0;
 
 	/** says if politeness delay is to be done (false if error occurs) */
 	private static boolean wait = true;
@@ -98,13 +101,14 @@ public class WebsiteExplorer {
 		if (visitedElements.isEmpty())
 			return false;
 		else {
-			//Iterator<Entry<String, WebElement>> it = visitedElements.entrySet().iterator();
+			// Iterator<Entry<String, WebElement>> it =
+			// visitedElements.entrySet().iterator();
 			Iterator<String> it = visitedElements.iterator();
 			while (it.hasNext()) {
-				//Map.Entry<String, WebElement> pair = it.next();
+				// Map.Entry<String, WebElement> pair = it.next();
 				String pair = it.next();
-				if (//p.equals(pair.getKey().toString())&& 
-						e.toString().equals(pair))
+				if (// p.equals(pair.getKey().toString())&&
+				e.toString().equals(pair))
 					return true;
 			}
 		}
@@ -131,11 +135,11 @@ public class WebsiteExplorer {
 		for (int i = 0; i < list.size(); ++i) {
 			if (!list.get(i).isEmpty()) {
 				nonEmpties.add(i);
-				type += TYPES[i] + "="+list.get(i).size()+"|";
+				type += TYPES[i] + "=" + list.get(i).size() + "|";
 				allOptions += list.get(i).size();
 			}
 		}
-		System.out.println("non_empty: " + type + "total: "+allOptions);
+		System.out.println("non_empty: " + type + "total: " + allOptions);
 		if (nonEmpties.size() != 0) {
 			// Choose random element of random list
 			int rand1 = (int) Math.round(Math.random()
@@ -207,7 +211,7 @@ public class WebsiteExplorer {
 	private static void processAnchorElements(WebElement element) {
 		// link
 		SeleniumTableRow row = new SeleniumTableRow("clickAndWait",
-				//element.toString(),
+		// element.toString(),
 				HTMLLocatorBuilder.getElementIdentifier(element), "EMPTY");
 		history.add(row);
 		writeToHistoryFile(row, true);
@@ -231,37 +235,74 @@ public class WebsiteExplorer {
 		// clear inside text
 		element.clear();
 
-		// verify if input wants numbers or words
-		if (isInputElementExpectingNumbers(element)) {
-			// it wants an integer value
-			int rand1 = (int) Math.round(Math.random() * 100);
-			row = new SeleniumTableRow("type", 
-					//element.toString(), 
-					identifier,
-					"\"" + rand1 + "\"");
-			System.out.println("row: " + row.toString());
-			history.add(row);
-			writeToHistoryFile(row, true);
-			element.sendKeys(Integer.toString(rand1));
+		// if form doesn't submit dynamically, submit
+		// form manually
+		if (!element.toString().matches(".*onchange=\".*submit\".*")) {
+
+			// verify if input wants numbers or words
+			if (isInputElementExpectingNumbers(element)) {
+				// it wants an integer value
+				int rand1 = (int) Math.round(Math.random() * 100) + 1;
+				row = new SeleniumTableRow("type",
+				// element.toString(),
+						identifier, "\"" + rand1 + "\"");
+				System.out.println("row: " + row.toString());
+				history.add(row);
+				writeToHistoryFile(row, true);
+				
+				// interact
+				element.sendKeys(Integer.toString(rand1));
+			} else {
+				// insert random keyword
+				int rand1 = (int) Math.round(Math.random()
+						* (typedKeywords.length - 1));
+
+				row = new SeleniumTableRow("type",
+				// element.toString(),
+						identifier, "\"" + typedKeywords[rand1] + "\"");
+				System.out.println("row: " + row.toString());
+				history.add(row);
+				writeToHistoryFile(row, true);
+
+				// interact
+				element.sendKeys(typedKeywords[rand1]);
+			}
+
+			// add visited elements to list
+			visitedElements.add(element.toString());
+			handleFormSubmission(element);
 		} else {
-			// insert random keyword
-			int rand1 = (int) Math.round(Math.random()
-					* (typedKeywords.length - 1));
+			// add 'andWait' suffix to mark page change
 
-			row = new SeleniumTableRow("type", 
-					//element.toString(), 
-					identifier,
-					"\"" + typedKeywords[rand1] + "\"");
-			System.out.println("row: " + row.toString());
-			history.add(row);
-			writeToHistoryFile(row, true);
-			element.sendKeys(typedKeywords[rand1]);
+			if (isInputElementExpectingNumbers(element)) {
+				// it wants an integer value
+				int rand1 = (int) Math.round(Math.random() * 100) + 1;
+				row = new SeleniumTableRow("typeAndWait",
+				// element.toString(),
+						identifier, "\"" + rand1 + "\"");
+				System.out.println("row: " + row.toString());
+				history.add(row);
+				writeToHistoryFile(row, true);
+				element.sendKeys(Integer.toString(rand1));
+			} else {
+				// insert random keyword
+				int rand1 = (int) Math.round(Math.random()
+						* (typedKeywords.length - 1));
+
+				row = new SeleniumTableRow("typeAndWait",
+				// element.toString(),
+						identifier, "\"" + typedKeywords[rand1] + "\"");
+				System.out.println("row: " + row.toString());
+				history.add(row);
+				writeToHistoryFile(row, true);
+
+				// interact
+				element.sendKeys(typedKeywords[rand1]);
+
+				// add visited elements to list
+				visitedElements.add(element.toString());
+			}
 		}
-
-		// add visited elements to list
-		visitedElements.add(element.toString());
-
-		handleFormSubmission(element);
 	}
 
 	private static void handleFormSubmission(WebElement element) {
@@ -270,15 +311,17 @@ public class WebsiteExplorer {
 				.xpath("//input[@type='submit']"));
 		if (submit.size() > 0) {
 			for (WebElement sub : submit)
-				System.out.println("SELECT:SUBMIT: " + sub.toString());
-			SeleniumTableRow row = new SeleniumTableRow("clickAndWait", 
-					//submit.get(0).toString(),
+				System.out.println("SUBMIT: " + sub.toString());
+			SeleniumTableRow row = new SeleniumTableRow("clickAndWait",
+					// submit.get(0).toString(),
 					HTMLLocatorBuilder.getElementIdentifier(submit.get(0)),
 					"EMPTY");
 			history.add(row);
 			writeToHistoryFile(row, true);
 			// element.submit();
 			visitedElements.add(submit.get(0).toString());
+			
+			// interact
 			submit.get(0).click();
 		} else {
 			// search for elements that dynamically submit forms
@@ -287,15 +330,17 @@ public class WebsiteExplorer {
 
 			if (dynamicSubmits.size() > 0) {
 				for (WebElement sub : dynamicSubmits)
-					System.out.println("DYN_SELECT:SUBMIT: " + sub.toString());
+					System.out.println("DYN_SUBMIT: " + sub.toString());
 				SeleniumTableRow row = new SeleniumTableRow("clickAndWait",
-						//dynamicSubmits.get(0).toString(),
+				// dynamicSubmits.get(0).toString(),
 						HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits
 								.get(0)), "EMPTY");
 				history.add(row);
 				writeToHistoryFile(row, true);
 				// element.submit();
 				visitedElements.add(dynamicSubmits.get(0).toString());
+
+				// interact
 				dynamicSubmits.get(0).click();
 			}
 		}
@@ -331,18 +376,26 @@ public class WebsiteExplorer {
 				// it's a valid option
 				select.selectByIndex(rand1);
 
-				SeleniumTableRow row = new SeleniumTableRow("select",//element.toString(),
-						identifier, "label=\"" + options.get(rand1).getText()
-								+ '"');
-				System.out.println("row: " + row.toString());
-				history.add(row);
-				writeToHistoryFile(row, true);
-
-				if (!element.toString().matches(
-						".*onchange=\".*submit\".*")) {
+				if (!element.toString().matches(".*onchange=\".*submit\".*")) {
 					// if form doesn't submit dynamically, submit
 					// form manually
+					SeleniumTableRow row = new SeleniumTableRow("select",// element.toString(),
+							identifier, "label=\""
+									+ options.get(rand1).getText() + '"');
+					System.out.println("row: " + row.toString());
+					history.add(row);
+					writeToHistoryFile(row, true);
+
 					handleFormSubmission(element);
+				} else {
+					// add 'andWait' suffix to mark page change
+					SeleniumTableRow row = new SeleniumTableRow(
+							"selectAndWait",// element.toString(),
+							identifier, "label=\""
+									+ options.get(rand1).getText() + '"');
+					System.out.println("row: " + row.toString());
+					history.add(row);
+					writeToHistoryFile(row, true);
 				}
 				// add visited elements to list
 				visitedElements.add(element.toString());
@@ -351,55 +404,69 @@ public class WebsiteExplorer {
 	}
 
 	private static void processLogin(WebElement element) {
-		WebElement form = findParentForm(element);
-		List<WebElement> children = findInputChildNodes(form);
-		SeleniumTableRow row = null;
+		if (element.getTagName().toLowerCase().equals("input")
+				|| element.getTagName().toLowerCase().equals("select")) {
+			// login form, fill all form inputs
+			WebElement form = findParentForm(element);
+			List<WebElement> children = findInputChildNodes(form);
+			SeleniumTableRow row = null;
 
-		for (WebElement e : children) {
-			if (e.getTagName().toLowerCase().equals("input")) {
-				switch (e.getAttribute("type")) {
-				case "text":
-				case "password":
-				case "email":
-					e.clear();
-					int rand = (int) (Math.random() * (typedKeywords.length - 1));
-					row = new SeleniumTableRow("type",//e.toString(),
-							HTMLLocatorBuilder.getElementIdentifier(e),
-							typedKeywords[rand]);
-					System.out.println("row: " + row.toString());
-					history.add(row);
-					writeToHistoryFile(row, true);
-					e.sendKeys(typedKeywords[rand]);
-					break;
-				case "radio":
-				case "checkbox":
-					row = new SeleniumTableRow("click",//e.toString(),
-							HTMLLocatorBuilder.getElementIdentifier(e), "EMPTY");
-					System.out.println("row: " + row.toString());
-					e.click();
-					history.add(row);
-					writeToHistoryFile(row, true);
-					break;
-				}
-			} else if (e.getTagName().toLowerCase().equals("select")) {
-				List<WebElement> options = element.findElements(By
-						.xpath(".//option"));
-				if (options.size() != 0) {
-					int rand1 = (int) Math.round(Math.random()
-							* (options.size() - 1));
-					Select select = new Select(e);
-					row = new SeleniumTableRow("select",//e.toString(),
-							HTMLLocatorBuilder.getElementIdentifier(e),
-							"label=\"" + options.get(rand1).getText() + '"');
-					System.out.println("row: " + row.toString());
-					history.add(row);
-					writeToHistoryFile(row, true);
-					select.selectByIndex(rand1);
+			for (WebElement e : children) {
+				if (e.getTagName().toLowerCase().equals("input")) {
+					switch (e.getAttribute("type")) {
+					case "text":
+					case "password":
+					case "email":
+						int rand = (int) (Math.random() * (typedKeywords.length - 1));
+						row = new SeleniumTableRow(
+								"type",// e.toString(),
+								HTMLLocatorBuilder.getElementIdentifier(e),
+								typedKeywords[rand]);
+						System.out.println("row: " + row.toString());
+						history.add(row);
+						writeToHistoryFile(row, true);
+						// interact
+						e.clear();
+						e.sendKeys(typedKeywords[rand]);
+						break;
+					case "radio":
+					case "checkbox":
+						row = new SeleniumTableRow(
+								"click",// e.toString(),
+								HTMLLocatorBuilder.getElementIdentifier(e),
+								"EMPTY");
+						System.out.println("row: " + row.toString());
+						history.add(row);
+						writeToHistoryFile(row, true);
+						// interact
+						e.click();
+						break;
+					}
+				} else if (e.getTagName().toLowerCase().equals("select")) {
+					List<WebElement> options = element.findElements(By
+							.xpath(".//option"));
+					if (options.size() != 0) {
+						int rand1 = (int) Math.round(Math.random()
+								* (options.size() - 1));
+						Select select = new Select(e);
+						row = new SeleniumTableRow(
+								"select",// e.toString(),
+								HTMLLocatorBuilder.getElementIdentifier(e),
+								"label=\"" + options.get(rand1).getText() + '"');
+						System.out.println("row: " + row.toString());
+						history.add(row);
+						writeToHistoryFile(row, true);
+						// interact
+						select.selectByIndex(rand1);
+					}
 				}
 			}
-		}
 
-		handleFormSubmission(form);
+			handleFormSubmission(form);
+		} else {
+			// login link
+			processAnchorElements(element);
+		}
 	}
 
 	private static List<WebElement> findInputChildNodes(WebElement form) {
@@ -477,7 +544,6 @@ public class WebsiteExplorer {
 	}
 
 	public void exploreWebsite() {
-		int homeRedirections = 0;
 
 		// Create a new instance of the html unit driver
 		// Notice that the remainder of the code relies on the interface,
@@ -503,7 +569,7 @@ public class WebsiteExplorer {
 		// write 'open' action
 		String r = baseUrl.replaceFirst(
 				"/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
-		SeleniumTableRow row = new SeleniumTableRow("open",  r, "EMPTY");
+		SeleniumTableRow row = new SeleniumTableRow("open", r, "EMPTY");
 		history.add(row);
 		writeToHistoryFile(row, false);
 		System.out.println(history.get(0).toString());
@@ -517,23 +583,8 @@ public class WebsiteExplorer {
 
 			if (element == null) {
 				// if no element is found, go back to home page
-				driver.get(baseUrl);
-				row = new SeleniumTableRow("open", r, "EMPTY");
-				history.add(row);
-				writeToHistoryFile(row, true);
-				wait = false;
-				homeRedirections++;
-				currAction--;
-
-				if (homeRedirections > NUM_ERRORS) {
-					System.out.println("Maximum redirects, stopping.");
-					break;
-				} else {
-					System.out
-							.println("No suitable element found, going back to base URL. "
-									+ "Redirects left:"
-									+ (NUM_ERRORS - homeRedirections));
-				}
+				goBackToHome(r);
+				break;
 			} else {
 				System.out.println("ELEMENT: "
 						+ element.toString()
@@ -545,6 +596,7 @@ public class WebsiteExplorer {
 						+ HTMLLocatorBuilder.getElementIdentifier(element));
 				if (isElementRelatedToLogin(element)) {
 					processLogin(element);
+					goBackToHome(r);
 				}// dropdown list
 				else if (element.getTagName().toLowerCase().equals("select")) {
 					processSelectElement(element);
@@ -571,5 +623,24 @@ public class WebsiteExplorer {
 		}
 
 		driver.quit();
+	}
+
+	private void goBackToHome(String URL) {
+		driver.get(baseUrl);
+		SeleniumTableRow row = new SeleniumTableRow("open", URL, "EMPTY");
+		history.add(row);
+		writeToHistoryFile(row, true);
+		wait = false;
+		homeRedirections++;
+		currAction--;
+
+		if (homeRedirections > NUM_ERRORS) {
+			System.out.println("Maximum redirects, stopping.");
+		} else {
+			System.out
+					.println("No suitable element found, going back to base URL. "
+							+ "Redirects left:"
+							+ (NUM_ERRORS - homeRedirections));
+		}
 	}
 }

@@ -403,7 +403,7 @@ public class WebsiteExplorer {
 		}
 	}
 
-	private static void processLogin(WebElement element) {
+	private static boolean processLogin(WebElement element) {
 		if (element.getTagName().toLowerCase().equals("input")
 				|| element.getTagName().toLowerCase().equals("select")) {
 			// login form, fill all form inputs
@@ -463,9 +463,11 @@ public class WebsiteExplorer {
 			}
 
 			handleFormSubmission(form);
+			return true;
 		} else {
 			// login link
 			processAnchorElements(element);
+			return false;
 		}
 	}
 
@@ -595,8 +597,9 @@ public class WebsiteExplorer {
 				System.out.println("LOCATOR:"
 						+ HTMLLocatorBuilder.getElementIdentifier(element));
 				if (isElementRelatedToLogin(element)) {
-					processLogin(element);
-					goBackToHome(r);
+					boolean processedLogin = processLogin(element);
+					if(processedLogin)
+						goBackToHome(r);
 				}// dropdown list
 				else if (element.getTagName().toLowerCase().equals("select")) {
 					processSelectElement(element);
@@ -609,7 +612,7 @@ public class WebsiteExplorer {
 				if (wait) {
 					// politeness delay
 					try {
-						TimeUnit.MILLISECONDS.sleep(500);
+						TimeUnit.MILLISECONDS.sleep(750);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}

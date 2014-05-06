@@ -15,68 +15,81 @@ import java.util.regex.Pattern;
 public class LogProcessor {
 	static DicTrie dictionary = new DicTrie();
 
-	//static String imageKeywords = "(img)";
-	//static String refineKeywords = "(refine)";
+	// static String imageKeywords = "(img)";
+	// static String refineKeywords = "(refine)";
 
 	static ArrayList<PatternMapEntry> patterns;
 
 	public static void defaultSetupPatternList() {
 		patterns = new ArrayList<PatternMapEntry>();
-		patterns.add(new PatternMapEntry("formSubmit", "submit",
+	
+		patterns.add(new PatternMapEntry("submit", "submit",
 				"submit|input|nav|search|button|btn"));
-		// identify home page
-		patterns.add(new PatternMapEntry("home", "(home|main\\s?page|index)",
-				""));
+		
 		// session start links
 		patterns.add(new PatternMapEntry("login",
 				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)",
-				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link|href)"));
+				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link|href|home)"));
 		// login related patterns
-		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?", ""));
+		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?",
+				""));
 		patterns.add(new PatternMapEntry("password", "pass(word)?", ""));
 		patterns.add(new PatternMapEntry("verifyPassword",
 				"verify(\\s|_)?pass(word)?", "verify|pass(word)?"));
 		patterns.add(new PatternMapEntry("email", "e?mail", "e?mail"));
-		//patterns.add(new PatternMapEntry("searchResult", _identifyingRegex, _garageRemovalRegex));
-		patterns.add(new PatternMapEntry("search",
-				"\\sq\\s|query|search|pesq(uisa)?|procura(r)?|busca(dor)?",
-				"\\sq\\s|query|search|pesq(uisa)?|procura(r)?|busca(dor)?|input"));
-		patterns.add(new PatternMapEntry("sort", "sort|asc\\s|desc\\s",
-				"sort|asc\\s|desc\\s"));
-
+		
+		// identify home page
+		patterns.add(new PatternMapEntry("homeLink",
+				"(home|main\\s?page|index|logo)",
+				"home|main\\s?page|index|logo|sort"));
 		patterns.add(new PatternMapEntry("imageLink", "img", "link|img"));
+		patterns.add(new PatternMapEntry("searchRefineLink", "refine",
+				"refine|link"));
+		patterns.add(new PatternMapEntry("navLink", "\\s?nav\\s",
+				"\\s?nav\\s"));
+		// specific types of links (next,previous,first,last)
+		patterns.add(new PatternMapEntry("nextLink", "link(.*)next",
+				"link|next|button|btn"));
+		patterns.add(new PatternMapEntry("previousLink", "link(.*)prev(ious)?",
+				"link|prev(ious)?|button|btn"));
+		patterns.add(new PatternMapEntry("firstLink", "link(.*)first",
+				"link|first|button|btn"));
+		patterns.add(new PatternMapEntry("lastLink", "link(.*)last",
+				"link|last|button|btn"));
+		patterns.add(new PatternMapEntry("languageLink", "lang",
+				"lang|button|btn|link"));
+		patterns.add(new PatternMapEntry("buttonLink", "href.*(button|btn)",
+				"href|button|btn|link"));
+		patterns.add(new PatternMapEntry("link", "link|href|button|btn",
+				"link|href|button|btn|sort|search"));		
+		patterns.add(new PatternMapEntry("searchResultLink",
+				"search.*result(.*row)?", "search|result|href|link|sort"));
 		patterns.add(new PatternMapEntry("option", "option", "option"));
-		patterns.add(new PatternMapEntry("searchRefine", "refine", "refine|link"));
+
 		// mostly related to 'click' actions
 		patterns.add(new PatternMapEntry("checkbox", "checkbox",
 				"input|nav|checkbox"));
 		patterns.add(new PatternMapEntry("collapse", "collapse",
 				"collapse|button|btn"));
-		patterns.add(new PatternMapEntry("navigation", "\\s?nav\\s",
-				"\\s?nav\\s"));
-		// specific types of links (next,previous,first,last)
-		patterns.add(new PatternMapEntry("nextLink", "link(.*)next", "link|next|button|btn"));
-		patterns.add(new PatternMapEntry("previousLink", "link(.*)prev(ious)?",
-				"link|prev(ious)?|button|btn"));
-		patterns.add(new PatternMapEntry("firstLink", "link(.*)first", "link|first|button|btn"));
-		patterns.add(new PatternMapEntry("lastLink", "link(.*)last", "link|last|button|btn"));
 		// first/last name
 		patterns.add(new PatternMapEntry("firstName", "first(.*)name",
 				"name|first"));
 		patterns.add(new PatternMapEntry("lastName", "last(.*)name",
 				"name|last"));
-		// CRUD ops
-		//patterns.add(new PatternMapEntry("create", "add\\s|create\\s|new\\s",
-			//	"add|create|new|link"));
 
-		patterns.add(new PatternMapEntry("languageLink", "lang", "lang|button|btn|link"));
-		patterns.add(new PatternMapEntry("buttonLink", "href.*(button|btn)", "href|button|btn|link"));
-		patterns.add(new PatternMapEntry("link", "link|href|button|btn",
-				"link|href|button|btn"));
+		patterns.add(new PatternMapEntry("sort", "sort|asc\\s|desc\\s",
+				"sort|asc\\s|desc\\s"));
+		patterns.add(new PatternMapEntry("search",
+				"\\sq\\s|query|qry|search|pesq(uisa)?|procura(r)?|busca(dor)?",
+				"\\sq\\s|query|qry|search|pesq(uisa)?|procura(r)?|busca(dor)?|input"));
 		patterns.add(new PatternMapEntry("button", "button|btn", "button|btn"));
-		
-		patterns.add(new PatternMapEntry("captchaInput", "captcha", "captcha|input"));
+
+		patterns.add(new PatternMapEntry("captchaInput", "captcha",
+				"captcha|input"));
 		patterns.add(new PatternMapEntry("authInput", "auth", "auth|input"));
+		patterns.add(new PatternMapEntry("numberInput",
+				"number|price|quantity|qty\\s|zip\\s?code",
+				"number|price|quantity|qty\\s|zip\\s?code|input"));
 		patterns.add(new PatternMapEntry("input", "input", "input"));
 		patterns.add(new PatternMapEntry("clear", "clear", "clear"));
 	}
@@ -109,11 +122,12 @@ public class LogProcessor {
 
 		String lineBuffer = "";
 		String line = "";
-
+//int lineNum = 1;
 		try {
 			while ((lineBuffer = in.readLine()) != null) {
+	//			System.out.println(lineNum++);
 				line = processLine(lineBuffer);
-				//output.write(lineBuffer + ";" + line + "\n");
+				// output.write(lineBuffer + ";" + line + "\n");
 				output.write(line + "\n");
 			}
 		} catch (IOException e) {
@@ -151,7 +165,7 @@ public class LogProcessor {
 				words += org.apache.commons.lang3.StringUtils
 						.stripAccents(matcher.group().toLowerCase()) + " ";
 		}
-		//System.out.println("ORIGINAL_LINE="+words);
+		// System.out.println("ORIGINAL_LINE="+words);
 		// process all patterns
 		for (PatternMapEntry p : patterns) {
 			if (words.matches(".*(" + p.getIdentifyingRegex() + ").*")) {
@@ -159,10 +173,10 @@ public class LogProcessor {
 				line += action
 						+ Character.toUpperCase(p.getPatternName().charAt(0))
 						+ p.getPatternName().substring(1) + " ";
-				//System.out.println("LINE="+line);
-				words = words.replaceAll("(" + p.getGarbageRemovalRegex()
-						+ ")", " ");
-				//System.out.println("WORDS_AFTER_REMOVAL="+words+"\n");
+				// System.out.println("LINE="+line);
+				words = words.replaceAll(
+						"(" + p.getGarbageRemovalRegex() + ")", " ");
+				//System.out.println("WORDS_AFTER_REMOVAL="+words);
 				if (!atLeastOne)
 					atLeastOne = true;
 				break;
@@ -178,12 +192,13 @@ public class LogProcessor {
 	}
 
 	public static void main(String[] args) {
-		File file = new File(System.getProperty("user.dir")+File.separator+"history.csv"
-				//"C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
-						//+ "crawler_histories\\portaldajuventude.csv");
-				//"H:\\Dropbox\\DISS\\"
-						//+ "traces\\selenium_traces\\merge.csv"
-				);
+		File file = new File(System.getProperty("user.dir") + File.separator
+				+ "history.csv"
+		// "C:\\Users\\gekka_000\\workspace\\re-tool_continued\\history.csv"
+		// + "crawler_histories\\portaldajuventude.csv");
+		// "H:\\Dropbox\\DISS\\"
+		// + "traces\\selenium_traces\\merge.csv"
+		);
 		if (!file.isDirectory()
 				&& !file.getAbsolutePath().matches("(.)*processed(.)*")) {
 			LogProcessor.processFile(file.getAbsolutePath());

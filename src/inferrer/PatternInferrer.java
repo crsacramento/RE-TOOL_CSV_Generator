@@ -99,19 +99,22 @@ public class PatternInferrer {
 				.entrySet().iterator();
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<Integer>> entry = it.next();
-			PatternRegister.startPattern(entry.getKey().split("_")[0]);
-			
+			String patternName = entry.getKey().split("_")[0];
+			int number = Integer.parseInt(entry.getKey().split("_")[1]);
+			PatternRegister.startPattern(patternName, number);
+
 			String[] line = null;
-			int start =  entry.getValue().get(0);
-			int size =entry.getValue().size(); 
-			
+			int start = entry.getValue().get(0);
+			int size = entry.getValue().size();
+
 			if (size > 1)
-				line = Filesystem.getLinesInFile("history.csv",start,
-						entry.getValue().get(entry.getValue().size() - 1));
-			else line = Filesystem.getLinesInFile("history.csv", start);
-			
+				line = Filesystem.getLinesInFile("history.csv", start, entry
+						.getValue().get(entry.getValue().size() - 1));
+			else
+				line = Filesystem.getLinesInFile("history.csv", start);
+
 			for (int i = 0; i < line.length; ++i) {
-				if(line[i] == null)
+				if (line[i] == null)
 					continue;
 				String[] splits = line[i].split("\t");
 				PatternRegister.enterPatternContent(splits[0], splits[1],
@@ -119,7 +122,7 @@ public class PatternInferrer {
 			}
 			PatternRegister.closePattern();
 		}
-		PatternRegister.endPatternRegister();
+		PatternRegister.endPatternRegister(patternIndex + 1);
 	}
 
 	private static void updateCurrentState() {
@@ -188,20 +191,18 @@ public class PatternInferrer {
 			alreadyWroteOnThisLine = false;
 	}
 
-	private static boolean matchLogin(ArrayList<String> words) {
-		return words.get(0).toLowerCase().matches(".*login.*")
-				|| words.get(0).toLowerCase().matches(".*user.*")
-				|| words.get(0).toLowerCase().matches(".*email.*")
-				|| words.get(0).toLowerCase().matches(".*password.*")
-				|| words.get(0).toLowerCase().matches(".*auth.*")
-				|| words.get(0).toLowerCase().matches(".*captcha.*");
-	}
-
-	private static boolean matchInput(ArrayList<String> words) {
-		return words.get(0).toLowerCase().matches(".*input.*");
-	}
-
 	private static void processLink(ArrayList<String> words, int lineNum) {
+		// check if trailing sort or search
+		if (firstIndex == 2 && secondIndex == 0) {
+			// sort without submit is still valid
+			patternsFound.put("SORT_" + patternIndex, lines);
+			patternIndex++;
+		} else if (firstIndex == 3 && secondIndex == 0) {
+			// search without submit is still valid
+			patternsFound.put("SEARCH_" + patternIndex, lines);
+			patternIndex++;
+		}
+
 		System.out.println(lineNum + ": CALL");
 		ArrayList<Integer> a = new ArrayList<Integer>();
 		a.add(lineNum);
@@ -225,6 +226,13 @@ public class PatternInferrer {
 	}
 
 	private static void processSearch(ArrayList<String> words, int lineNum) {
+		// check if trailing sort or search
+		if (firstIndex == 2 && secondIndex == 0) {
+			// sort without submit is still valid
+			patternsFound.put("SORT_" + patternIndex, lines);
+			patternIndex++;
+		}
+
 		if (matchSubmit(words)) {
 			if (firstIndex == 3) {
 				if (secondIndex == 0) {
@@ -257,6 +265,13 @@ public class PatternInferrer {
 	}
 
 	private static void processSort(ArrayList<String> words, int lineNum) {
+		// check if trailing sort or search
+		if (firstIndex == 3 && secondIndex == 0) {
+			// search without submit is still valid
+			patternsFound.put("SEARCH_" + patternIndex, lines);
+			patternIndex++;
+		}
+
 		if (matchSubmit(words)) {
 			if (firstIndex == 2) {
 				if (secondIndex == 0) {
@@ -290,6 +305,17 @@ public class PatternInferrer {
 	}
 
 	private static void processInput(ArrayList<String> words, int lineNum) {
+		// check if trailing sort or search
+		if (firstIndex == 2 && secondIndex == 0) {
+			// sort without submit is still valid
+			patternsFound.put("SORT_" + patternIndex, lines);
+			patternIndex++;
+		} else if (firstIndex == 3 && secondIndex == 0) {
+			// search without submit is still valid
+			patternsFound.put("SEARCH_" + patternIndex, lines);
+			patternIndex++;
+		}
+
 		if (matchSubmit(words)) {
 			if (firstIndex == 1) {
 				if (secondIndex == 0) {
@@ -322,6 +348,17 @@ public class PatternInferrer {
 	}
 
 	private static void processLogin(ArrayList<String> words, int lineNum) {
+		// check if trailing sort or search
+		if (firstIndex == 2 && secondIndex == 0) {
+			// sort without submit is still valid
+			patternsFound.put("SORT_" + patternIndex, lines);
+			patternIndex++;
+		} else if (firstIndex == 3 && secondIndex == 0) {
+			// search without submit is still valid
+			patternsFound.put("SEARCH_" + patternIndex, lines);
+			patternIndex++;
+		}
+
 		// "LOGIN","LOGIN_USER","LOGIN_PASS","LOGIN_USER_PASS","LOGIN_USER_PASS_SUBMIT"
 		if (matchSubmit(words)) {
 			if (firstIndex == 0) {
@@ -425,6 +462,19 @@ public class PatternInferrer {
 		return (words.size() == 1 ? false : words.get(0).toLowerCase()
 				.matches(".*link.*")
 				&& words.get(1).toLowerCase().equals("pagechange"));
+	}
+	
+	private static boolean matchLogin(ArrayList<String> words) {
+		return words.get(0).toLowerCase().matches(".*login.*")
+				|| words.get(0).toLowerCase().matches(".*user.*")
+				|| words.get(0).toLowerCase().matches(".*email.*")
+				|| words.get(0).toLowerCase().matches(".*password.*")
+				|| words.get(0).toLowerCase().matches(".*auth.*")
+				|| words.get(0).toLowerCase().matches(".*captcha.*");
+	}
+
+	private static boolean matchInput(ArrayList<String> words) {
+		return words.get(0).toLowerCase().matches(".*input.*");
 	}
 
 	public static void main(String[] args) {

@@ -13,8 +13,6 @@ public class PatternRegister {
 
 	// If it is Login/Sort/MasterDetail/Search/Menu
 	String patternType;
-	// Number increments with every pattern
-	static int number = 1;
 
 	public PatternRegister() {
 		super();
@@ -51,7 +49,7 @@ public class PatternRegister {
 
 	}
 
-	public static void startPattern(String patternType) {
+	public static void startPattern(String patternType, int number) {
 		File file = new File(System.getProperty("user.dir")
 				+ File.separatorChar + "patterns.paradigm");
 
@@ -81,8 +79,6 @@ public class PatternRegister {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		number += 1;
 	}
 
 	public static void closePattern() {
@@ -120,7 +116,7 @@ public class PatternRegister {
 		}
 	}
 
-	public static void endPatternRegister() {
+	public static void endPatternRegister(int number) {
 
 		File file = new File(System.getProperty("user.dir")
 				+ File.separatorChar + "patterns.paradigm");

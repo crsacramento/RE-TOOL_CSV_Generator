@@ -9,16 +9,22 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import file_utilities.Filesystem;
+import inferrer.PatternRegister;
+
 public class PatternInferrer {
 	private static final String[] LOGIN_STATES = { "LOGIN", "LOGIN_USER",
-			"LOGIN_USER_PASS", "LOGIN_USER_PASS_SUBMIT" };
+			"LOGIN_PASS", "LOGIN_USER_PASS", "LOGIN_USER_PASS_SUBMIT" };
 	private static final String[] INPUT_STATES = { "INPUT", "INPUT_SUBMIT" };
 	private static final String[] SORT_STATES = { "SORT", "SORT_SUBMIT" };
 	private static final String[] SEARCH_STATES = { "SEARCH", "SEARCH_SUBMIT" };
-	// private static final String[] CALL_STATES = { "CALL" };
 	private static final String[][] STATE_ENUM = { LOGIN_STATES, INPUT_STATES,
 			SORT_STATES, SEARCH_STATES };
 
@@ -26,10 +32,17 @@ public class PatternInferrer {
 	private static int secondIndex = -1;
 	private static String currentState = "NONE";
 	private static FileWriter output = null;
-
 	private static ArrayList<Integer> lines = new ArrayList<Integer>();
+	private static boolean alreadyWroteOnThisLine = false;
+	private static int patternIndex = 1;
+	private static LinkedHashMap<String, ArrayList<Integer>> patternsFound = new LinkedHashMap<String, ArrayList<Integer>>();
 
 	public static void startInferringProcess() {
+		/*
+		 * try { System.setOut(new PrintStream(new File("out_p.txt"))); } catch
+		 * (FileNotFoundException e1) { e1.printStackTrace(); }
+		 */
+
 		// open processed file
 		BufferedReader in = null;
 		File file = new File("history.csv.processed");
@@ -42,8 +55,10 @@ public class PatternInferrer {
 		}
 
 		// open alphabet file
-		
-		File actualOutputFile = new File(file.getName() + ".patterns");
+
+		File actualOutputFile = new File(System.getProperty("user.dir")
+				+ File.separatorChar + "patterns.paradigm");
+		;
 
 		try {
 			output = new FileWriter(actualOutputFile);
@@ -52,19 +67,22 @@ public class PatternInferrer {
 		}
 
 		String lineBuffer = "";
-		//String line = "";
+		// String line = "";
 		int lineNum = 1;
 		try {
 			while ((lineBuffer = in.readLine()) != null) {
 				processLine(lineBuffer, lineNum);
 				lineNum++;
-				// output.write(lineBuffer + ";" + line + "\n");
-				// output.write(line + "\n");
+				// System.out.println(lineBuffer + ";" + line );
+				// System.out.println(line );
 				// updateCurrentState();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+
+		// write to file
+		writeParadigmFile(output);
 
 		// close the streams
 		try {
@@ -75,8 +93,37 @@ public class PatternInferrer {
 		}
 	}
 
+	private static void writeParadigmFile(FileWriter output) {
+		PatternRegister.initializePatternRegister();
+		Iterator<Entry<String, ArrayList<Integer>>> it = patternsFound
+				.entrySet().iterator();
+		while (it.hasNext()) {
+			Map.Entry<String, ArrayList<Integer>> entry = it.next();
+			PatternRegister.startPattern(entry.getKey().split("_")[0]);
+			
+			String[] line = null;
+			int start =  entry.getValue().get(0);
+			int size =entry.getValue().size(); 
+			
+			if (size > 1)
+				line = Filesystem.getLinesInFile("history.csv",start,
+						entry.getValue().get(entry.getValue().size() - 1));
+			else line = Filesystem.getLinesInFile("history.csv", start);
+			
+			for (int i = 0; i < line.length; ++i) {
+				if(line[i] == null)
+					continue;
+				String[] splits = line[i].split("\t");
+				PatternRegister.enterPatternContent(splits[0], splits[1],
+						splits[2]);
+			}
+			PatternRegister.closePattern();
+		}
+		PatternRegister.endPatternRegister();
+	}
+
 	private static void updateCurrentState() {
-		if (firstIndex > 0 && secondIndex > 0)
+		if (firstIndex >= 0 && secondIndex >= 0)
 			currentState = STATE_ENUM[firstIndex][secondIndex];
 		else
 			currentState = "NONE";
@@ -90,6 +137,10 @@ public class PatternInferrer {
 		while (matcher.find()) {
 			words.add(matcher.group());
 		}
+
+		String line = "";
+		String word = "";
+
 		// { LOGIN_STATES, INPUT_STATES, SORT_STATES, SEARCH_STATES };
 		if (matchLink(words)) {
 			processLink(words, lineNum);
@@ -119,13 +170,31 @@ public class PatternInferrer {
 			processInput(words, lineNum);
 		} else if (matchLogin(words)) {
 			processLogin(words, lineNum);
+		} else {
+			resetStates();
 		}
+		updateCurrentState();
+		if (!alreadyWroteOnThisLine) {
+			line = "";
+			word = "";
+			if (lines.size() > 0)
+				for (int i : lines)
+					line += i + " ";
+			for (String i : words)
+				word += i + " ";
+			System.out.println(lineNum + ": words:" + word + "|" + currentState
+					+ (!line.isEmpty() ? "|lines: " + line : ""));
+		} else
+			alreadyWroteOnThisLine = false;
 	}
 
 	private static boolean matchLogin(ArrayList<String> words) {
 		return words.get(0).toLowerCase().matches(".*login.*")
 				|| words.get(0).toLowerCase().matches(".*user.*")
-				|| words.get(0).toLowerCase().matches(".*email.*");
+				|| words.get(0).toLowerCase().matches(".*email.*")
+				|| words.get(0).toLowerCase().matches(".*password.*")
+				|| words.get(0).toLowerCase().matches(".*auth.*")
+				|| words.get(0).toLowerCase().matches(".*captcha.*");
 	}
 
 	private static boolean matchInput(ArrayList<String> words) {
@@ -133,12 +202,12 @@ public class PatternInferrer {
 	}
 
 	private static void processLink(ArrayList<String> words, int lineNum) {
-		try {
-			output.write(lineNum + ": CALL"+"\n");
-		} catch (IOException e) {
-			//  Auto-generated catch block
-			e.printStackTrace();
-		}
+		System.out.println(lineNum + ": CALL");
+		ArrayList<Integer> a = new ArrayList<Integer>();
+		a.add(lineNum);
+		patternsFound.put("CALL_" + patternIndex, a);
+		patternIndex++;
+		alreadyWroteOnThisLine = true;
 		resetStates();
 	}
 
@@ -167,35 +236,22 @@ public class PatternInferrer {
 					String line = "";
 					for (int i : lines)
 						line += i + " ";
-					try {
-						output.write(lineNum + ": " + currentState + "|lines: "
-								+ line+"\n");
-					} catch (IOException e) {
-						//  Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					System.out.println(lineNum + ": " + currentState
+							+ "|lines: " + line);
+					patternsFound.put("SEARCH_" + patternIndex, lines);
+					patternIndex++;
+					alreadyWroteOnThisLine = true;
 					resetStates();
 				}
 			} else {
-				try {
-					output.write(lineNum +"|invalid state: expected 3 got "
-							+ firstIndex+"\n");
-				} catch (IOException e) {
-					//  Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println(lineNum + "|invalid state: expected 3 got "
+						+ firstIndex);
 			}
 		} else if (matchSearch(words)) {
 			lines.add(lineNum);
 			setStates(3, 0);
 		} else {
-			try {
-				output.write(lineNum +" SEARCH:error invalid input"+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.out.println("SEARCH:error invalid input");
 			resetStates();
 		}
 	}
@@ -212,40 +268,23 @@ public class PatternInferrer {
 					String line = "";
 					for (int i : lines)
 						line += i + " ";
-					try {
-						output.write(lineNum + ": " + currentState
-								+ "|lines:" + line+"\n");
-					} catch (IOException e) {
-						//  Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					System.out.println(lineNum + ": " + currentState
+							+ "|lines:" + line);
+					patternsFound.put("SORT_" + patternIndex, lines);
+					patternIndex++;
+					alreadyWroteOnThisLine = true;
 					resetStates();
 				}
 			} else {
-				try {
-					output.write(lineNum +" invalid state: expected 2 got "
-							+ firstIndex+"\n");
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				System.out.println("SORT: invalid state: expected 2 got "
+						+ firstIndex);
+
 			}
 		} else if (matchSort(words)) {
 			lines.add(lineNum);
 			setStates(2, 0);
-			try {
-				output.write(lineNum + ": " + currentState+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else {
-			try {
-				output.write(lineNum +" SORT:error invalid input"+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.out.println("SORT:error invalid input");
 			resetStates();
 		}
 	}
@@ -262,52 +301,32 @@ public class PatternInferrer {
 					String line = "";
 					for (int i : lines)
 						line += i + " ";
-					try {
-						output.write(lineNum + ": " + currentState
-								+ "|lines: " + line+"\n");
-					} catch (IOException e) {
-						//  Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					System.out.println(lineNum + ": " + currentState
+							+ "|lines: " + line);
+					patternsFound.put("INPUT_" + patternIndex, lines);
+					patternIndex++;
+					alreadyWroteOnThisLine = true;
 					resetStates();
 				}
 			} else {
-				try {
-					output.write(lineNum +" invalid state: expected 2 got "
-							+ firstIndex+"\n");
-				} catch (IOException e) {
-					//  Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println("invalid state: expected 2 got "
+						+ firstIndex);
 			}
 		} else if (matchInput(words)) {
 			lines.add(lineNum);
 			setStates(1, 0);
-			try {
-				output.write(lineNum + ": " + currentState+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
 		} else {
-			try {
-				output.write(lineNum +"INPUT:error invalid input"+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
+			System.out.println("INPUT:error invalid input");
 			resetStates();
 		}
 	}
 
 	private static void processLogin(ArrayList<String> words, int lineNum) {
-		// { "LOGIN", "LOGIN_USER","LOGIN_USER_PASS", "LOGIN_USER_PASS_SUBMIT"
-		// };
+		// "LOGIN","LOGIN_USER","LOGIN_PASS","LOGIN_USER_PASS","LOGIN_USER_PASS_SUBMIT"
 		if (matchSubmit(words)) {
 			if (firstIndex == 0) {
 				// end of login
-				if (secondIndex == 2) {
+				if (secondIndex == 3) {
 					// valid
 					setStates(0, 3);
 					lines.add(lineNum);
@@ -316,34 +335,23 @@ public class PatternInferrer {
 					String line = "";
 					for (int i : lines)
 						line += i + " ";
-					try {
-						output.write(lineNum + ": " + currentState
-								+ "|lines:" + line+"\n");
-					} catch (IOException e) {
-						//  Auto-generated catch block
-						e.printStackTrace();
-					}
-
+					System.out.println(lineNum + ": " + currentState
+							+ "|lines:" + line);
+					patternsFound.put("LOGIN_" + patternIndex, lines);
+					patternIndex++;
+					alreadyWroteOnThisLine = true;
 					resetStates();
 				} else {
-					try {
-						output.write(lineNum +" LOGIN: premature submit"+"\n");
-					} catch (IOException e) {
-						//  Auto-generated catch block
-						e.printStackTrace();
-					}
+					System.out.println("LOGIN: premature submit ");
 					resetStates();
 				}
 			} else {
-				try {
-					output.write(lineNum +" invalid state: expected 2 got "
-							+ firstIndex+"\n");
-				} catch (IOException e) {
-					//  Auto-generated catch block
-					e.printStackTrace();
-				}
+				System.out.println("LOGIN: invalid state: expected 2 got "
+						+ firstIndex);
 			}
-		} else if (words.get(0).toLowerCase().matches(".*login.*")) {
+		} else if (words.get(0).toLowerCase().matches(".*login.*")
+				|| words.get(0).toLowerCase().matches(".*auth.*")
+				|| words.get(0).toLowerCase().matches(".*captcha.*")) {
 			if (firstIndex == 0) {
 				// doesnt alter states, can go in any state
 				lines.add(lineNum);
@@ -355,52 +363,53 @@ public class PatternInferrer {
 		} else if (words.get(0).toLowerCase().matches(".*user.*")
 				|| words.get(0).toLowerCase().matches(".*email.*")) {
 			if (firstIndex == 0) {
-				if(secondIndex == 0){// curr state LOGIN
-					setStates(0, 1);
+				if (secondIndex == 0) {// curr state LOGIN
+					setStates(0, 1);// LOGIN_USER
 					lines.add(lineNum);
-				}else if(secondIndex == 1){// curr state LOGIN_USER
+				} else if (secondIndex == 1) {// curr state LOGIN_USER
 					// duplicate writes on user, state keeps the same
 					lines.add(lineNum);
-				}else{// curr state LOGIN_USER_PASSWORD
-					// keep same state ( verify if this causes problems)
+				} else if (secondIndex == 2) {// curr state LOGIN_PASS
+					// has password, got user, change state
+					lines.add(lineNum);
+					setStates(0, 3);// LOGIN_USER_PASS
+				} else {// curr state LOGIN_USER_PASSWORD
+						// keep same state (TODO verify if this causes problems)
 					lines.add(lineNum);
 				}
-			}else{
-				try {
-					output.write(lineNum +" LOGIN: ERROR: reset|"+words.get(0));
-				} catch (IOException e) {
-					//  Auto-generated catch block
-					e.printStackTrace();
-				}
-				resetStates();
+			} else {
+				// starts login
+				lines.add(lineNum);
+				setStates(0, 1);
 			}
-		} else if (words.get(0).toLowerCase().matches(".*typePassword.*")){
+		} else if (words.get(0).toLowerCase().matches(".*password.*")) {
 			if (firstIndex == 0) {
-				if(secondIndex == 1){// curr state LOGIN_USER
+				if (secondIndex == 0) {// curr state LOGIN
 					lines.add(lineNum);
-					setStates(0, 2);
-				}else{
-					try {
-						output.write(lineNum + " premature password\n");
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					setStates(0, 2); // LOGIN_PASS
+				} else if (secondIndex == 1) {// curr state LOGIN_USER
+					lines.add(lineNum);
+					setStates(0, 3);
+				} else if (secondIndex == 2) {// curr state LOGIN_PASS
+					// duplicate writes on pass, state keeps the same
+					lines.add(lineNum);
+				} else {// curr state LOGIN_USER_PASS
+					lines.add(lineNum);
 				}
+			} else {
+				// starts login
+				lines.add(lineNum);
+				setStates(0, 2);// LOGIN_PASS
 			}
-		}
-		else {
-			try {
-				output.write(lineNum +" INPUT:error invalid input"+"\n");
-			} catch (IOException e) {
-				//  Auto-generated catch block
-				e.printStackTrace();
-			}
+		} else {
+			System.out.println("LOGIN:error invalid input");
 			resetStates();
 		}
 	}
 
 	private static boolean matchSubmit(ArrayList<String> words) {
-		return (words.size() == 1 ? false : words.get(0).toLowerCase().matches(".*submit.*")
+		return (words.size() == 1 ? false : words.get(0).toLowerCase()
+				.matches(".*submit.*")
 				&& words.get(1).toLowerCase().equals("pagechange"));
 	}
 
@@ -413,10 +422,11 @@ public class PatternInferrer {
 	}
 
 	private static boolean matchLink(ArrayList<String> words) {
-		return (words.size() == 1 ? false : words.get(0).toLowerCase().matches(".*link.*")
+		return (words.size() == 1 ? false : words.get(0).toLowerCase()
+				.matches(".*link.*")
 				&& words.get(1).toLowerCase().equals("pagechange"));
 	}
-	
+
 	public static void main(String[] args) {
 		startInferringProcess();
 	}

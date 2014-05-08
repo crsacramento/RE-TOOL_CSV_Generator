@@ -40,6 +40,6 @@ public class SeleniumTableRow {
 	
 	public String toString(){
 		//return action+','+element+','+target+','+value;
-		return action+','+target+','+value;
+		return action+'\t'+target+'\t'+value;
 	}
 }

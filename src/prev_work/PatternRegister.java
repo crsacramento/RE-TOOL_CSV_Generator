@@ -30,7 +30,7 @@ public class PatternRegister {
 
 
 
-	public void initializePatternRegister(){
+	public static void initializePatternRegister(){
 		File file = new File(System.getProperty("user.dir")+"\\HTML"+"final"+"\\"+"patterns.paradigm");
 		// if file doesnt exists, then create it
 		if (!file.exists()) {

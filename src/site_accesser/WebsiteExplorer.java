@@ -6,8 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.openqa.selenium.By;
@@ -24,22 +26,22 @@ public class WebsiteExplorer {
 	private String baseUrl = "";
 
 	/** number of actions the crawler will execute before stopping */
-	static final int NUM_ACTIONS = 30;
+	private static final int NUM_ACTIONS = 30;
 	/** number of redirects to the home page the crawler will do before stopping */
-	static final int NUM_ERRORS = 5;
+	private static final int NUM_ERRORS = 5;
 
 	/** words to insert in text input elements */
-	static String[] typedKeywords = { "curtains", "coffee", "phone", "shirt",
-			"computer", "dress", "banana", "sandals" };
+	private static String[] typedKeywords = { "curtains", "coffee", "phone",
+			"shirt", "computer", "dress", "banana", "sandals" };
 
-	/** crawling history */
-	static ArrayList<SeleniumTableRow> history = new ArrayList<SeleniumTableRow>();
+	/** action history */
+	private static ArrayList<SeleniumTableRow> history = new ArrayList<SeleniumTableRow>();
 
-	/** list of visited elements in each page (identified by its URL) */
-	static ArrayList<String> visitedElements = new ArrayList<String>();
+	/** set of visited elements */
+	private static Set<String> visitedElements = new HashSet<String>();
 
 	/** URL of current page */
-	static String currentPage = "";
+	// private static String currentPage = "";
 
 	/** index of current action */
 	private static int currAction = 0;
@@ -88,16 +90,13 @@ public class WebsiteExplorer {
 	}
 
 	/**
-	 * Checks crawling history to see if element e was visited in page with URL
-	 * p.
+	 * Checks crawling history to see if element e was visited already.
 	 * 
-	 * @param p
-	 *            current page URL
 	 * @param e
 	 *            HTML element
 	 * @return element was visited or not
 	 */
-	static boolean isElementAlreadyVisited(WebElement e) {
+	public static boolean isElementAlreadyVisited(WebElement e) {
 		if (visitedElements.isEmpty())
 			return false;
 		else {
@@ -115,14 +114,12 @@ public class WebsiteExplorer {
 		return false;
 	}
 
-	// -------------------------------------------------------------------------
 	/**
 	 * Chooses a random element to interact with.
 	 * 
-	 * @param driver
 	 * @return random element
 	 */
-	public static WebElement chooseNextElement() {
+	private static WebElement chooseNextElement() {
 		String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT", "LOGIN" };
 
 		List<ArrayList<WebElement>> list = WebElementOrganizer
@@ -165,7 +162,7 @@ public class WebsiteExplorer {
 	 * @param e
 	 *            element to check
 	 */
-	static boolean isElementTextInputable(WebElement e) {
+	private static boolean isElementTextInputable(WebElement e) {
 		if (e.getTagName().toLowerCase().equals("textarea"))
 			return true;
 		if (e.getTagName().toLowerCase().equals("input")) {
@@ -183,7 +180,7 @@ public class WebsiteExplorer {
 	 * @param e
 	 *            element to check
 	 */
-	static boolean isElementRelatedToLogin(WebElement e) {
+	private static boolean isElementRelatedToLogin(WebElement e) {
 		return e.toString().toLowerCase()
 				.matches(".*" + GlobalConstants.loginKeywords + ".*");
 	}
@@ -194,8 +191,8 @@ public class WebsiteExplorer {
 	 * @param e
 	 *            element to check
 	 */
-	static boolean isInputElementExpectingNumbers(WebElement e) {
-		String types = "((type=\\\")*number|price|quantity|qty\\s|zip\\s?code)";
+	private static boolean isInputElementExpectingNumbers(WebElement e) {
+		String types = "((type=\\\")?number|price|quantity|qty\\s|zip\\s?code)";
 		if (e.toString().matches(".*" + types + ".*"))
 			return true;
 
@@ -237,7 +234,7 @@ public class WebsiteExplorer {
 
 		// if form doesn't submit dynamically, submit
 		// form manually
-		if (!element.toString().matches(".*onchange=\".*submit\".*")) {
+		if (!element.toString().matches(".*onchange=.*submit.*")) {
 
 			// verify if input wants numbers or words
 			if (isInputElementExpectingNumbers(element)) {
@@ -249,7 +246,8 @@ public class WebsiteExplorer {
 				System.out.println("row: " + row.toString());
 				history.add(row);
 				writeToHistoryFile(row, true);
-				
+				visitedElements.add(element.toString());
+
 				// interact
 				element.sendKeys(Integer.toString(rand1));
 			} else {
@@ -263,13 +261,12 @@ public class WebsiteExplorer {
 				System.out.println("row: " + row.toString());
 				history.add(row);
 				writeToHistoryFile(row, true);
+				visitedElements.add(element.toString());
 
 				// interact
 				element.sendKeys(typedKeywords[rand1]);
 			}
 
-			// add visited elements to list
-			visitedElements.add(element.toString());
 			handleFormSubmission(element);
 		} else {
 			// add 'andWait' suffix to mark page change
@@ -283,6 +280,7 @@ public class WebsiteExplorer {
 				System.out.println("row: " + row.toString());
 				history.add(row);
 				writeToHistoryFile(row, true);
+				visitedElements.add(element.toString());
 				element.sendKeys(Integer.toString(rand1));
 			} else {
 				// insert random keyword
@@ -296,11 +294,11 @@ public class WebsiteExplorer {
 				history.add(row);
 				writeToHistoryFile(row, true);
 
-				// interact
-				element.sendKeys(typedKeywords[rand1]);
-
 				// add visited elements to list
 				visitedElements.add(element.toString());
+
+				// interact
+				element.sendKeys(typedKeywords[rand1]);
 			}
 		}
 	}
@@ -318,9 +316,8 @@ public class WebsiteExplorer {
 					"EMPTY");
 			history.add(row);
 			writeToHistoryFile(row, true);
-			// element.submit();
 			visitedElements.add(submit.get(0).toString());
-			
+
 			// interact
 			submit.get(0).click();
 		} else {
@@ -342,7 +339,7 @@ public class WebsiteExplorer {
 
 				// interact
 				dynamicSubmits.get(0).click();
-			}
+			}else{System.out.println("THERE ARE NO SUBMITS");}
 		}
 
 	}
@@ -385,6 +382,7 @@ public class WebsiteExplorer {
 					System.out.println("row: " + row.toString());
 					history.add(row);
 					writeToHistoryFile(row, true);
+					visitedElements.add(element.toString());
 
 					handleFormSubmission(element);
 				} else {
@@ -397,8 +395,6 @@ public class WebsiteExplorer {
 					history.add(row);
 					writeToHistoryFile(row, true);
 				}
-				// add visited elements to list
-				visitedElements.add(element.toString());
 			}
 		}
 	}
@@ -425,6 +421,7 @@ public class WebsiteExplorer {
 						System.out.println("row: " + row.toString());
 						history.add(row);
 						writeToHistoryFile(row, true);
+						visitedElements.add(e.toString());
 						// interact
 						e.clear();
 						e.sendKeys(typedKeywords[rand]);
@@ -438,6 +435,7 @@ public class WebsiteExplorer {
 						System.out.println("row: " + row.toString());
 						history.add(row);
 						writeToHistoryFile(row, true);
+						visitedElements.add(e.toString());
 						// interact
 						e.click();
 						break;
@@ -456,6 +454,7 @@ public class WebsiteExplorer {
 						System.out.println("row: " + row.toString());
 						history.add(row);
 						writeToHistoryFile(row, true);
+						visitedElements.add(e.toString());
 						// interact
 						select.selectByIndex(rand1);
 					}
@@ -507,8 +506,9 @@ public class WebsiteExplorer {
 	private static WebElement findParentForm(WebElement element) {
 		WebElement current = element;
 		while (!(current == null
-				|| current.getTagName().toLowerCase().equals("form") || current
-				.getTagName().toLowerCase().equals("html"))) {
+				|| current.getTagName().toLowerCase().equals("form")
+				|| current.getTagName().toLowerCase().equals("html") || current
+				.getTagName().toLowerCase().equals("body"))) {
 			current = current.findElement(By.xpath(".."));
 		}
 		return current;
@@ -522,11 +522,12 @@ public class WebsiteExplorer {
 	 * @param append
 	 *            true=append to file contents;false=reset file contents
 	 */
-	static void writeToHistoryFile(SeleniumTableRow r, boolean append) {
+	private static void writeToHistoryFile(SeleniumTableRow r, boolean append) {
 		// Write history to file
 		FileWriter output = null;
 		try {
-			output = new FileWriter(new File("history.csv"), append);
+			output = new FileWriter(new File(GlobalConstants.HISTORY_FILEPATH),
+					append);
 		} catch (IOException e) {
 			e.printStackTrace();
 			System.exit(1);
@@ -577,16 +578,17 @@ public class WebsiteExplorer {
 		System.out.println(history.get(0).toString());
 
 		while (currAction < NUM_ACTIONS) {
-			currentPage = driver.getCurrentUrl();
-			System.out.println("Action #" + currAction + " | Page title is: "
-					+ driver.getTitle());
+			// currentPage = driver.getCurrentUrl();
+			System.out.println("Action #" + currAction + " | Page URL is: "
+					+ driver.getCurrentUrl() + "|actions:"+currAction);
 
 			WebElement element = chooseNextElement();
 
 			if (element == null) {
 				// if no element is found, go back to home page
-				goBackToHome(r);
-				break;
+				boolean stop = goBackToHome(r);
+				if (stop)
+					break;
 			} else {
 				System.out.println("ELEMENT: "
 						+ element.toString()
@@ -596,9 +598,10 @@ public class WebsiteExplorer {
 
 				System.out.println("LOCATOR:"
 						+ HTMLLocatorBuilder.getElementIdentifier(element));
+
 				if (isElementRelatedToLogin(element)) {
 					boolean processedLogin = processLogin(element);
-					if(processedLogin)
+					if (processedLogin)
 						goBackToHome(r);
 				}// dropdown list
 				else if (element.getTagName().toLowerCase().equals("select")) {
@@ -628,22 +631,24 @@ public class WebsiteExplorer {
 		driver.quit();
 	}
 
-	private void goBackToHome(String URL) {
+	private boolean goBackToHome(String URL) {
 		driver.get(baseUrl);
 		SeleniumTableRow row = new SeleniumTableRow("open", URL, "EMPTY");
 		history.add(row);
 		writeToHistoryFile(row, true);
-		wait = false;
+		wait = true;
 		homeRedirections++;
 		currAction--;
 
 		if (homeRedirections > NUM_ERRORS) {
 			System.out.println("Maximum redirects, stopping.");
+			return true;
 		} else {
 			System.out
 					.println("No suitable element found, going back to base URL. "
 							+ "Redirects left:"
 							+ (NUM_ERRORS - homeRedirections));
+			return false;
 		}
 	}
 }

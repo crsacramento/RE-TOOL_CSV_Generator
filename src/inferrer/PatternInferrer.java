@@ -16,6 +16,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import site_accesser.GlobalConstants;
 import file_utilities.Filesystem;
 import inferrer.PatternRegister;
 
@@ -31,7 +32,6 @@ public class PatternInferrer {
 	private static int firstIndex = -1;
 	private static int secondIndex = -1;
 	private static String currentState = "NONE";
-	private static FileWriter output = null;
 	private static ArrayList<Integer> lines = new ArrayList<Integer>();
 	private static boolean alreadyWroteOnThisLine = false;
 	private static int patternIndex = 1;
@@ -44,8 +44,9 @@ public class PatternInferrer {
 		 */
 
 		// open processed file
+		System.out.println("********************************************");
 		BufferedReader in = null;
-		File file = new File("history.csv.processed");
+		File file = new File(GlobalConstants.PROCESSED_FILEPATH);
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream(
 					file), /* "UTF8" */"ISO-8859-1"));
@@ -54,21 +55,9 @@ public class PatternInferrer {
 			System.exit(2);
 		}
 
-		// open alphabet file
-
-		File actualOutputFile = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
-		;
-
-		try {
-			output = new FileWriter(actualOutputFile);
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
-
 		String lineBuffer = "";
 		// String line = "";
-		int lineNum = 1;
+		int lineNum = 0;
 		try {
 			while ((lineBuffer = in.readLine()) != null) {
 				processLine(lineBuffer, lineNum);
@@ -82,47 +71,64 @@ public class PatternInferrer {
 		}
 
 		// write to file
-		writeParadigmFile(output);
+		writeParadigmFile();
 
 		// close the streams
 		try {
 			in.close();
-			output.close();
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private static void writeParadigmFile(FileWriter output) {
+	private static void writeParadigmFile() {
+		// open patterns file
+		File actualOutputFile = new File(GlobalConstants.PATTERNS_FILEPATH);
+		FileWriter output = null;
+		try {
+			output = new FileWriter(actualOutputFile);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
 		PatternRegister.initializePatternRegister();
 		Iterator<Entry<String, ArrayList<Integer>>> it = patternsFound
 				.entrySet().iterator();
+
+		String[] line = null;
 		while (it.hasNext()) {
 			Map.Entry<String, ArrayList<Integer>> entry = it.next();
-			String patternName = entry.getKey().split("_")[0];
-			int number = Integer.parseInt(entry.getKey().split("_")[1]);
-			PatternRegister.startPattern(patternName, number);
+			String[] pattern = entry.getKey().split("_");
+			PatternRegister.startPattern(pattern[0], Integer.parseInt(pattern[1]));
 
-			String[] line = null;
 			int start = entry.getValue().get(0);
-			int size = entry.getValue().size();
 
-			if (size > 1)
-				line = Filesystem.getLinesInFile("history.csv", start, entry
-						.getValue().get(entry.getValue().size() - 1));
+			if (entry.getValue().size() > 1)
+				line = Filesystem.getLinesInFile(
+						GlobalConstants.HISTORY_FILENAME, start, entry
+								.getValue().get(entry.getValue().size() - 1));
 			else
-				line = Filesystem.getLinesInFile("history.csv", start);
+				line = Filesystem.getLinesInFile(
+						GlobalConstants.HISTORY_FILENAME, start);
 
 			for (int i = 0; i < line.length; ++i) {
 				if (line[i] == null)
 					continue;
-				String[] splits = line[i].split("\t");
+				String[] splits = line[i].split(GlobalConstants.SEPARATOR);
 				PatternRegister.enterPatternContent(splits[0], splits[1],
 						splits[2]);
 			}
 			PatternRegister.closePattern();
 		}
+
 		PatternRegister.endPatternRegister(patternIndex + 1);
+
+		try {
+			output.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void updateCurrentState() {
@@ -145,38 +151,43 @@ public class PatternInferrer {
 		String word = "";
 
 		// { LOGIN_STATES, INPUT_STATES, SORT_STATES, SEARCH_STATES };
-		if (matchLink(words)) {
-			processLink(words, lineNum);
-		} else if (matchSubmit(words)) {
-			// might be a submit to login, input, search or sort
-			switch (firstIndex) {
-			case 0:
-				processLogin(words, lineNum);
-				break;
-			case 1:
-				processInput(words, lineNum);
-				break;
-			case 2:
-				processSort(words, lineNum);
-				break;
-			case 3:
+		if (lineBuffer != null) {
+			if (matchLink(words)) {
+				processLink(words, lineNum);
+			} else if (matchSubmit(words)) {
+				// might be a submit to login, input, search or sort
+				switch (firstIndex) {
+				case 0:
+					processLogin(words, lineNum);
+					break;
+				case 1:
+					processInput(words, lineNum);
+					break;
+				case 2:
+					processSort(words, lineNum);
+					break;
+				case 3:
+					processSearch(words, lineNum);
+					break;
+				default:
+					resetStates();
+				}
+			} else if (matchSearch(words)) {
 				processSearch(words, lineNum);
-				break;
-			default:
+			} else if (matchSort(words)) {
+				processSort(words, lineNum);
+			} else if (matchInput(words)) {
+				processInput(words, lineNum);
+			} else if (matchLogin(words)) {
+				processLogin(words, lineNum);
+			} else {
+				System.out
+						.println("doesnt match call, login, sort, search or input - ignored");
 				resetStates();
 			}
-		} else if (matchSearch(words)) {
-			processSearch(words, lineNum);
-		} else if (matchSort(words)) {
-			processSort(words, lineNum);
-		} else if (matchInput(words)) {
-			processInput(words, lineNum);
-		} else if (matchLogin(words)) {
-			processLogin(words, lineNum);
-		} else {
-			resetStates();
 		}
 		updateCurrentState();
+
 		if (!alreadyWroteOnThisLine) {
 			line = "";
 			word = "";
@@ -189,6 +200,7 @@ public class PatternInferrer {
 					+ (!line.isEmpty() ? "|lines: " + line : ""));
 		} else
 			alreadyWroteOnThisLine = false;
+
 	}
 
 	private static void processLink(ArrayList<String> words, int lineNum) {
@@ -197,17 +209,19 @@ public class PatternInferrer {
 			// sort without submit is still valid
 			patternsFound.put("SORT_" + patternIndex, lines);
 			patternIndex++;
+			resetStates();
 		} else if (firstIndex == 3 && secondIndex == 0) {
 			// search without submit is still valid
 			patternsFound.put("SEARCH_" + patternIndex, lines);
 			patternIndex++;
+			resetStates();
 		}
 
 		System.out.println(lineNum + ": CALL");
 		ArrayList<Integer> a = new ArrayList<Integer>();
 		a.add(lineNum);
-		patternsFound.put("CALL_" + patternIndex, a);
-		patternIndex++;
+		//patternsFound.put("CALL_" + patternIndex, a);
+		//patternIndex++;
 		alreadyWroteOnThisLine = true;
 		resetStates();
 	}
@@ -230,7 +244,12 @@ public class PatternInferrer {
 		if (firstIndex == 2 && secondIndex == 0) {
 			// sort without submit is still valid
 			patternsFound.put("SORT_" + patternIndex, lines);
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SORT|lines: " + line);
 			patternIndex++;
+			resetStates();
 		}
 
 		if (matchSubmit(words)) {
@@ -270,31 +289,28 @@ public class PatternInferrer {
 			// search without submit is still valid
 			patternsFound.put("SEARCH_" + patternIndex, lines);
 			patternIndex++;
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SEARCH|lines: " + line);
+			resetStates();
 		}
 
-		if (matchSubmit(words)) {
-			if (firstIndex == 2) {
-				if (secondIndex == 0) {
-					// full search
-					setStates(firstIndex, 1);
-					lines.add(lineNum);
-					updateCurrentState();
+		if (matchSubmit(words) && (firstIndex == 2) && (secondIndex == 0)) {
+			// full search
+			setStates(firstIndex, 1);
+			lines.add(lineNum);
+			updateCurrentState();
 
-					String line = "";
-					for (int i : lines)
-						line += i + " ";
-					System.out.println(lineNum + ": " + currentState
-							+ "|lines:" + line);
-					patternsFound.put("SORT_" + patternIndex, lines);
-					patternIndex++;
-					alreadyWroteOnThisLine = true;
-					resetStates();
-				}
-			} else {
-				System.out.println("SORT: invalid state: expected 2 got "
-						+ firstIndex);
-
-			}
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out
+					.println(lineNum + ": " + currentState + "|lines:" + line);
+			patternsFound.put("SORT_" + patternIndex, lines);
+			patternIndex++;
+			alreadyWroteOnThisLine = true;
+			resetStates();
 		} else if (matchSort(words)) {
 			lines.add(lineNum);
 			setStates(2, 0);
@@ -310,34 +326,37 @@ public class PatternInferrer {
 			// sort without submit is still valid
 			patternsFound.put("SORT_" + patternIndex, lines);
 			patternIndex++;
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SORT|lines: " + line);
+			resetStates();
 		} else if (firstIndex == 3 && secondIndex == 0) {
 			// search without submit is still valid
 			patternsFound.put("SEARCH_" + patternIndex, lines);
 			patternIndex++;
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SEARCH|lines: " + line);
+			resetStates();
 		}
 
-		if (matchSubmit(words)) {
-			if (firstIndex == 1) {
-				if (secondIndex == 0) {
-					// full search
-					setStates(firstIndex, 1);
-					lines.add(lineNum);
-					updateCurrentState();
+		if (matchSubmit(words) && (firstIndex == 1) && (secondIndex == 0)) {
+			// full input
+			setStates(firstIndex, 1);
+			lines.add(lineNum);
+			updateCurrentState();
 
-					String line = "";
-					for (int i : lines)
-						line += i + " ";
-					System.out.println(lineNum + ": " + currentState
-							+ "|lines: " + line);
-					patternsFound.put("INPUT_" + patternIndex, lines);
-					patternIndex++;
-					alreadyWroteOnThisLine = true;
-					resetStates();
-				}
-			} else {
-				System.out.println("invalid state: expected 2 got "
-						+ firstIndex);
-			}
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1 + ": " + currentState + "|lines: "
+					+ line);
+			patternsFound.put("INPUT_" + patternIndex, lines);
+			patternIndex++;
+			alreadyWroteOnThisLine = true;
+			resetStates();
 		} else if (matchInput(words)) {
 			lines.add(lineNum);
 			setStates(1, 0);
@@ -353,10 +372,20 @@ public class PatternInferrer {
 			// sort without submit is still valid
 			patternsFound.put("SORT_" + patternIndex, lines);
 			patternIndex++;
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SORT|lines: " + line);
+			resetStates();
 		} else if (firstIndex == 3 && secondIndex == 0) {
 			// search without submit is still valid
 			patternsFound.put("SEARCH_" + patternIndex, lines);
 			patternIndex++;
+			String line = "";
+			for (int i : lines)
+				line += i + " ";
+			System.out.println(lineNum+1+": SEARCH|lines: " + line);
+			resetStates();
 		}
 
 		// "LOGIN","LOGIN_USER","LOGIN_PASS","LOGIN_USER_PASS","LOGIN_USER_PASS_SUBMIT"
@@ -386,9 +415,8 @@ public class PatternInferrer {
 				System.out.println("LOGIN: invalid state: expected 2 got "
 						+ firstIndex);
 			}
-		} else if (words.get(0).toLowerCase().matches(".*login.*")
-				|| words.get(0).toLowerCase().matches(".*auth.*")
-				|| words.get(0).toLowerCase().matches(".*captcha.*")) {
+		} else if (words.get(0).toLowerCase()
+				.matches(".*(login|auth|captcha).*")) {
 			if (firstIndex == 0) {
 				// doesnt alter states, can go in any state
 				lines.add(lineNum);
@@ -397,8 +425,7 @@ public class PatternInferrer {
 				lines.add(lineNum);
 				setStates(0, 0);
 			}
-		} else if (words.get(0).toLowerCase().matches(".*user.*")
-				|| words.get(0).toLowerCase().matches(".*email.*")) {
+		} else if (words.get(0).toLowerCase().matches(".*(user|email).*")) {
 			if (firstIndex == 0) {
 				if (secondIndex == 0) {// curr state LOGIN
 					setStates(0, 1);// LOGIN_USER
@@ -411,7 +438,7 @@ public class PatternInferrer {
 					lines.add(lineNum);
 					setStates(0, 3);// LOGIN_USER_PASS
 				} else {// curr state LOGIN_USER_PASSWORD
-						// keep same state (TODO verify if this causes problems)
+						// keep same state
 					lines.add(lineNum);
 				}
 			} else {
@@ -463,14 +490,10 @@ public class PatternInferrer {
 				.matches(".*link.*")
 				&& words.get(1).toLowerCase().equals("pagechange"));
 	}
-	
+
 	private static boolean matchLogin(ArrayList<String> words) {
-		return words.get(0).toLowerCase().matches(".*login.*")
-				|| words.get(0).toLowerCase().matches(".*user.*")
-				|| words.get(0).toLowerCase().matches(".*email.*")
-				|| words.get(0).toLowerCase().matches(".*password.*")
-				|| words.get(0).toLowerCase().matches(".*auth.*")
-				|| words.get(0).toLowerCase().matches(".*captcha.*");
+		return words.get(0).toLowerCase()
+				.matches(".*(login|user|email|password|auth|captcha).*");
 	}
 
 	private static boolean matchInput(ArrayList<String> words) {

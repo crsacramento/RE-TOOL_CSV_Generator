@@ -100,14 +100,14 @@ public class Filesystem {
 	}
 
 	public static String[] getLinesInFile(String filename, int start, int end) {
-		if ((end < start && end != -1)|| start < 0)
+		if ((end < start && end != -1) || start < 0)
 			return null;
 		
 		int toRead, numberOfLines = 0;
 		if (end == -1)
 			toRead = 1;
 		else
-			toRead = end - start;
+			toRead = end - start + 1;
 		String[] lines = new String[toRead];
 		
 		
@@ -117,19 +117,23 @@ public class Filesystem {
 
 		try {
 			fr = new FileReader(file.getAbsoluteFile());
-			@SuppressWarnings("resource")
 			BufferedReader br = new BufferedReader(fr);
 			String line = "";
-			while (br.readLine() != null && numberOfLines < start) {
-				// System.out.println(s);
+			while (numberOfLines < start && br.readLine() != null) {
 				numberOfLines++;
 			}
-			if(numberOfLines < start)
+			if(numberOfLines < start){
+				br.close();
+				fr.close();	
 				return null;
+			}
 			for(int i = 0; i < toRead; ++i){
 				line = br.readLine();
-				if(line == null)
+				if(line == null){
+					br.close();
+					fr.close();	
 					return lines;
+				}
 				lines[i] = line;
 			}
 			

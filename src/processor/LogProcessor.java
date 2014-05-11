@@ -26,18 +26,6 @@ public class LogProcessor {
 		patterns.add(new PatternMapEntry("submit", "submit",
 				"submit|input|nav|search|button|btn"));
 		
-		// session start links
-		patterns.add(new PatternMapEntry("login",
-				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)",
-				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link|href|home)"));
-		// login related patterns
-		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?",
-				""));
-		patterns.add(new PatternMapEntry("password", "pass(word)?", ""));
-		patterns.add(new PatternMapEntry("verifyPassword",
-				"verify(\\s|_)?pass(word)?", "verify|pass(word)?"));
-		patterns.add(new PatternMapEntry("email", "e?mail", "e?mail"));
-		
 		// identify home page
 		patterns.add(new PatternMapEntry("homeLink",
 				"(home|main\\s?page|index|logo)",
@@ -66,6 +54,18 @@ public class LogProcessor {
 				"search.*result(.*row)?", "search|result|href|link|sort"));
 		patterns.add(new PatternMapEntry("option", "option", "option"));
 
+		// session start links
+		patterns.add(new PatternMapEntry("login",
+				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)",
+				"(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)|link|href|home)"));
+		// login related patterns
+		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?",
+				""));
+		patterns.add(new PatternMapEntry("password", "pass(word)?", ""));
+		patterns.add(new PatternMapEntry("verifyPassword",
+				"verify(\\s|_)?pass(word)?", "verify|pass(word)?"));
+		patterns.add(new PatternMapEntry("email", "e?mail", "e?mail"));
+		
 		// mostly related to 'click' actions
 		patterns.add(new PatternMapEntry("checkbox", "checkbox",
 				"input|nav|checkbox"));
@@ -84,9 +84,9 @@ public class LogProcessor {
 				"\\sq\\s|query|qry|search|pesq(uisa)?|procura(r)?|busca(dor)?|input"));
 		patterns.add(new PatternMapEntry("button", "button|btn", "button|btn"));
 
-		patterns.add(new PatternMapEntry("captchaInput", "captcha",
+		patterns.add(new PatternMapEntry("captcha", "captcha",
 				"captcha|input"));
-		patterns.add(new PatternMapEntry("authInput", "auth", "auth|input"));
+		patterns.add(new PatternMapEntry("auth", "auth", "auth|input"));
 		patterns.add(new PatternMapEntry("numberInput",
 				"number|price|quantity|qty\\s|zip\\s?code",
 				"number|price|quantity|qty\\s|zip\\s?code|input"));

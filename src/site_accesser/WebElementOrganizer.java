@@ -136,6 +136,7 @@ public class WebElementOrganizer {
 			// link is visible, not a link to a file, and doesn't have login
 			// or general keywords
 			if (itPassesAllGeneralChecks(e)
+					&& e.getAttribute("href") != null
 					&& !allFileExtensions.matcher(e.getAttribute("href"))
 						.matches()) {
 				// verify if it belongs to the home page's domain and

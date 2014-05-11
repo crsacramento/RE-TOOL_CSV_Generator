@@ -5,24 +5,12 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import site_accesser.GlobalConstants;
+
 public class PatternRegister {
-
-	/**
-	 * @param args
-	 */
-
-	// If it is Login/Sort/MasterDetail/Search/Menu
-	String patternType;
-
-	public PatternRegister() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
-
 	public static void initializePatternRegister() {
-		File file = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
-		// if file doesnt exists, then create it
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
+		// if file doesn't exist, then create it
 		if (!file.exists()) {
 			try {
 				file.createNewFile();
@@ -40,8 +28,7 @@ public class PatternRegister {
 					+ "xmlns:xmi=\"http://www.omg.org/XMI\" "
 					+ "xmlns:Paradigm=\"http://www.example.org/Paradigm\"\n"
 					+ "title=\"patterns\"/>\n");
-			bw.write("<nodes xsi:type=\"Paradigm:Init\" name=\"XInit\" number=\"1.0\"/>\n");
-			// bw.newLine();
+			bw.write("\t<node xsi:type=\"Paradigm:Init\" name=\"XInit\"/>\n");
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -50,31 +37,30 @@ public class PatternRegister {
 	}
 
 	public static void startPattern(String patternType, int number) {
-		File file = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
 
 		FileWriter fw;
 		try {
 			fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			if (patternType.trim().toLowerCase().equals("sort"))
-				bw.write("\t<node xsi:type=\"Paradigm:Sort\" name=\"Sort\""
-						+ number + ">\n");
+				bw.write("\t<node xsi:type=\"Paradigm:Sort\" name=\"Sort"
+						+ number + "\">\n");
 			else if (patternType.trim().toLowerCase().equals("login"))
 				bw.write("\t<node xsi:type=\"Paradigm:Login\" name=\"Login"
-						+ number + "\"/>\n");
+						+ number + "\">\n");
 			else if (patternType.trim().toLowerCase().equals("masterdetail"))
 				bw.write("\t<node xsi:type=\"Paradigm:MasterDetail\" name=\"MasterDetail"
-						+ number + "\"/>\n");
+						+ number + "\">\n");
 			else if (patternType.trim().toLowerCase().equals("input"))
 				bw.write("\t<node xsi:type=\"Paradigm:Input\" name=\"Input"
-						+ number + "\"/>\n");
+						+ number + "\">\n");
 			else if (patternType.trim().toLowerCase().equals("search"))
 				bw.write("\t<node xsi:type=\"Paradigm:Find\" name=\"Find"
-						+ number + "\"/>\n");
+						+ number + "\">\n");
 			else if (patternType.trim().toLowerCase().equals("call"))
 				bw.write("\t<node xsi:type=\"Paradigm:Call\" name=\"Call"
-						+ number + /* "\" number=\"" + number + */"\"/>\n");
+						+ number + /* "\" number=\"" + number + */"\">\n");
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -82,8 +68,7 @@ public class PatternRegister {
 	}
 
 	public static void closePattern() {
-		File file = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
 
 		FileWriter fw;
 		try {
@@ -98,18 +83,17 @@ public class PatternRegister {
 
 	public static void enterPatternContent(String action, String target,
 			String parameter) {
-		File file = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
 		FileWriter fw;
 		try {
 			fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
-			bw.write("\t\t<content action=\"" + action + "\"\n\t\ttarget=\""
+			bw.write("\t\t<content action=\"" + action + "\" \n\t\ttarget=\""
 					+ target);
 			if (parameter.toLowerCase().equals("empty"))
 				bw.write("\"/>\n");
 			else
-				bw.write("\"\n\t\tparameter=\"" + parameter + "\"/>\n");
+				bw.write("\" \n\t\tparameter=\"" + parameter.replaceAll("\"", "") + "\"/>\n");
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -118,16 +102,14 @@ public class PatternRegister {
 
 	public static void endPatternRegister(int number) {
 
-		File file = new File(System.getProperty("user.dir")
-				+ File.separatorChar + "patterns.paradigm");
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
 
 		FileWriter fw;
 		try {
 			fw = new FileWriter(file.getAbsoluteFile(), true);
 			BufferedWriter bw = new BufferedWriter(fw);
 
-			bw.write("\t<nodes xsi:type=\"Paradigm:End\" name=\"End\" number=\""
-					+ number + "\"/>\n");
+			bw.write("\t<node xsi:type=\"Paradigm:End\" name=\"End\"/>\n");
 			bw.write("</Paradigm:Model>\n");
 			bw.close();
 		} catch (IOException e) {

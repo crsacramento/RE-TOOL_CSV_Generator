@@ -1,18 +1,13 @@
 package site_accesser;
 
 public class SeleniumTableRow {
-	private String action, /*element,*/ target, value;
+	private String action, target, value;
 
-	SeleniumTableRow(String a, /*String e,*/ String t, String v){
-		action=a;
-		//element=e;
-		target=t;
-		value=v;
+	SeleniumTableRow(String a, String t, String v) {
+		action = a;
+		target = t;
+		value = v;
 	}
-	 /*
-	public String getElement() {
-		return element;
-	}*/
 
 	public String getAction() {
 		return action;
@@ -37,9 +32,9 @@ public class SeleniumTableRow {
 	public void setValue(String value) {
 		this.value = value;
 	}
-	
-	public String toString(){
-		//return action+','+element+','+target+','+value;
-		return action+'\t'+target+'\t'+value;
+
+	public String toString() {
+		return action + GlobalConstants.SEPARATOR + target
+				+ GlobalConstants.SEPARATOR + value;
 	}
 }

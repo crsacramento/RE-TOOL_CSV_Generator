@@ -4,6 +4,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashSet;
 
 import site_accesser.GlobalConstants;
 
@@ -58,6 +59,8 @@ public class PatternRegister {
 			else if (patternType.trim().toLowerCase().equals("search"))
 				bw.write("\t<node xsi:type=\"Paradigm:Find\" name=\"Find"
 						+ number + "\">\n");
+			else if (patternType.trim().toLowerCase().equals("menu"))
+				bw.write("\t<node xsi:type=\"Paradigm:Menu\" name=\"Menu\">\n");
 			else if (patternType.trim().toLowerCase().equals("call"))
 				bw.write("\t<node xsi:type=\"Paradigm:Call\" name=\"Call"
 						+ number + /* "\" number=\"" + number + */"\">\n");
@@ -94,6 +97,23 @@ public class PatternRegister {
 				bw.write("\"/>\n");
 			else
 				bw.write("\" \n\t\tparameter=\"" + parameter.replaceAll("\"", "") + "\"/>\n");
+			bw.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void enterMenuItemContent(String element, HashSet<String> urls) {
+		File file = new File(GlobalConstants.PATTERNS_FILEPATH);
+		FileWriter fw;
+		try {
+			fw = new FileWriter(file.getAbsoluteFile(), true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write("\t\t<item element=\"" + element + "\">\n");
+			for(String s : urls){
+				bw.write("\t\t\t<page URL=\"" + s + "\"/>\n");
+			}
+			bw.write("\"\n\t\t</item>\n");
 			bw.close();
 		} catch (IOException e) {
 			e.printStackTrace();

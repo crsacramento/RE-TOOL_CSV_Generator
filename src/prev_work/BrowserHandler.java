@@ -68,7 +68,7 @@ public class BrowserHandler implements NativeKeyListener{
 		
 		
 		//create the file to save the patterns in PARADIGM syntax
-		patterns.initializePatternRegister();
+		PatternRegister.initializePatternRegister();
 		
 		//initializes keyboard event handler
 		try {

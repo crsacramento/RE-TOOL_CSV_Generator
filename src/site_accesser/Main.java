@@ -2,8 +2,6 @@ package site_accesser;
 
 import inferrer.PatternInferrer;
 
-import java.io.File;
-
 import processor.LogProcessor;
 
 public class Main {
@@ -16,12 +14,12 @@ public class Main {
 		// String baseURL = "http://www.ebay.com/";
 		// String baseURL = "http://www.youtube.com/";
 		// String baseURL = "http://store.steampowered.com/";
+		
 		WebsiteExplorer we = WebsiteExplorer.getInstance();
 		WebsiteExplorer.initialize(baseURL);
-		//we.getDriver().get(baseURL);
 		we.exploreWebsite();
-		
-		LogProcessor.processFile(new File("history.csv").getAbsolutePath());
+		LogProcessor.processFile(GlobalConstants.HISTORY_FILEPATH);
+		PatternInferrer.setMenuElements(we.menuElements);
 		PatternInferrer.startInferringProcess();
 	}
 }

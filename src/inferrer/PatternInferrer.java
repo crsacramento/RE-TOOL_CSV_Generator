@@ -4,11 +4,12 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -36,6 +37,15 @@ public class PatternInferrer {
 	private static boolean alreadyWroteOnThisLine = false;
 	private static int patternIndex = 1;
 	private static LinkedHashMap<String, ArrayList<Integer>> patternsFound = new LinkedHashMap<String, ArrayList<Integer>>();
+
+	private static HashMap<String, HashSet<String>> menuElements;
+
+	/**
+	 * @param menuElements the menuElements to set
+	 */
+	public static void setMenuElements(HashMap<String, HashSet<String>> menuElements) {
+		PatternInferrer.menuElements = menuElements;
+	}
 
 	public static void startInferringProcess() {
 		/*
@@ -83,16 +93,22 @@ public class PatternInferrer {
 	}
 
 	private static void writeParadigmFile() {
-		// open patterns file
-		File actualOutputFile = new File(GlobalConstants.PATTERNS_FILEPATH);
-		FileWriter output = null;
-		try {
-			output = new FileWriter(actualOutputFile);
-		} catch (IOException e1) {
-			e1.printStackTrace();
+		// write menu
+		if(!(menuElements == null || menuElements.isEmpty())){
+			PatternRegister.initializePatternRegister();
+			PatternRegister.startPattern("menu", 0);// number doesnt matter
+			
+			Iterator<Entry<String, HashSet<String>>> it = menuElements
+					.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, HashSet<String>> entry = it.next();
+				PatternRegister.enterMenuItemContent(entry.getKey(), entry.getValue());
+			}
+			
+			PatternRegister.closePattern();
 		}
-
-		PatternRegister.initializePatternRegister();
+		
+		// write rest of patterns
 		Iterator<Entry<String, ArrayList<Integer>>> it = patternsFound
 				.entrySet().iterator();
 
@@ -123,12 +139,6 @@ public class PatternInferrer {
 		}
 
 		PatternRegister.endPatternRegister(patternIndex + 1);
-
-		try {
-			output.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	private static void updateCurrentState() {

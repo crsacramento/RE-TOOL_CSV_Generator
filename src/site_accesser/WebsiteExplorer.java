@@ -6,6 +6,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -40,29 +41,44 @@ public class WebsiteExplorer {
 	/** set of visited elements */
 	private static Set<String> visitedElements = new HashSet<String>();
 
+	/** set of visited elements */
+	public HashMap<String, HashSet<String>> menuElements = new HashMap<String, HashSet<String>>();
+
 	/** URL of current page */
-	// private static String currentPage = "";
+	private String currentPage = baseUrl;
 
 	/** index of current action */
 	private static int currAction = 0;
 
 	/** number of times explorer went back to home page */
-	int homeRedirections = 0;
+	private int homeRedirections = 0;
 
 	/** says if politeness delay is to be done (false if error occurs) */
 	private static boolean wait = true;
 
+	/** instance of this class (singleton enforcement) */
+	private static WebsiteExplorer instance = null;
+
+	/** web driver */
 	private WebDriver driver = null;
 
+	/**
+	 * Returns web driver.
+	 * 
+	 * @return driver
+	 */
 	public WebDriver getDriver() {
 		return driver;
 	}
 
+	/**
+	 * Returns base URL
+	 * 
+	 * @return base URL
+	 */
 	public String getBaseUrl() {
 		return baseUrl;
 	}
-
-	private static WebsiteExplorer instance = null;
 
 	/**
 	 * Singleton enforcement.
@@ -85,12 +101,15 @@ public class WebsiteExplorer {
 		WebsiteExplorer.instance.baseUrl = URL;
 	}
 
+	/**
+	 * Constructor. Initializes Web driver.
+	 */
 	private WebsiteExplorer() {
 		driver = new HtmlUnitDriver();
 	}
 
 	/**
-	 * Checks crawling history to see if element e was visited already.
+	 * Checks exploring history to see if element e was visited already.
 	 * 
 	 * @param e
 	 *            HTML element
@@ -303,6 +322,12 @@ public class WebsiteExplorer {
 		}
 	}
 
+	/**
+	 * Submits a previously visited form.
+	 * 
+	 * @param element
+	 *            element inside the form to be visited.
+	 */
 	private static void handleFormSubmission(WebElement element) {
 		// search for conventional submit elements
 		List<WebElement> submit = element.findElements(By
@@ -339,7 +364,9 @@ public class WebsiteExplorer {
 
 				// interact
 				dynamicSubmits.get(0).click();
-			}else{System.out.println("THERE ARE NO SUBMITS");}
+			} else {
+				System.out.println("THERE ARE NO SUBMITS");
+			}
 		}
 
 	}
@@ -399,12 +426,19 @@ public class WebsiteExplorer {
 		}
 	}
 
+	/**
+	 * Visits a login form completely, or clicks on a login link.
+	 * 
+	 * @param element
+	 *            chosen element to visit
+	 * @return if login form was visited or not
+	 */
 	private static boolean processLogin(WebElement element) {
 		if (element.getTagName().toLowerCase().equals("input")
 				|| element.getTagName().toLowerCase().equals("select")) {
 			// login form, fill all form inputs
 			WebElement form = findParentForm(element);
-			List<WebElement> children = findInputChildNodes(form);
+			List<WebElement> children = findInputSelectChildNodes(form);
 			SeleniumTableRow row = null;
 
 			for (WebElement e : children) {
@@ -470,7 +504,13 @@ public class WebsiteExplorer {
 		}
 	}
 
-	private static List<WebElement> findInputChildNodes(WebElement form) {
+	/**
+	 * Given a form element, returns all input and select leaf nodes
+	 * 
+	 * @param form
+	 * @return all input and select leaf nodes
+	 */
+	private static List<WebElement> findInputSelectChildNodes(WebElement form) {
 		List<WebElement> all = form.findElements(By.xpath("*"));
 		List<WebElement> descendants = null;
 		if (all.isEmpty()) {
@@ -492,7 +532,7 @@ public class WebsiteExplorer {
 			} else if (item.getTagName().toLowerCase().equals("select")) {
 				ret.add(item);
 			} else {
-				descendants = findInputChildNodes(item);
+				descendants = findInputSelectChildNodes(item);
 				if (!(descendants == null || descendants.isEmpty())) {
 					for (WebElement i : descendants) {
 						ret.add(i);
@@ -503,6 +543,86 @@ public class WebsiteExplorer {
 		return ret;
 	}
 
+	/**
+	 * Given a parent element, returns all anchor leaf nodes
+	 * 
+	 * @param parent
+	 *            parent node
+	 * @return all anchor leaf nodes
+	 */
+	private static List<WebElement> findAnchorNodes(WebElement parent) {
+		List<WebElement> all = parent.findElements(By.xpath("*"));
+		List<WebElement> descendants = null;
+		if (all.isEmpty()) {
+			return null;
+		}
+
+		List<WebElement> ret = new ArrayList<WebElement>();
+		for (WebElement item : all) {
+			if (item.getTagName().toLowerCase().equals("a")) {
+				ret.add(item);
+			} else {
+				descendants = findAnchorNodes(item);
+				if (!(descendants == null || descendants.isEmpty())) {
+					for (WebElement i : descendants) {
+						ret.add(i);
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private void findMenuElementsInPage() {
+		Set<String> retSet = new HashSet<String>();
+
+		// search for <nav> tag
+		List<WebElement> masterList = driver.findElements(By.tagName("nav"));
+		// search for class, name and id = "[a-zA-z]+[nav][a-zA-z]+"
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@class, \"nav\")]")));
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@id, \"nav\")]")));
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@name, \"nav\")]")));
+		// search for class, name and id = "[a-zA-z]+[menu][a-zA-z]+"
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@class, \"menu\")]")));
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@id, \"menu\")]")));
+		masterList.addAll(driver.findElements(By
+				.xpath("//*[contains(@name, \"nav\")]")));
+
+
+		for (WebElement elem : masterList) {
+			List<WebElement> children = findAnchorNodes(elem);
+			if (!(children == null || children.isEmpty()))
+				for (WebElement element : children) {
+					if(element.getAttribute("href") != null)
+						retSet.add(element.toString());
+				}
+		}
+
+		for (String s : retSet) {
+			if (menuElements.containsKey(s)) {
+				menuElements.get(s).add(currentPage);
+			} else {
+				HashSet<String> temp = new HashSet<String>();
+				temp.add(currentPage);
+				menuElements.put(s, temp);
+			}
+			//System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+		}
+		System.out.println("size:"+menuElements.size());
+	}
+
+	/**
+	 * Given a WebElement, finds the parent form
+	 * 
+	 * @param element
+	 *            child element node
+	 * @return parent form
+	 */
 	private static WebElement findParentForm(WebElement element) {
 		WebElement current = element;
 		while (!(current == null
@@ -546,18 +666,43 @@ public class WebsiteExplorer {
 		}
 	}
 
-	public void exploreWebsite() {
+	/**
+	 * returns driver to base url and checks if number of redirections is bigger
+	 * than the limit.
+	 * 
+	 * @param URL
+	 *            base URL
+	 * @return if exploring cycle should stop or not
+	 */
+	private boolean goBackToHome(String URL) {
+		driver.get(baseUrl);
+		SeleniumTableRow row = new SeleniumTableRow("open", URL, "EMPTY");
+		history.add(row);
+		writeToHistoryFile(row, true);
+		wait = true;
+		homeRedirections++;
+		currAction--;
 
-		// Create a new instance of the html unit driver
-		// Notice that the remainder of the code relies on the interface,
-		// not the implementation.
-		driver = new HtmlUnitDriver();
+		if (homeRedirections > NUM_ERRORS) {
+			System.out.println("Maximum redirects, stopping.");
+			return true;
+		} else {
+			System.out
+					.println("No suitable element found, going back to base URL. "
+							+ "Redirects left:"
+							+ (NUM_ERRORS - homeRedirections));
+			return false;
+		}
+	}
+
+	public void exploreWebsite() {
 
 		// set logger config
 		java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
 				.setLevel(java.util.logging.Level.SEVERE);
 		driver.get(baseUrl);
 
+		
 		try {
 			System.setErr(new PrintStream(new File("err.txt")));
 		} catch (FileNotFoundException e1) {
@@ -578,10 +723,14 @@ public class WebsiteExplorer {
 		System.out.println(history.get(0).toString());
 
 		while (currAction < NUM_ACTIONS) {
-			// currentPage = driver.getCurrentUrl();
+			currentPage = driver.getCurrentUrl();
+			
 			System.out.println("Action #" + currAction + " | Page URL is: "
-					+ driver.getCurrentUrl() + "|actions:"+currAction);
-
+					+ currentPage + "|actions:" + currAction);
+			
+			// search for menu elements (before the element is visited)
+			findMenuElementsInPage();
+			
 			WebElement element = chooseNextElement();
 
 			if (element == null) {
@@ -590,11 +739,12 @@ public class WebsiteExplorer {
 				if (stop)
 					break;
 			} else {
+
+				
 				System.out.println("ELEMENT: "
 						+ element.toString()
-						+ "\""
-						+ (!element.getText().isEmpty() ? " (text)"
-								: "(no text)"));
+						+ (!element.getText().isEmpty() ? " (has text)"
+								: " (no text)"));
 
 				System.out.println("LOCATOR:"
 						+ HTMLLocatorBuilder.getElementIdentifier(element));
@@ -631,24 +781,4 @@ public class WebsiteExplorer {
 		driver.quit();
 	}
 
-	private boolean goBackToHome(String URL) {
-		driver.get(baseUrl);
-		SeleniumTableRow row = new SeleniumTableRow("open", URL, "EMPTY");
-		history.add(row);
-		writeToHistoryFile(row, true);
-		wait = true;
-		homeRedirections++;
-		currAction--;
-
-		if (homeRedirections > NUM_ERRORS) {
-			System.out.println("Maximum redirects, stopping.");
-			return true;
-		} else {
-			System.out
-					.println("No suitable element found, going back to base URL. "
-							+ "Redirects left:"
-							+ (NUM_ERRORS - homeRedirections));
-			return false;
-		}
-	}
 }

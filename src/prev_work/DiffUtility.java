@@ -10,7 +10,7 @@ import difflib.*;
 
 public class DiffUtility {
 
-	// Helper method for get the file content
+    // Helper method for get the file content
     private static List<String> fileToLines(String filename) {
             List<String> lines = new LinkedList<String>();
             String line = "";
@@ -30,8 +30,8 @@ public class DiffUtility {
     
     public static Patch differenceBetweenFiles(int index1, int index2)
     {
-    	//System.out.println("I Get here");
-    	List<String> original = fileToLines(System.getProperty("user.dir")+"\\HTMLtemp\\"+index1+".txt");
+        //System.out.println("I Get here");
+        List<String> original = fileToLines(System.getProperty("user.dir")+"\\HTMLtemp\\"+index1+".txt");
         List<String> revised  = fileToLines(System.getProperty("user.dir")+"\\HTMLtemp\\"+index2+".txt");
         //System.out.println("Here too");
         
@@ -40,12 +40,12 @@ public class DiffUtility {
     
     public static String convertPatchToString(Patch patch)
     {
-    	String complex="";
-    	for (Delta delta: patch.getDeltas()) {
+        String complex="";
+        for (Delta delta: patch.getDeltas()) {
             complex+=delta.toString();
             complex+="\n";
-    	}
-		return complex;
+        }
+        return complex;
     }
     
     public static void main(String[] args) {

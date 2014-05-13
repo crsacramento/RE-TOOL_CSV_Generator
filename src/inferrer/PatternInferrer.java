@@ -39,11 +39,14 @@ public class PatternInferrer {
     private static LinkedHashMap<String, ArrayList<Integer>> patternsFound = new LinkedHashMap<String, ArrayList<Integer>>();
 
     private static HashMap<String, HashSet<String>> menuElements;
+    private static String baseUrl = "default";
 
     /**
-     * @param menuElements the menuElements to set
+     * @param menuElements
+     *            the menuElements to set
      */
-    public static void setMenuElements(HashMap<String, HashSet<String>> menuElements) {
+    public static void setMenuElements(
+            HashMap<String, HashSet<String>> menuElements) {
         PatternInferrer.menuElements = menuElements;
     }
 
@@ -94,20 +97,21 @@ public class PatternInferrer {
 
     private static void writeParadigmFile() {
         // write menu
-        if(!(menuElements == null || menuElements.isEmpty())){
-            PatternRegister.initializePatternRegister();
+        PatternRegister.initializePatternRegister(baseUrl);
+        if (!(menuElements == null || menuElements.isEmpty())) {
             PatternRegister.startPattern("menu", 0);// number doesnt matter
-            
+
             Iterator<Entry<String, HashSet<String>>> it = menuElements
                     .entrySet().iterator();
             while (it.hasNext()) {
                 Map.Entry<String, HashSet<String>> entry = it.next();
-                PatternRegister.enterMenuItemContent(entry.getKey(), entry.getValue());
+                PatternRegister.enterMenuItemContent(entry.getKey(),
+                        entry.getValue());
             }
-            
+
             PatternRegister.closePattern();
         }
-        
+
         // write rest of patterns
         Iterator<Entry<String, ArrayList<Integer>>> it = patternsFound
                 .entrySet().iterator();
@@ -116,7 +120,9 @@ public class PatternInferrer {
         while (it.hasNext()) {
             Map.Entry<String, ArrayList<Integer>> entry = it.next();
             String[] pattern = entry.getKey().split("_");
-            PatternRegister.startPattern(pattern[0], Integer.parseInt(pattern[1]));
+
+            PatternRegister.startPattern(pattern[0],
+                    Integer.parseInt(pattern[1]));
 
             int start = entry.getValue().get(0);
 
@@ -128,12 +134,47 @@ public class PatternInferrer {
                 line = Filesystem.getLinesInFile(
                         GlobalConstants.HISTORY_FILENAME, start);
 
+            ArrayList<String> actions = new ArrayList<String>();
+            ArrayList<String> targets = new ArrayList<String>();
+            ArrayList<String> parameters = new ArrayList<String>();
+
             for (int i = 0; i < line.length; ++i) {
                 if (line[i] == null)
                     continue;
                 String[] splits = line[i].split(GlobalConstants.SEPARATOR);
-                PatternRegister.enterPatternContent(splits[0], splits[1],
-                        splits[2]);
+                actions.add(splits[0]);
+                targets.add(splits[1]);
+                parameters.add(splits[2]);
+            }
+
+            String patternType = pattern[0];
+            switch (patternType.toLowerCase()) {
+                case "login": {
+                    PatternRegister.enterLoginContent(actions, targets,
+                            parameters);
+                    break;
+                }
+                case "masterdetail": {
+                    String master = null, detail = null, masterLocator = null, detailLocator = null;
+                    PatternRegister.enterMasterDetailContent(master, detail,
+                            masterLocator, detailLocator);
+                    break;
+                }
+                case "search": {
+                    PatternRegister.enterFindContent(actions, targets,
+                            parameters);
+                    break;
+                }
+                case "sort": {
+                    PatternRegister.enterSortContent(actions, targets,
+                            parameters);
+                    break;
+                }
+                case "call": {
+                    PatternRegister.enterCallContent(actions, targets,
+                            parameters);
+                    break;
+                }
             }
             PatternRegister.closePattern();
         }
@@ -167,20 +208,20 @@ public class PatternInferrer {
             } else if (matchSubmit(words)) {
                 // might be a submit to login, input, search or sort
                 switch (firstIndex) {
-                case 0:
-                    processLogin(words, lineNum);
-                    break;
-                case 1:
-                    processInput(words, lineNum);
-                    break;
-                case 2:
-                    processSort(words, lineNum);
-                    break;
-                case 3:
-                    processSearch(words, lineNum);
-                    break;
-                default:
-                    resetStates();
+                    case 0:
+                        processLogin(words, lineNum);
+                        break;
+                    case 1:
+                        processInput(words, lineNum);
+                        break;
+                    case 2:
+                        processSort(words, lineNum);
+                        break;
+                    case 3:
+                        processSearch(words, lineNum);
+                        break;
+                    default:
+                        resetStates();
                 }
             } else if (matchSearch(words)) {
                 processSearch(words, lineNum);
@@ -230,8 +271,8 @@ public class PatternInferrer {
         System.out.println(lineNum + ": CALL");
         ArrayList<Integer> a = new ArrayList<Integer>();
         a.add(lineNum);
-        //patternsFound.put("CALL_" + patternIndex, a);
-        //patternIndex++;
+        patternsFound.put("CALL_" + patternIndex, a);
+        patternIndex++;
         alreadyWroteOnThisLine = true;
         resetStates();
     }
@@ -257,7 +298,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SORT|lines: " + line);
+            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
             patternIndex++;
             resetStates();
         }
@@ -302,7 +343,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SEARCH|lines: " + line);
+            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
             resetStates();
         }
 
@@ -339,7 +380,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SORT|lines: " + line);
+            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
             resetStates();
         } else if (firstIndex == 3 && secondIndex == 0) {
             // search without submit is still valid
@@ -348,7 +389,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SEARCH|lines: " + line);
+            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
             resetStates();
         }
 
@@ -361,7 +402,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1 + ": " + currentState + "|lines: "
+            System.out.println(lineNum + 1 + ": " + currentState + "|lines: "
                     + line);
             patternsFound.put("INPUT_" + patternIndex, lines);
             patternIndex++;
@@ -385,7 +426,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SORT|lines: " + line);
+            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
             resetStates();
         } else if (firstIndex == 3 && secondIndex == 0) {
             // search without submit is still valid
@@ -394,7 +435,7 @@ public class PatternInferrer {
             String line = "";
             for (int i : lines)
                 line += i + " ";
-            System.out.println(lineNum+1+": SEARCH|lines: " + line);
+            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
             resetStates();
         }
 
@@ -512,5 +553,9 @@ public class PatternInferrer {
 
     public static void main(String[] args) {
         startInferringProcess();
+    }
+
+    public static void setBaseUrl(String baseURL) {
+        baseUrl = baseURL;
     }
 }

@@ -403,7 +403,7 @@ public class WebsiteExplorer {
                 if (!element.toString().matches(".*onchange=\".*submit\".*")) {
                     // if form doesn't submit dynamically, submit
                     // form manually
-                    SeleniumTableRow row = new SeleniumTableRow("select",// element.toString(),
+                    SeleniumTableRow row = new SeleniumTableRow("select",
                             identifier, "label=\""
                                     + options.get(rand1).getText() + '"');
                     System.out.println("row: " + row.toString());
@@ -592,6 +592,13 @@ public class WebsiteExplorer {
                 .xpath("//*[contains(@id, \"menu\")]")));
         masterList.addAll(driver.findElements(By
                 .xpath("//*[contains(@name, \"nav\")]")));
+        // search for class, name and id = "[a-zA-z]+[top][a-zA-z]+"
+        masterList.addAll(driver.findElements(By
+                .xpath("//*[contains(@class, \"top\")]")));
+        masterList.addAll(driver.findElements(By
+                .xpath("//*[contains(@id, \"top\")]")));
+        masterList.addAll(driver.findElements(By
+                .xpath("//*[contains(@name, \"top\")]")));
 
 
         for (WebElement elem : masterList) {

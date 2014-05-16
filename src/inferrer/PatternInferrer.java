@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -38,7 +39,8 @@ public class PatternInferrer {
     private static int patternIndex = 1;
     private static LinkedHashMap<String, ArrayList<Integer>> patternsFound = new LinkedHashMap<String, ArrayList<Integer>>();
 
-    private static HashMap<String, HashSet<String>> menuElements;
+    private static HashMap<String, HashSet<String>> menuElements,
+            masterElements, detailElements;
     private static String baseUrl = "default";
 
     /**
@@ -48,6 +50,20 @@ public class PatternInferrer {
     public static void setMenuElements(
             HashMap<String, HashSet<String>> menuElements) {
         PatternInferrer.menuElements = menuElements;
+    }
+
+    public static void setBaseUrl(String baseURL) {
+        baseUrl = baseURL;
+    }
+
+    public static void setMasterElements(
+            HashMap<String, HashSet<String>> masterElements) {
+        PatternInferrer.masterElements = masterElements;
+    }
+
+    public static void setDetailElements(
+            HashMap<String, HashSet<String>> detailElements) {
+        PatternInferrer.detailElements = detailElements;
     }
 
     public static void startInferringProcess() {
@@ -96,10 +112,11 @@ public class PatternInferrer {
     }
 
     private static void writeParadigmFile() {
+        int number = 0;
         // write menu
         PatternRegister.initializePatternRegister(baseUrl);
         if (!(menuElements == null || menuElements.isEmpty())) {
-            PatternRegister.startPattern("menu", 0);// number doesnt matter
+            PatternRegister.startPattern("menu", number);// number doesnt matter
 
             Iterator<Entry<String, HashSet<String>>> it = menuElements
                     .entrySet().iterator();
@@ -107,6 +124,27 @@ public class PatternInferrer {
                 Map.Entry<String, HashSet<String>> entry = it.next();
                 PatternRegister.enterMenuItemContent(entry.getKey(),
                         entry.getValue());
+            }
+
+            PatternRegister.closePattern();
+            number++;
+        }
+        
+        // write search result pages' master detail
+        if (!(masterElements == null || detailElements == null
+                || masterElements.isEmpty() || detailElements.isEmpty())) {
+            Set<String> keys = masterElements.keySet();
+            
+            for(String k : keys){
+                PatternRegister.startPattern("masterDetail", number);// number doesn't matter
+                Set<String> masters = masterElements.get(k);
+                Set<String> details = null;
+                if(detailElements.containsKey(k))
+                    details = detailElements.get(k);
+                
+                PatternRegister.enterMasterDetailContent(masters, details, k);
+                
+                number++;
             }
 
             PatternRegister.closePattern();
@@ -154,12 +192,6 @@ public class PatternInferrer {
                             parameters);
                     break;
                 }
-                case "masterdetail": {
-                    String master = null, detail = null, masterLocator = null, detailLocator = null;
-                    PatternRegister.enterMasterDetailContent(master, detail,
-                            masterLocator, detailLocator);
-                    break;
-                }
                 case "search": {
                     PatternRegister.enterFindContent(actions, targets,
                             parameters);
@@ -172,6 +204,11 @@ public class PatternInferrer {
                 }
                 case "call": {
                     PatternRegister.enterCallContent(actions, targets,
+                            parameters);
+                    break;
+                }
+                case "input": {
+                    PatternRegister.enterInputContent(actions, targets,
                             parameters);
                     break;
                 }
@@ -488,8 +525,8 @@ public class PatternInferrer {
                     // has password, got user, change state
                     lines.add(lineNum);
                     setStates(0, 3);// LOGIN_USER_PASS
-                } else {// curr state LOGIN_USER_PASSWORD
-                        // keep same state
+                } else if (secondIndex == 3) {// curr state LOGIN_USER_PASSWORD
+                    // keep same state
                     lines.add(lineNum);
                 }
             } else {
@@ -508,7 +545,7 @@ public class PatternInferrer {
                 } else if (secondIndex == 2) {// curr state LOGIN_PASS
                     // duplicate writes on pass, state keeps the same
                     lines.add(lineNum);
-                } else {// curr state LOGIN_USER_PASS
+                } else if (secondIndex == 3) {// curr state LOGIN_USER_PASS
                     lines.add(lineNum);
                 }
             } else {
@@ -553,9 +590,5 @@ public class PatternInferrer {
 
     public static void main(String[] args) {
         startInferringProcess();
-    }
-
-    public static void setBaseUrl(String baseURL) {
-        baseUrl = baseURL;
     }
 }

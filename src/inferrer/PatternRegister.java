@@ -4,16 +4,18 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.FileOutputStream;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import site_accesser.GlobalConstants;
 
 public class PatternRegister {
-    static int pos = 1;
 
     public static void initializePatternRegister(String baseUrl) {
         File file = new File(GlobalConstants.PATTERNS_FILEPATH);
@@ -106,9 +108,9 @@ public class PatternRegister {
 
         Writer bw;
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file.getAbsoluteFile(), true),
-                    "UTF-8"));
+            bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile(), true), "UTF-8"));
             bw.write("\t</node>\n");
             bw.close();
         } catch (IOException e) {
@@ -119,20 +121,20 @@ public class PatternRegister {
     private static void writeConfigurationLine(String actionType, String field,
             String value) {
         File file = new File(GlobalConstants.PATTERNS_FILEPATH);
-        
+
         if (actionType.toLowerCase().contains("type")) {
             actionType = "inputs ";
         } else if (actionType.toLowerCase().contains("click")) {
-            // TODO ask which one it is
             actionType = "clicks ";
         } else if (actionType.toLowerCase().contains("select")) {
-            // TODO ask which one it is
             actionType = "selects";
         }
+
         Writer bw;
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file.getAbsoluteFile(),true), "UTF-8"));
+            bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile(), true), "UTF-8"));
             bw.write("\t\t\t<" + actionType + " field=\"" + field
                     + "\" value=\"" + value + "\"/>\n");
             bw.close();
@@ -145,8 +147,9 @@ public class PatternRegister {
         File file = new File(GlobalConstants.PATTERNS_FILEPATH);
         Writer bw;
         try {
-            bw = new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(file.getAbsoluteFile(),true), "UTF-8"));
+            bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile(), true), "UTF-8"));
             bw.write("\t\t</configurations>\n");
             bw.close();
         } catch (IOException e) {
@@ -173,8 +176,29 @@ public class PatternRegister {
         }
     }
 
+    private static void writeFields(HashMap<String, String> ids) {
+        File file = new File(GlobalConstants.PATTERNS_FILEPATH);
+        Writer bw;
+        try {
+            bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile(), true), "UTF-8"));
+            Iterator<Map.Entry<String, String>> it = ids.entrySet().iterator();
+            while (it.hasNext()) {
+                // Map.Entry<String, WebElement> pair = it.next();
+                Map.Entry<String, String> pair = it.next();
+                bw.write("\t\t<fields name=\"" + pair.getValue() + "\" id=\""
+                        + pair.getKey() + "\"/>\n");
+            }
+
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private static void openConfiguration(String check, String validity,
-            String message, String position, String result, String master) {
+            String position, String result, String master, String mappingURL) {
         File file = new File(GlobalConstants.PATTERNS_FILEPATH);
         Writer bw;
         try {
@@ -187,32 +211,51 @@ public class PatternRegister {
                             : "")
                     + (!(check == null || check.isEmpty()) ? "check=\"" + check
                             + "\" " : "")
-                    + (!(message == null || message.isEmpty()) ? "message=\""
-                            + message + "\" " : "")
-                    + (!(position == null || position.isEmpty()) ? "position="
-                            + position + " " : "")
+                    + (!(position == null || position.isEmpty()) ? "position=\""
+                            + position + "\" "
+                            : "")
                     + (!(result == null || position.isEmpty()) ? "result=\""
                             + result + "\" " : "")
                     + (!(master == null || master.isEmpty()) ? "master=\""
-                            + master + "\" " : "") + ">\n");
+                            + master + "\" " : "")
+                    + (!(mappingURL == null || mappingURL.isEmpty()) ? "mappingURL=\""
+                            + mappingURL + "\" " : "")+ ">\n");
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void enterMenuItemContent(String element, HashSet<String> urls) {
+    private static void writeClosedConfigurationTag(String value, String check) {
         File file = new File(GlobalConstants.PATTERNS_FILEPATH);
         Writer bw;
         try {
             bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
-            bw.write("\t\t<item element=\"" + element + "\">\n");
-            for (String s : urls) {
-                bw.write("\t\t\t<page URL=\"" + s + "\"/>\n");
+            bw.write("\t\t<configurations "
+                    + (!(value == null || value.isEmpty()) ? "value=\"" + value
+                            + "\" " : "")
+                    + (!(check == null || check.isEmpty()) ? "check=\"" + check
+                            + "\" " : "") + "/>\n");
+            bw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void enterMenuItemContent(String url, HashSet<String> elements) {
+        File file = new File(GlobalConstants.PATTERNS_FILEPATH);
+        Writer bw;
+        try {
+            bw = new BufferedWriter(
+                    new OutputStreamWriter(new FileOutputStream(
+                            file.getAbsoluteFile(), true), "UTF-8"));
+            bw.write("\t\t<page URL=\"" + url + "\">\n");
+            for (String s : elements) {
+                bw.write("\t\t\t<item element=\"" + s + "\"/>\n");
             }
-            bw.write("\t\t</item>\n");
+            bw.write("\t\t</page>\n");
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -288,16 +331,22 @@ public class PatternRegister {
                 || actions.size() != parameters.size())
             return;
 
-        String check = "StayOnSamePage", validity = "Invalid", message = "invalid login", position = "\""
-                + pos + "\"", result = "", master = "";
-        pos++;
+        String check = "StayOnSamePage", validity = "Invalid";
+
         ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
 
-        openConfiguration(check, validity, message, position, result, master);
+        openConfiguration(check, validity, "", "", "","");
         for (int i = 0; i < actions.size(); ++i) {
-            writeConfigurationLine(actions.get(i), "field_" + i,
-                    parameters.get(i));
-            names.add("field_" + i);
+            String field = "field_" + i;
+            if (targets.get(i).matches(".*(submit).*"))
+                continue;
+            else if (targets.get(i).matches(".*(user|mail).*"))
+                field = "username";
+            else if (targets.get(i).matches(".*(pass).*"))
+                field = "password";
+
+            writeConfigurationLine(actions.get(i), field, parameters.get(i));
+            names.add(field);
             ids.add(targets.get(i));
         }
         closeConfiguration();
@@ -305,23 +354,35 @@ public class PatternRegister {
         writeFields(names, ids);
     }
 
-    public static void enterMasterDetailContent(String detail, String master,
-            String masterLocator, String detailLocator) {
+    public static void enterMasterDetailContent(Set<String> masters,
+            Set<String> details, String mappingURL) {
 
-        String check = "Contains1", validity = "", message = "master detail contain check", position = "\""
-                + pos + "\"", result = "";
-        pos++;
-        ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
+        String check = "Contains1";
 
-        openConfiguration(check, validity, message, position, result, master);
-        writeDetailLine(detail);
-        names.add(master);
-        ids.add(masterLocator);
-        names.add(detail);
-        ids.add(detailLocator);
-        closeConfiguration();
+        HashMap<String, String> idNameMap = new HashMap<String, String>();
 
-        writeFields(names, ids);
+        int numberMaster = 0, numberDetail = 0;
+        for (String master : masters) {
+            for (String detail : details) {
+                // conf master
+                if (!idNameMap.containsKey(master)) {
+                    idNameMap.put(master, "master_" + numberMaster);
+                    numberMaster++;
+                }
+                openConfiguration(check, "", "", "", idNameMap.get(master),mappingURL);
+
+                // write detail
+                if (!idNameMap.containsKey(detail)) {
+                    idNameMap.put(master, "detail_" + numberDetail);
+                    numberDetail++;
+                }
+                writeDetailLine(idNameMap.get(detail));
+                
+                closeConfiguration();
+            }
+        }
+
+        writeFields(idNameMap);
     }
 
     public static void enterFindContent(ArrayList<String> actions,
@@ -331,21 +392,19 @@ public class PatternRegister {
                 || actions.size() != parameters.size())
             return;
 
-        String check = "NumberOfResults_more_than", validity = "", message = "check search results", position = "\""
-                + pos + "\"", result = "10", master = "";
-        pos++;
-        ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
+        String check = "NumberOfResults_more_than", position = "1", result = "10";
 
-        openConfiguration(check, validity, message, position, result, master);
+        ArrayList<String> names = new ArrayList<String>();
+
+        openConfiguration(check, "", position, result, "","");
         for (int i = 0; i < actions.size(); ++i) {
-            writeConfigurationLine(actions.get(i), "field_" + i,
+            writeConfigurationLine(actions.get(i), "find_" + i,
                     parameters.get(i));
-            names.add("field_" + i);
-            ids.add(targets.get(i));
+            names.add("find_" + i);
         }
         closeConfiguration();
 
-        writeFields(names, ids);
+        writeFields(names, targets);
     }
 
     public static void enterSortContent(ArrayList<String> actions,
@@ -355,21 +414,16 @@ public class PatternRegister {
                 || actions.size() != parameters.size())
             return;
 
-        String check = '\"' + parameters.get(0).replaceAll("(label=|\")", "") + '\"', validity = "Invalid", message = "valid sort", position = "\""
-                + pos + "\"", result = "", master = "";
-        pos++;
-        ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
+        ArrayList<String> names = new ArrayList<String>();
 
-        openConfiguration(check, validity, message, position, result, master);
+        writeClosedConfigurationTag("", "");
         for (int i = 0; i < actions.size(); ++i) {
-            writeConfigurationLine(actions.get(i), "field_" + i,
+            writeConfigurationLine(actions.get(i), "sort_" + i,
                     parameters.get(i));
-            names.add("field_" + i);
-            ids.add(targets.get(i));
+            names.add("sort_" + i);
         }
-        closeConfiguration();
 
-        writeFields(names, ids);
+        writeFields(names, targets);
     }
 
     public static void enterCallContent(ArrayList<String> actions,
@@ -379,20 +433,32 @@ public class PatternRegister {
                 || actions.size() != parameters.size())
             return;
 
-        String check = "", validity = "", message = "call", position = "\""
-                + pos + "\"", result = "", master = "";
-        pos++;
-        ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
+        String check = "PageChange";
 
-        openConfiguration(check, validity, message, position, result, master);
+        ArrayList<String> names = new ArrayList<String>();
+
+        writeClosedConfigurationTag("", check);
         for (int i = 0; i < actions.size(); ++i) {
-            writeConfigurationLine(actions.get(i), "field_" + i,
-                    parameters.get(i));
-            names.add("field_" + i);
-            ids.add(targets.get(i));
+            names.add("call_" + i);
         }
-        closeConfiguration();
 
-        writeFields(names, ids);
+        writeFields(names, targets);
+    }
+
+    public static void enterInputContent(ArrayList<String> actions,
+            ArrayList<String> targets, ArrayList<String> parameters) {
+        if (actions.size() != targets.size()
+                || targets.size() != parameters.size()
+                || actions.size() != parameters.size())
+            return;
+
+        ArrayList<String> names = new ArrayList<String>();
+
+        for (int i = 0; i < actions.size(); ++i) {
+            writeClosedConfigurationTag(parameters.get(i), "");
+            names.add("input_" + i);
+        }
+
+        writeFields(names, targets);
     }
 }

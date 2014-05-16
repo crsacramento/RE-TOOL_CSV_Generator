@@ -41,8 +41,20 @@ public class WebsiteExplorer {
     /** set of visited elements */
     private static Set<String> visitedElements = new HashSet<String>();
 
-    /** set of visited elements */
+    /** set of menu elements (page -> menu elements within) */
     public HashMap<String, HashSet<String>> menuElements = new HashMap<String, HashSet<String>>();
+
+    /**
+     * set of detail elements belonging to a MasterDetail in a search results
+     * page (page -> menu elements within)
+     */
+    public HashMap<String, HashSet<String>> detailElements = new HashMap<String, HashSet<String>>();
+
+    /**
+     * set of master elements belonging to a MasterDetail in a search results
+     * page (page -> menu elements within)
+     */
+    public HashMap<String, HashSet<String>> masterElements = new HashMap<String, HashSet<String>>();
 
     /** URL of current page */
     private String currentPage = baseUrl;
@@ -61,6 +73,8 @@ public class WebsiteExplorer {
 
     /** web driver */
     private WebDriver driver = null;
+
+    private static String lastAction = "NONE", currentAction = "NONE";
 
     /**
      * Returns web driver.
@@ -161,6 +175,9 @@ public class WebsiteExplorer {
             int rand1 = (int) Math.round(Math.random()
                     * (nonEmpties.size() - 1));
             if (rand1 >= 0) {
+                lastAction = currentAction;
+                currentAction = TYPES[nonEmpties.get(rand1)];
+
                 List<WebElement> randChosenList = list.get(nonEmpties
                         .get(rand1));
                 int rand2 = (int) Math.round(Math.random()
@@ -438,41 +455,41 @@ public class WebsiteExplorer {
                 || element.getTagName().toLowerCase().equals("select")) {
             // login form, fill all form inputs
             WebElement form = findParentForm(element);
-            List<WebElement> children = findInputSelectChildNodes(form);
+            List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
             SeleniumTableRow row = null;
 
             for (WebElement e : children) {
                 if (e.getTagName().toLowerCase().equals("input")) {
                     switch (e.getAttribute("type")) {
-                    case "text":
-                    case "password":
-                    case "email":
-                        int rand = (int) (Math.random() * (typedKeywords.length - 1));
-                        row = new SeleniumTableRow(
-                                "type",// e.toString(),
-                                HTMLLocatorBuilder.getElementIdentifier(e),
-                                typedKeywords[rand]);
-                        System.out.println("row: " + row.toString());
-                        history.add(row);
-                        writeToHistoryFile(row, true);
-                        visitedElements.add(e.toString());
-                        // interact
-                        e.clear();
-                        e.sendKeys(typedKeywords[rand]);
-                        break;
-                    case "radio":
-                    case "checkbox":
-                        row = new SeleniumTableRow(
-                                "click",// e.toString(),
-                                HTMLLocatorBuilder.getElementIdentifier(e),
-                                "EMPTY");
-                        System.out.println("row: " + row.toString());
-                        history.add(row);
-                        writeToHistoryFile(row, true);
-                        visitedElements.add(e.toString());
-                        // interact
-                        e.click();
-                        break;
+                        case "text":
+                        case "password":
+                        case "email":
+                            int rand = (int) (Math.random() * (typedKeywords.length - 1));
+                            row = new SeleniumTableRow(
+                                    "type",// e.toString(),
+                                    HTMLLocatorBuilder.getElementIdentifier(e),
+                                    typedKeywords[rand]);
+                            System.out.println("row: " + row.toString());
+                            history.add(row);
+                            writeToHistoryFile(row, true);
+                            visitedElements.add(e.toString());
+                            // interact
+                            e.clear();
+                            e.sendKeys(typedKeywords[rand]);
+                            break;
+                        case "radio":
+                        case "checkbox":
+                            row = new SeleniumTableRow(
+                                    "click",// e.toString(),
+                                    HTMLLocatorBuilder.getElementIdentifier(e),
+                                    "EMPTY");
+                            System.out.println("row: " + row.toString());
+                            history.add(row);
+                            writeToHistoryFile(row, true);
+                            visitedElements.add(e.toString());
+                            // interact
+                            e.click();
+                            break;
                     }
                 } else if (e.getTagName().toLowerCase().equals("select")) {
                     List<WebElement> options = element.findElements(By
@@ -510,7 +527,8 @@ public class WebsiteExplorer {
      * @param form
      * @return all input and select leaf nodes
      */
-    private static List<WebElement> findInputSelectChildNodes(WebElement form) {
+    private static List<WebElement> findInputAndSelectChildNodesGivenParentForm(
+            WebElement form) {
         List<WebElement> all = form.findElements(By.xpath("*"));
         List<WebElement> descendants = null;
         if (all.isEmpty()) {
@@ -521,18 +539,18 @@ public class WebsiteExplorer {
         for (WebElement item : all) {
             if (item.getTagName().toLowerCase().equals("input")) {
                 switch (item.getAttribute("type")) {
-                case "text":
-                case "password":
-                case "email":
-                case "radio":
-                case "checkbox": {
-                    ret.add(item);
-                }
+                    case "text":
+                    case "password":
+                    case "email":
+                    case "radio":
+                    case "checkbox": {
+                        ret.add(item);
+                    }
                 }
             } else if (item.getTagName().toLowerCase().equals("select")) {
                 ret.add(item);
             } else {
-                descendants = findInputSelectChildNodes(item);
+                descendants = findInputAndSelectChildNodesGivenParentForm(item);
                 if (!(descendants == null || descendants.isEmpty())) {
                     for (WebElement i : descendants) {
                         ret.add(i);
@@ -550,7 +568,8 @@ public class WebsiteExplorer {
      *            parent node
      * @return all anchor leaf nodes
      */
-    private static List<WebElement> findAnchorNodes(WebElement parent) {
+    private static List<WebElement> findChildrenAnchorNodesGivenParent(
+            WebElement parent) {
         List<WebElement> all = parent.findElements(By.xpath("*"));
         List<WebElement> descendants = null;
         if (all.isEmpty()) {
@@ -562,7 +581,7 @@ public class WebsiteExplorer {
             if (item.getTagName().toLowerCase().equals("a")) {
                 ret.add(item);
             } else {
-                descendants = findAnchorNodes(item);
+                descendants = findChildrenAnchorNodesGivenParent(item);
                 if (!(descendants == null || descendants.isEmpty())) {
                     for (WebElement i : descendants) {
                         ret.add(i);
@@ -578,49 +597,43 @@ public class WebsiteExplorer {
 
         // search for <nav> tag
         List<WebElement> masterList = driver.findElements(By.tagName("nav"));
-        // search for class, name and id = "[a-zA-z]+[nav][a-zA-z]+"
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@class, \"nav\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@id, \"nav\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@name, \"nav\")]")));
-        // search for class, name and id = "[a-zA-z]+[menu][a-zA-z]+"
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@class, \"menu\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@id, \"menu\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@name, \"nav\")]")));
-        // search for class, name and id = "[a-zA-z]+[top][a-zA-z]+"
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@class, \"top\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@id, \"top\")]")));
-        masterList.addAll(driver.findElements(By
-                .xpath("//*[contains(@name, \"top\")]")));
+        masterList.addAll(driver.findElements(By.tagName("header")));
+        masterList.addAll(driver.findElements(By.tagName("footer")));
 
+        // search for class, name and id = "[a-zA-z]+[nav][a-zA-z]+"
+        for (String id : GlobalConstants.menuIdentifiers) {
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
+        }
 
         for (WebElement elem : masterList) {
-            List<WebElement> children = findAnchorNodes(elem);
+            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
             if (!(children == null || children.isEmpty()))
                 for (WebElement element : children) {
-                    if(element.getAttribute("href") != null)
+                    if (element.getAttribute("href") != null)
                         retSet.add(element.toString());
                 }
         }
 
+        int prevSize = menuElements.size();
+
+        // page -> elements
         for (String s : retSet) {
-            if (menuElements.containsKey(s)) {
-                menuElements.get(s).add(currentPage);
+            if (menuElements.containsKey(currentPage)) {
+                menuElements.get(currentPage).add(s);
             } else {
                 HashSet<String> temp = new HashSet<String>();
-                temp.add(currentPage);
-                menuElements.put(s, temp);
+                temp.add(s);
+                menuElements.put(currentPage, temp);
             }
-            //System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
         }
-        System.out.println("size:"+menuElements.size());
+        System.out.println("menu elements found:"
+                + Math.abs(menuElements.size() - prevSize));
     }
 
     /**
@@ -709,7 +722,6 @@ public class WebsiteExplorer {
                 .setLevel(java.util.logging.Level.SEVERE);
         driver.get(baseUrl);
 
-        
         try {
             System.setErr(new PrintStream(new File("err.txt")));
         } catch (FileNotFoundException e1) {
@@ -731,14 +743,19 @@ public class WebsiteExplorer {
 
         while (currAction < NUM_ACTIONS) {
             currentPage = driver.getCurrentUrl();
-            
+
             System.out.println("Action #" + currAction + " | Page URL is: "
                     + currentPage + "|actions:" + currAction);
-            
+
             // search for menu elements (before the element is visited)
             findMenuElementsInPage();
-            
+
             WebElement element = chooseNextElement();
+
+            // see if one can search for master detail after search
+            if (lastAction.equals("SEARCH")) {
+                findMasterDetailElementsInSearchResultPage();
+            }
 
             if (element == null) {
                 // if no element is found, go back to home page
@@ -747,7 +764,6 @@ public class WebsiteExplorer {
                     break;
             } else {
 
-                
                 System.out.println("ELEMENT: "
                         + element.toString()
                         + (!element.getText().isEmpty() ? " (has text)"
@@ -786,6 +802,77 @@ public class WebsiteExplorer {
         }
 
         driver.quit();
+    }
+
+    private void findMasterDetailElementsInSearchResultPage() {
+        Set<String> masterRetSet = new HashSet<String>(), detailRetSet = new HashSet<String>();
+
+        // extract master elements
+        List<WebElement> masterList = new ArrayList<WebElement>();
+
+        for (String id : GlobalConstants.masterIdentifiers) {
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
+        }
+
+        // extract detail elements
+        List<WebElement> detailList = new ArrayList<WebElement>();
+
+        // search for class, name and id = "[a-zA-z]+[id][a-zA-z]+"
+        for (String id : GlobalConstants.masterIdentifiers) {
+            detailList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
+            detailList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
+            detailList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
+        }
+
+        for (WebElement elem : masterList) {
+            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            if (!(children == null || children.isEmpty()))
+                // for (WebElement element : children) {
+                // if (element.getAttribute("href") != null)
+                masterRetSet.add(elem.toString());
+            // }
+        }
+        
+        for (WebElement elem : detailList) {
+            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            if (!(children == null || children.isEmpty()))
+                // for (WebElement element : children) {
+                // if (element.getAttribute("href") != null)
+                detailRetSet.add(elem.toString());
+            // }
+        }
+
+        // page -> elements
+        for (String s : masterRetSet) {
+            if (masterElements.containsKey(currentPage)) {
+                masterElements.get(currentPage).add(s);
+            } else {
+                HashSet<String> temp = new HashSet<String>();
+                temp.add(s);
+                masterElements.put(currentPage, temp);
+            }
+            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+        }
+        
+        for (String s : detailRetSet) {
+            if (detailElements.containsKey(currentPage)) {
+                detailElements.get(currentPage).add(s);
+            } else {
+                HashSet<String> temp = new HashSet<String>();
+                temp.add(s);
+                detailElements.put(currentPage, temp);
+            }
+            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+        }
+        System.out.println("menuElements size:" + menuElements.size());
     }
 
 }

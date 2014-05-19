@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
@@ -34,14 +32,12 @@ public class Configurator {
      * @return the instance
      */
     public static Configurator getInstance() {
-
         if (instance == null)
             instance = new Configurator();
         return instance;
     }
 
     public Configurator() {
-        System.out.println(this.hashCode());
         loadConfig();
     }
 
@@ -53,7 +49,8 @@ public class Configurator {
     private String[] typedKeywords = { "curtains", "coffee", "phone", "shirt",
             "computer", "dress", "banana", "sandals" };
     /** list of patterns to restrict which patterns to search for */
-    private String[] patternsToSearch = {};
+    private String[] patternsToSearch = { "all" };
+    private boolean includeChildrenNodesOnInteraction = false;
 
     /** keywords that identify search elements */
     private String searchKeywords = "(\\sq\\s|query|qry|search|"
@@ -115,6 +112,13 @@ public class Configurator {
      */
     public int getNumRedirects() {
         return numRedirects;
+    }
+
+    /**
+     * @return the includeChildrenNodesOnInteraction
+     */
+    public boolean includeChildrenNodesOnInteraction() {
+        return includeChildrenNodesOnInteraction;
     }
 
     /**
@@ -209,14 +213,14 @@ public class Configurator {
     }
 
     private final String[] TAGNAMES = { "actions", "redirections",
-            "typedKeywords", "searchKeywords", "sortKeywords", "loginKeywords",
+            "includeChildrenNodesOnInteraction", "typedKeywords",
+            "searchKeywords", "sortKeywords", "loginKeywords",
             "generalWordsToExclude", "menuIdentifiers", "masterIdentifiers",
             "detailIdentifiers", "historyFilepath", "processedHistoryFilepath",
             "patternsFilepath", "patternsToFind", "loginConfiguration",
             "tokenizerPatterns" };
 
     private void loadConfig() {
-        System.out.println("PASSED_HERE");
         File userOverride = new File("conf.xml");
 
         if (!userOverride.exists()) {
@@ -265,74 +269,32 @@ public class Configurator {
                         || s.equals("detailIdentifiers")
                         || s.equals("patternsToFind")) {
                     processItemListTag(tag);
-                } else if (s.equals("loginConfiguration")) {
-                    NodeList children = tag.item(0).getChildNodes();
-                    if (children.getLength() == 2) {
-                        NodeList user = doc.getElementsByTagName("username");
-                        NodeList pass = doc.getElementsByTagName("password");
-
-                        if (user.getLength() == 1) {
-                            loginConfiguration.put("username", user.item(0)
-                                    .getFirstChild().getNodeValue());
-                        } else {
-                            System.err.println("if there is a " + s
-                                    + " tag, it must have a username child");
-                        }
-
-                        if (pass.getLength() == 1) {
-                            loginConfiguration.put("password", pass.item(0)
-                                    .getFirstChild().getNodeValue());
-                        } else {
-                            System.err.println("if there is a " + s
-                                    + " tag, it must have a password child");
-                        }
-
-                    }
                 } else if (s.equals("tokenizerPatterns")) {
                     processTokenizerPatternList(tag);
-                }
+                } else if (s.equals("loginConfiguration")) {
+                    NodeList children = tag.item(0).getChildNodes();
+                    String username = null, password = null;
+                    for (int i = 0; i < children.getLength(); i++) {
+
+                        Node firstPersonNode = children.item(i);
+                        if (firstPersonNode.getNodeType() == Node.ELEMENT_NODE) {
+                            if(firstPersonNode.getNodeName().equals("username")){
+                                username = firstPersonNode.getFirstChild().getNodeValue();
+                            }else if(firstPersonNode.getNodeName().equals("password")){
+                                password = firstPersonNode.getFirstChild().getNodeValue();
+                            }
+                        }
+                    }
+                    if (!(username == null || password == null)) {
+                        loginConfiguration.put("username", username);
+                        loginConfiguration.put("password", password);
+                    } else {
+                        System.err
+                                .println("In a login configuration there must exist a username and a password node");
+                    }
+                } 
             }
-
         }
-
-        /*
-         * System.out.println("numActions:" + numActions);
-         * System.out.println("getGeneralWordsToExclude:" +
-         * getGeneralWordsToExclude());
-         * System.out.println("getHistoryFilepath: " + getHistoryFilepath());
-         * System.out.println("getLoginKeywords:" + getLoginKeywords());
-         * System.out.println("getNumRedirects:" + getNumRedirects());
-         * System.out.println("getPatternsFilepath:" + getPatternsFilepath());
-         * System.out.println("getProcessedHistoryFilepath:" +
-         * getProcessedHistoryFilepath());
-         * System.out.println("getSearchKeywords:" + getSearchKeywords());
-         * System.out.println("getSortKeywords:" + getSortKeywords());
-         */
-        Iterator<Entry<String, String>> it = loginConfiguration.entrySet()
-                .iterator();
-        while (it.hasNext()) {
-            Entry<String, String> p = it.next();
-            System.out.println("login config:" + p.getKey() + "|"
-                    + p.getValue());
-        }
-        for (String s : getDetailIdentifiers()) {
-            System.out.println("\tdetail:" + s);
-        }
-        for (String s : getMasterIdentifiers()) {
-            System.out.println("\tmaster:" + s);
-        }
-        for (String s : getMenuIdentifiers()) {
-            System.out.println("\tmenu:" + s);
-        }
-        for (String s : getTypedKeywords()) {
-            System.out.println("\ttype:" + s);
-        }
-        for (String s : getPatternsToSearch()) {
-            System.out.println("\tpattern:" + s);
-        }
-        for (PatternMapEntry s : LogProcessor.getPatterns())
-            System.out.println(s.getPatternName() + "|"
-                    + s.getIdentifyingRegex());
     }
 
     private void processTokenizerPatternList(NodeList tag) {
@@ -351,17 +313,18 @@ public class Configurator {
             Node n = children.item(i);
             if (n.getNodeName().equals("patternEntry")) {
 
-                Element patternEntryElement = (Element)n;
-                NodeList nameList = patternEntryElement.getElementsByTagName("name");
-                Element firstNameElement = (Element)nameList.item(0);
+                Element patternEntryElement = (Element) n;
+                NodeList nameList = patternEntryElement
+                        .getElementsByTagName("name");
+                Element firstNameElement = (Element) nameList.item(0);
                 NodeList textFNList = firstNameElement.getChildNodes();
-                name =((Node)textFNList.item(0)).getNodeValue().trim();
-                
-                
-                NodeList regexList = patternEntryElement.getElementsByTagName("regex");
-                Element firstRegexElement = (Element)regexList.item(0);
+                name = ((Node) textFNList.item(0)).getNodeValue().trim();
+
+                NodeList regexList = patternEntryElement
+                        .getElementsByTagName("regex");
+                Element firstRegexElement = (Element) regexList.item(0);
                 NodeList regexFNList = firstRegexElement.getChildNodes();
-                regex = ((Node)regexFNList.item(0)).getNodeValue().trim();
+                regex = ((Node) regexFNList.item(0)).getNodeValue().trim();
 
                 if (name == null || regex == null) {
                     System.err.println("No name or regex, invalid");
@@ -389,13 +352,10 @@ public class Configurator {
         for (int i = 0; i < children.getLength(); ++i) {
             Node n = children.item(i);
 
-            // System.out.println(children.getLength()+"|"+tag.);
             if (n.getNodeType() == Node.ELEMENT_NODE) {
                 Element e = (Element) n;
-                NodeList itemList = e.getChildNodes();// getElementsByTagName("item");
-                // Element itemElement = (Element)itemList.item(0);
+                NodeList itemList = e.getChildNodes();
                 Node textList = itemList.item(0);
-                // Node text_list = textList.getFirstChild();
                 String text = textList.getNodeValue().trim();
                 b = true;
 
@@ -417,7 +377,26 @@ public class Configurator {
             } else if (s.equals("detailIdentifiers")) {
                 detailIdentifiers = array;
             } else if (s.equals("patternsToFind")) {
-                patternsToSearch = array;
+                // patternsToSearch = array;
+                ArrayList<String> arr2 = new ArrayList<String>();
+                boolean b1 = false;
+                for (String str : arr) {
+                    if (str.toLowerCase().equals("all")) {
+                        b1 = true;
+                        break;
+                    } else if (str.toLowerCase().matches(
+                            "search|sort|masterdetail|call|input|login")) {
+                        arr2.add(str);
+                    }
+                }
+                if (!b1 && arr2.size() > 0) {
+                    patternsToSearch = new String[arr2.size()];
+                    for (int i = 0; i < arr2.size(); ++i)
+                        patternsToSearch[i] = arr2.get(i);
+                }else{
+                    patternsToSearch = new String[] { "all" };
+                }
+
             }
         }
     }
@@ -431,7 +410,16 @@ public class Configurator {
      *            tag value
      */
     private boolean processSimpleTag(String name, String content) {
-        if (name.equals("actions") || name.equals("redirections")) {
+        if (name.equals("includeChildrenNodesOnInteraction")) {
+            if (content.matches("t(rue)?|1")) {
+                includeChildrenNodesOnInteraction = true;
+            } else if (content.matches("f(alse)?|0"))
+                includeChildrenNodesOnInteraction = true;
+            else
+                System.err.println("Invalid content on tag " + name
+                        + ", must have boolean value");
+            return true;
+        } else if (name.equals("actions") || name.equals("redirections")) {
             int parse = -1;
             try {
                 parse = Integer.parseInt(content);

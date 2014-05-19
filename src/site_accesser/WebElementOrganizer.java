@@ -12,25 +12,17 @@ import configuration.Configurator;
 
 public class WebElementOrganizer {
     private static Configurator conf = Configurator.getInstance();
-	/**
-	 * Does all checks that all elements have to respect (not visited, not
-	 * hidden, doesn't have keywords that no element should have)
-	 * 
-	 * @param e
-	 * @return
-	 */
-	 
-	static WebsiteExplorer we = WebsiteExplorer.getInstance();
+	private static WebsiteExplorer we = WebsiteExplorer.getInstance();
 	
 	private static boolean itPassesAllGeneralChecks(WebElement e) {
 		return e.isDisplayed()
-				&& !WebsiteExplorer.isElementAlreadyVisited(e)
+				&& !we.isElementAlreadyVisited(e)
 				&& !e.toString().toLowerCase()
 						.matches(".*" + conf.getGeneralWordsToExclude() + ".*")
 				&& !e.toString().toLowerCase().matches(".*(disabled|readonly).*");
 	}
 	
-	static private ArrayList<ArrayList<WebElement>> initialSetupElementList(){
+	private static ArrayList<ArrayList<WebElement>> initialSetupElementList(){
 		ArrayList<ArrayList<WebElement>> elemList = new 
 			ArrayList<ArrayList<WebElement>>();
 		/**
@@ -54,9 +46,9 @@ public class WebElementOrganizer {
 		ArrayList<ArrayList<WebElement>> retList = masterElemList;
 		
 		/**
-		 * 0 -> text
-		 * 1 -> select
-		 * 2 -> links
+		 * 0 -> select
+		 * 1 -> input
+		 * 2 -> call
 		 * 3 -> search
 		 * 4 -> sort 
 		 * 5 -> login
@@ -65,17 +57,17 @@ public class WebElementOrganizer {
 		for (WebElement e : elementsToDistribute) {
 			if (itPassesAllGeneralChecks(e)){
 				// test for search
-				if(e.toString().toLowerCase()
+				if(we.isSearchingForPattern("search") && e.toString().toLowerCase()
 							.matches(".*" + conf.getSearchKeywords() + ".*")){
 					retList.get(3).add(e);
 				}else{
 					// test for sort
-					if(e.toString().toLowerCase()
+					if(we.isSearchingForPattern("sort") && e.toString().toLowerCase()
 								.matches(".*" + conf.getSortKeywords() + ".*")){
 						retList.get(4).add(e);
 					}else{
 						// test for login
-						if(e.toString().toLowerCase()
+						if(we.isSearchingForPattern("login") && e.toString().toLowerCase()
 									.matches(".*" + conf.getLoginKeywords() + ".*")){
 							retList.get(5).add(e);
 						}else{
@@ -84,12 +76,12 @@ public class WebElementOrganizer {
 								|| e.getTagName().toLowerCase()
 									.equals("input")){
 								// text input
-								retList.get(0).add(e);
+								retList.get(1).add(e);
 							}
 							else if(e.getTagName().toLowerCase()
 								.equals("select")){
 								// dropdown
-								retList.get(1).add(e);
+								retList.get(0).add(e);
 							}
 							else if(e.getTagName().toLowerCase().equals("a")){
 								// link

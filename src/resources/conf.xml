@@ -2,24 +2,33 @@
 <conf>
 	<!-- 
 	    actions: number of actions the crawler will execute before stopping
-	    redirections: number of redirects to the home page the crawler will do before stopping
+	    redirections: number of redirects to the home page the crawler will do 
+	       before stopping
 	    typedKeywords: list of words to insert in text input elements
 		searchKeywords: regex with keywords that identify search elements
 		sortKeywords: regex with keywords that identify sort elements
 		loginKeywords: regex with keywords that identify login elements
-		generalWordsToExclude: regex with keywords that mark elements that should not be accessed
+		generalWordsToExclude: regex with keywords that mark elements that should not be 
+		  accessed
 		menuIdentifiers: list of ids/classes/names that identify menu elements
-		masterIdentifiers: list of ids/classes/names that identify master elements in search result pages
-		detailIdentifiers: list of ids/classes/names that identify detail elements in search result pages
+		masterIdentifiers: list of ids/classes/names that identify master elements in 
+		  search result pages
+		detailIdentifiers: list of ids/classes/names that identify detail elements in 
+		  search result pages
 		historyFilepath: specify absolute filepath for history file
 		processedHistoryFilepath: specify absolute filepath for processed history file
 		patternsFilepath: specify absolute filepath for PARADIGM model file
-		patternsToFind: list of patterns that the explorer can search for. If "all" occurs, there will be no restriction.
+		patternsToFind: list of patterns that the explorer can search for. If "all" 
+		  occurs, there will be no restriction.
 		loginConfiguration: credentials for a correct login in the web app.
 		tokenizerPatterns: patterns for LogProcessor
+		includeChildrenNodesOnInteraction: boolean; on interaction with an input or 
+		  select element, if children elements should be included  in the history file, 
+		  but not interacted with.
 	-->
 	<actions>30</actions>
 	<redirections>5</redirections>
+	<includeChildrenNodesOnInteraction>true</includeChildrenNodesOnInteraction>
 	<searchKeywords>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</searchKeywords>
 	<sortKeywords>(sort|asc\s|desc\s)</sortKeywords>
 	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\s|_)?(in|out)|log(ged)?(\s|_)?(in|out)))</loginKeywords>
@@ -63,6 +72,7 @@
 		<item>Call</item>
 		<item>Input</item>
 		<item>Login</item>
+		<item>Menu</item>
 	</patternsToFind>
 	<loginConfiguration>
 		<username>user-name</username>

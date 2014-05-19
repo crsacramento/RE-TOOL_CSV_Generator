@@ -105,10 +105,8 @@ public class LogProcessor {
 
 		// open alphabet file
 		FileWriter output = null;
-		String dirName = file.getParentFile().toPath().toAbsolutePath()
-				.toString();
-		File dir = new File(dirName);
-		File actualOutputFile = new File(dir, file.getName() + ".processed");
+		
+		File actualOutputFile = new File(conf.getProcessedHistoryFilepath());
 
 		try {
 			output = new FileWriter(actualOutputFile);

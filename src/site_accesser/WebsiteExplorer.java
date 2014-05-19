@@ -65,7 +65,7 @@ public class WebsiteExplorer {
     private static WebsiteExplorer instance = null;
 
     private static Configurator configurator = Configurator.getInstance();
-    
+
     /** web driver */
     private HtmlUnitDriver driver = null;
 
@@ -115,8 +115,8 @@ public class WebsiteExplorer {
      */
     private WebsiteExplorer() {
         driver = new HtmlUnitDriver();
-        //driver.setJavascriptEnabled(true);
-        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+        // driver.setJavascriptEnabled(true);
+        // driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
     /**
@@ -126,7 +126,7 @@ public class WebsiteExplorer {
      *            HTML element
      * @return element was visited or not
      */
-    public static boolean isElementAlreadyVisited(WebElement e) {
+    public boolean isElementAlreadyVisited(WebElement e) {
         if (visitedElements.isEmpty())
             return false;
         else {
@@ -149,8 +149,8 @@ public class WebsiteExplorer {
      * 
      * @return random element
      */
-    private static WebElement chooseNextElement() {
-        String[] TYPES = { "TEXT", "SELECT", "LINKS", "SEARCH", "SORT", "LOGIN" };
+    private WebElement chooseNextElement() {
+        String[] TYPES = { "SELECT", "INPUT", "CALL", "SEARCH", "SORT", "LOGIN" };
 
         List<ArrayList<WebElement>> list = WebElementOrganizer
                 .setupElementList();
@@ -160,7 +160,8 @@ public class WebsiteExplorer {
         int allOptions = 0;
 
         for (int i = 0; i < list.size(); ++i) {
-            if (!list.get(i).isEmpty()) {
+            if (!list.get(i).isEmpty()
+                    && (i == 0 || i > 0 && isSearchingForPattern(TYPES[i]))) {
                 nonEmpties.add(i);
                 type += TYPES[i] + "=" + list.get(i).size() + "|";
                 allOptions += list.get(i).size();
@@ -195,7 +196,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private static boolean isElementTextInputable(WebElement e) {
+    private boolean isElementTextInputable(WebElement e) {
         if (e.getTagName().toLowerCase().equals("textarea"))
             return true;
         if (e.getTagName().toLowerCase().equals("input")) {
@@ -213,7 +214,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private static boolean isElementRelatedToLogin(WebElement e) {
+    private boolean isElementRelatedToLogin(WebElement e) {
         return e.toString().toLowerCase()
                 .matches(".*" + configurator.getLoginKeywords() + ".*");
     }
@@ -224,7 +225,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private static boolean isInputElementExpectingNumbers(WebElement e) {
+    private boolean isInputElementExpectingNumbers(WebElement e) {
         String types = "((type=\\\")?number|price|quantity|qty\\s|zip\\s?code)";
         if (e.toString().matches(".*" + types + ".*"))
             return true;
@@ -238,7 +239,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to interact with
      */
-    private static void processAnchorElements(WebElement element) {
+    private void processAnchorElements(WebElement element) {
         // link
         SeleniumTableRow row = new SeleniumTableRow("clickAndWait",
         // element.toString(),
@@ -246,10 +247,12 @@ public class WebsiteExplorer {
         history.add(row);
         writeToHistoryFile(row, true);
         System.out.println("row: " + row.toString());
-        element.click();
 
         // add visited elements to list
-        visitedElements.add(element.toString());
+        // visitedElements.add(element.toString());
+        visitedElements.add(HTMLLocatorBuilder.getElementIdentifier(element));
+
+        element.click();
     }
 
     /**
@@ -258,7 +261,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to interact with
      */
-    private static void processInputElement(WebElement element) {
+    private void processInputElement(WebElement element) {
         String identifier = HTMLLocatorBuilder.getElementIdentifier(element);
         SeleniumTableRow row;
 
@@ -279,7 +282,9 @@ public class WebsiteExplorer {
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
-                visitedElements.add(element.toString());
+                // visitedElements.add(element.toString());
+                visitedElements.add(HTMLLocatorBuilder
+                        .getElementIdentifier(element));
 
                 // interact
                 element.sendKeys(Integer.toString(rand1));
@@ -290,11 +295,14 @@ public class WebsiteExplorer {
 
                 row = new SeleniumTableRow("type",
                 // element.toString(),
-                        identifier, "\"" + configurator.getTypedKeywords()[rand1] + "\"");
+                        identifier, "\""
+                                + configurator.getTypedKeywords()[rand1] + "\"");
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
-                visitedElements.add(element.toString());
+                // visitedElements.add(element.toString());
+                visitedElements.add(HTMLLocatorBuilder
+                        .getElementIdentifier(element));
 
                 // interact
                 element.sendKeys(configurator.getTypedKeywords()[rand1]);
@@ -313,7 +321,9 @@ public class WebsiteExplorer {
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
-                visitedElements.add(element.toString());
+                // visitedElements.add(element.toString());
+                visitedElements.add(HTMLLocatorBuilder
+                        .getElementIdentifier(element));
                 element.sendKeys(Integer.toString(rand1));
             } else {
                 // insert random keyword
@@ -322,13 +332,16 @@ public class WebsiteExplorer {
 
                 row = new SeleniumTableRow("typeAndWait",
                 // element.toString(),
-                        identifier, "\"" + configurator.getTypedKeywords()[rand1] + "\"");
+                        identifier, "\""
+                                + configurator.getTypedKeywords()[rand1] + "\"");
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
 
                 // add visited elements to list
-                visitedElements.add(element.toString());
+                // visitedElements.add(element.toString());
+                visitedElements.add(HTMLLocatorBuilder
+                        .getElementIdentifier(element));
 
                 // interact
                 element.sendKeys(configurator.getTypedKeywords()[rand1]);
@@ -342,7 +355,7 @@ public class WebsiteExplorer {
      * @param element
      *            element inside the form to be visited.
      */
-    private static void handleFormSubmission(WebElement element) {
+    private void handleFormSubmission(WebElement element) {
         // search for conventional submit elements
         List<WebElement> submit = element.findElements(By
                 .xpath("//input[@type='submit']"));
@@ -355,7 +368,9 @@ public class WebsiteExplorer {
                     "EMPTY");
             history.add(row);
             writeToHistoryFile(row, true);
-            visitedElements.add(submit.get(0).toString());
+            // visitedElements.add(submit.get(0).toString());
+            visitedElements.add(HTMLLocatorBuilder.getElementIdentifier(submit
+                    .get(0)));
 
             // interact
             submit.get(0).click();
@@ -374,7 +389,9 @@ public class WebsiteExplorer {
                 history.add(row);
                 writeToHistoryFile(row, true);
                 // element.submit();
-                visitedElements.add(dynamicSubmits.get(0).toString());
+                // visitedElements.add(dynamicSubmits.get(0).toString());
+                visitedElements.add(HTMLLocatorBuilder
+                        .getElementIdentifier(dynamicSubmits.get(0)));
 
                 // interact
                 dynamicSubmits.get(0).click();
@@ -423,8 +440,8 @@ public class WebsiteExplorer {
                     System.out.println("row: " + row.toString());
                     history.add(row);
                     writeToHistoryFile(row, true);
-                    visitedElements.add(element.toString());
-
+                    // visitedElements.add(element.toString());
+                    visitedElements.add(identifier);
                     handleFormSubmission(element);
                 } else {
                     // add 'andWait' suffix to mark page change
@@ -435,19 +452,21 @@ public class WebsiteExplorer {
                     System.out.println("row: " + row.toString());
                     history.add(row);
                     writeToHistoryFile(row, true);
+                    visitedElements.add(identifier);
                 }
             }
         }
     }
 
     /**
-     * Visits a login form completely, or clicks on a login link.
+     * Visits a login form completely inserting invalid words, or clicks on a
+     * login link.
      * 
      * @param element
      *            chosen element to visit
      * @return if login form was visited or not
      */
-    private static boolean processLogin(WebElement element) {
+    private boolean processInvalidLogin(WebElement element) {
         if (element.getTagName().toLowerCase().equals("input")
                 || element.getTagName().toLowerCase().equals("select")) {
             // login form, fill all form inputs
@@ -461,7 +480,8 @@ public class WebsiteExplorer {
                         case "text":
                         case "password":
                         case "email":
-                            int rand = (int) (Math.random() * (configurator.getTypedKeywords().length - 1));
+                            int rand = (int) (Math.random() * (configurator
+                                    .getTypedKeywords().length - 1));
                             row = new SeleniumTableRow(
                                     "type",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
@@ -469,7 +489,9 @@ public class WebsiteExplorer {
                             System.out.println("row: " + row.toString());
                             history.add(row);
                             writeToHistoryFile(row, true);
-                            visitedElements.add(e.toString());
+                            // visitedElements.add(e.toString());
+                            visitedElements.add(HTMLLocatorBuilder
+                                    .getElementIdentifier(e));
                             // interact
                             e.clear();
                             e.sendKeys(configurator.getTypedKeywords()[rand]);
@@ -483,7 +505,9 @@ public class WebsiteExplorer {
                             System.out.println("row: " + row.toString());
                             history.add(row);
                             writeToHistoryFile(row, true);
-                            visitedElements.add(e.toString());
+                            // visitedElements.add(e.toString());
+                            visitedElements.add(HTMLLocatorBuilder
+                                    .getElementIdentifier(e));
                             // interact
                             e.click();
                             break;
@@ -502,7 +526,9 @@ public class WebsiteExplorer {
                         System.out.println("row: " + row.toString());
                         history.add(row);
                         writeToHistoryFile(row, true);
-                        visitedElements.add(e.toString());
+                        // visitedElements.add(e.toString());
+                        visitedElements.add(HTMLLocatorBuilder
+                                .getElementIdentifier(e));
                         // interact
                         select.selectByIndex(rand1);
                     }
@@ -519,12 +545,43 @@ public class WebsiteExplorer {
     }
 
     /**
+     * Includes element siblings (other inputs and selects that are children of
+     * the element's form parent) and lists them on the history file without
+     * interacting with them.
+     * 
+     * @param element
+     *            element to interact with
+     */
+    private void includeFormChildrenAndVisitElement(WebElement element) {
+        WebElement form = findParentForm(element);
+        List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
+        SeleniumTableRow row = null;
+
+        for (WebElement e : children) {
+            if (!e.toString().equals(element.toString())) {
+
+                row = new SeleniumTableRow("list",
+                        HTMLLocatorBuilder.getElementIdentifier(e), "EMPTY");
+                System.out.println("list siblings|row: " + row.toString());
+                history.add(row);
+                writeToHistoryFile(row, true);
+            }
+        }
+
+        // process element
+        if (isElementTextInputable(element))
+            processInputElement(element);
+        else
+            processSelectElement(element);
+    }
+
+    /**
      * Given a form element, returns all input and select leaf nodes
      * 
      * @param form
      * @return all input and select leaf nodes
      */
-    private static List<WebElement> findInputAndSelectChildNodesGivenParentForm(
+    private List<WebElement> findInputAndSelectChildNodesGivenParentForm(
             WebElement form) {
         List<WebElement> all = form.findElements(By.xpath("*"));
         List<WebElement> descendants = null;
@@ -565,7 +622,7 @@ public class WebsiteExplorer {
      *            parent node
      * @return all anchor leaf nodes
      */
-    private static List<WebElement> findChildrenAnchorNodesGivenParent(
+    private List<WebElement> findChildrenAnchorNodesGivenParent(
             WebElement parent) {
         List<WebElement> all = parent.findElements(By.xpath("*"));
         List<WebElement> descendants = null;
@@ -596,7 +653,7 @@ public class WebsiteExplorer {
      *            parent node
      * @return all anchor leaf nodes
      */
-    public static List<WebElement> findAllChildrenOfAnElement(WebElement parent) {
+    private List<WebElement> findAllChildrenOfAnElement(WebElement parent) {
         List<WebElement> all = parent.findElements(By.xpath("*"));
         List<WebElement> descendants = null;
         if (all.isEmpty()) {
@@ -616,14 +673,14 @@ public class WebsiteExplorer {
         }
         return ret;
     }
-    
-    public static ArrayList<String> returnFullTextOfAnElement(WebElement parent){
+
+    private ArrayList<String> returnFullTextOfAnElement(WebElement parent) {
         List<WebElement> children = findAllChildrenOfAnElement(parent);
         ArrayList<String> ret = new ArrayList<String>();
         ret.add(parent.toString());
         for (WebElement item : children)
             ret.add(item.toString());
-        
+
         return ret;
     }
 
@@ -686,7 +743,6 @@ public class WebsiteExplorer {
                 temp.add(s);
                 masterElements.put(currentPage, temp);
             }
-            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
         }
 
         for (String s : detailRetSet) {
@@ -697,17 +753,16 @@ public class WebsiteExplorer {
                 temp.add(s);
                 detailElements.put(currentPage, temp);
             }
-            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
         }
         System.out.println("menuElements size:" + menuElements.size());
     }
 
     private void findMenuElementsInPage() {
-        // driver.get(baseUrl);
         Set<String> retSet = new HashSet<String>();
 
         // search for <nav> tag
-        List<WebElement> masterList = driver.findElements(By.tagName("nav"));
+        List<WebElement> masterList = new ArrayList<WebElement>();
+        masterList.addAll(driver.findElements(By.tagName("nav")));
         masterList.addAll(driver.findElements(By.tagName("header")));
         masterList.addAll(driver.findElements(By.tagName("footer")));
 
@@ -731,11 +786,7 @@ public class WebsiteExplorer {
         for (WebElement elem : masterList) {
             List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
             if (!(children == null || children.isEmpty()))
-                // for (WebElement element : children) {
-                // if (element.getAttribute("href") != null)
-                // retSet.add(element.toString());
                 retSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
-            // }
         }
         if (retSet.size() == 0)
             return;
@@ -753,7 +804,6 @@ public class WebsiteExplorer {
                 menuElements.put(currentPage, temp);
                 prevSize = menuElements.get(currentPage).size();
             }
-            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
         }
         System.out.println("menu elements found:" + prevSize);
     }
@@ -765,7 +815,7 @@ public class WebsiteExplorer {
      *            child element node
      * @return parent form
      */
-    public static WebElement findParentForm(WebElement element) {
+    private WebElement findParentForm(WebElement element) {
         WebElement current = element;
         while (!(current == null
                 || current.getTagName().toLowerCase().equals("form")
@@ -784,12 +834,12 @@ public class WebsiteExplorer {
      * @param append
      *            true=append to file contents;false=reset file contents
      */
-    private static void writeToHistoryFile(SeleniumTableRow r, boolean append) {
+    private void writeToHistoryFile(SeleniumTableRow r, boolean append) {
         // Write history to file
         FileWriter output = null;
         try {
-            output = new FileWriter(new File(configurator.getHistoryFilepath()),
-                    append);
+            output = new FileWriter(
+                    new File(configurator.getHistoryFilepath()), append);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -832,9 +882,23 @@ public class WebsiteExplorer {
             System.out
                     .println("No suitable element found, going back to base URL. "
                             + "Redirects left:"
-                            + (configurator.getNumActions() - homeRedirections));
+                            + (configurator.getNumRedirects() - homeRedirections));
             return false;
         }
+    }
+
+    public boolean isSearchingForPattern(String pattern) {
+        if (configurator.getPatternsToSearch().length == 1
+                && configurator.getPatternsToSearch()[0].toLowerCase().equals(
+                        "all"))
+            return true;
+        else {
+            for (String s : configurator.getPatternsToSearch()) {
+                if (s.toLowerCase().equals(pattern.toLowerCase()))
+                    return true;
+            }
+        }
+        return false;
     }
 
     public void exploreWebsite() {
@@ -870,15 +934,15 @@ public class WebsiteExplorer {
                     + currentPage);
 
             // search for menu elements (before the element is visited)
-            findMenuElementsInPage();
-
+            if (isSearchingForPattern("menu"))
+                findMenuElementsInPage();
             WebElement element = chooseNextElement();
 
             // see if one can search for master detail after search
-            if (lastAction.equals("SEARCH")) {
+            if (lastAction.equals("SEARCH")
+                    && isSearchingForPattern("masterdetail")) {
                 findMasterDetailElementsInSearchResultPage();
             }
-
             if (element == null) {
                 // if no element is found, go back to home page
                 boolean stop = goBackToHome(r);
@@ -894,15 +958,28 @@ public class WebsiteExplorer {
                 System.out.println("LOCATOR:"
                         + HTMLLocatorBuilder.getElementIdentifier(element));
 
-                if (isElementRelatedToLogin(element)) {
-                    boolean processedLogin = processLogin(element);
-                    if (processedLogin)
-                        goBackToHome(r);
+                if (isElementRelatedToLogin(element)
+                        && isSearchingForPattern("login")) {
+                    if (configurator.getLoginConfiguration().isEmpty()) {
+                        boolean processedLogin = processInvalidLogin(element);
+                        if (processedLogin)
+                            goBackToHome(r);
+                    } else {
+                        boolean processedLogin = processValidLogin(element);
+                        if (processedLogin)
+                            goBackToHome(r);
+                    }
                 }// dropdown list
                 else if (element.getTagName().toLowerCase().equals("select")) {
-                    processSelectElement(element);
+                    if (!configurator.includeChildrenNodesOnInteraction())
+                        processSelectElement(element);
+                    else
+                        includeFormChildrenAndVisitElement(element);
                 } else if (isElementTextInputable(element)) {
-                    processInputElement(element);
+                    if (!configurator.includeChildrenNodesOnInteraction())
+                        processInputElement(element);
+                    else
+                        includeFormChildrenAndVisitElement(element);
                 } else {
                     processAnchorElements(element);
                 }
@@ -926,4 +1003,91 @@ public class WebsiteExplorer {
         driver.quit();
     }
 
+    private boolean processValidLogin(WebElement element) {
+        if (element.getTagName().toLowerCase().equals("input")
+                || element.getTagName().toLowerCase().equals("select")) {
+            // login form, fill all form inputs
+            WebElement form = findParentForm(element);
+            List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
+            SeleniumTableRow row = null;
+
+            for (WebElement e : children) {
+                if (e.getTagName().toLowerCase().equals("input")
+                        && e.toString().matches("user(name)?|e?mail")) {
+                    row = new SeleniumTableRow(
+                            "type",// e.toString(),
+                            HTMLLocatorBuilder.getElementIdentifier(e),
+                            configurator.getLoginConfiguration()
+                                    .get("username"));
+                    writeToHistoryFile(row, true);
+                    visitedElements.add(HTMLLocatorBuilder
+                            .getElementIdentifier(e));
+                    e.clear();
+                    e.sendKeys(configurator.getLoginConfiguration().get(
+                            "username"));
+                } else if (e.getTagName().toLowerCase().equals("input")
+                        && e.toString().matches("pass(word)?")) {
+                    row = new SeleniumTableRow(
+                            "type",// e.toString(),
+                            HTMLLocatorBuilder.getElementIdentifier(e),
+                            configurator.getLoginConfiguration()
+                                    .get("username"));
+                    writeToHistoryFile(row, true);
+                    visitedElements.add(HTMLLocatorBuilder
+                            .getElementIdentifier(e));
+                    e.clear();
+                    e.sendKeys(configurator.getLoginConfiguration().get(
+                            "username"));
+                } else if (configurator.includeChildrenNodesOnInteraction()) {
+                    if (e.getTagName().toLowerCase().equals("input")) {
+                        switch (e.getAttribute("type")) {
+                            case "text":
+                            case "password":
+                            case "email":
+                                row = new SeleniumTableRow(
+                                        "list",// e.toString(),
+                                        HTMLLocatorBuilder
+                                                .getElementIdentifier(e),
+                                        "EMPTY");
+                                System.out.println("row: " + row.toString());
+                                history.add(row);
+                                writeToHistoryFile(row, true);
+                                break;
+                            case "radio":
+                            case "checkbox":
+                                row = new SeleniumTableRow(
+                                        "list",// e.toString(),
+                                        HTMLLocatorBuilder
+                                                .getElementIdentifier(e),
+                                        "EMPTY");
+                                System.out.println("row: " + row.toString());
+                                history.add(row);
+                                writeToHistoryFile(row, true);
+                                break;
+                        }
+                    } else if (e.getTagName().toLowerCase().equals("select")) {
+                        List<WebElement> options = element.findElements(By
+                                .xpath(".//option"));
+                        if (options.size() != 0) {
+                            row = new SeleniumTableRow(
+                                    "listSelect",// e.toString(),
+                                    HTMLLocatorBuilder.getElementIdentifier(e),
+                                    "EMPTY");
+                            System.out.println("row: " + row.toString());
+                            history.add(row);
+                            writeToHistoryFile(row, true);
+                        }
+                    }
+                }
+
+            }
+
+            handleFormSubmission(form);
+            return true;
+        } else {
+            // login link
+            processAnchorElements(element);
+            return false;
+        }
+    }
 }

@@ -19,21 +19,14 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import configuration.Configurator;
+
 public class WebsiteExplorer {
     /**
      * the URL where the crawler will start and the domain to which it will
      * restrict itself
      */
     private String baseUrl = "";
-
-    /** number of actions the crawler will execute before stopping */
-    private static final int NUM_ACTIONS = 30;
-    /** number of redirects to the home page the crawler will do before stopping */
-    private static final int NUM_ERRORS = 5;
-
-    /** words to insert in text input elements */
-    private static String[] typedKeywords = { "curtains", "coffee", "phone",
-            "shirt", "computer", "dress", "banana", "sandals" };
 
     /** action history */
     private static ArrayList<SeleniumTableRow> history = new ArrayList<SeleniumTableRow>();
@@ -60,19 +53,21 @@ public class WebsiteExplorer {
     private String currentPage = baseUrl;
 
     /** index of current action */
-    private static int currAction = 0;
+    private int currAction = 0;
 
     /** number of times explorer went back to home page */
     private int homeRedirections = 0;
 
     /** says if politeness delay is to be done (false if error occurs) */
-    private static boolean wait = true;
+    private boolean wait = true;
 
     /** instance of this class (singleton enforcement) */
     private static WebsiteExplorer instance = null;
 
+    private static Configurator configurator = Configurator.getInstance();
+    
     /** web driver */
-    private WebDriver driver = null;
+    private HtmlUnitDriver driver = null;
 
     private static String lastAction = "NONE", currentAction = "NONE";
 
@@ -120,6 +115,8 @@ public class WebsiteExplorer {
      */
     private WebsiteExplorer() {
         driver = new HtmlUnitDriver();
+        //driver.setJavascriptEnabled(true);
+        driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
     }
 
     /**
@@ -218,7 +215,7 @@ public class WebsiteExplorer {
      */
     private static boolean isElementRelatedToLogin(WebElement e) {
         return e.toString().toLowerCase()
-                .matches(".*" + GlobalConstants.loginKeywords + ".*");
+                .matches(".*" + configurator.getLoginKeywords() + ".*");
     }
 
     /**
@@ -289,18 +286,18 @@ public class WebsiteExplorer {
             } else {
                 // insert random keyword
                 int rand1 = (int) Math.round(Math.random()
-                        * (typedKeywords.length - 1));
+                        * (configurator.getTypedKeywords().length - 1));
 
                 row = new SeleniumTableRow("type",
                 // element.toString(),
-                        identifier, "\"" + typedKeywords[rand1] + "\"");
+                        identifier, "\"" + configurator.getTypedKeywords()[rand1] + "\"");
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
                 visitedElements.add(element.toString());
 
                 // interact
-                element.sendKeys(typedKeywords[rand1]);
+                element.sendKeys(configurator.getTypedKeywords()[rand1]);
             }
 
             handleFormSubmission(element);
@@ -321,11 +318,11 @@ public class WebsiteExplorer {
             } else {
                 // insert random keyword
                 int rand1 = (int) Math.round(Math.random()
-                        * (typedKeywords.length - 1));
+                        * (configurator.getTypedKeywords().length - 1));
 
                 row = new SeleniumTableRow("typeAndWait",
                 // element.toString(),
-                        identifier, "\"" + typedKeywords[rand1] + "\"");
+                        identifier, "\"" + configurator.getTypedKeywords()[rand1] + "\"");
                 System.out.println("row: " + row.toString());
                 history.add(row);
                 writeToHistoryFile(row, true);
@@ -334,7 +331,7 @@ public class WebsiteExplorer {
                 visitedElements.add(element.toString());
 
                 // interact
-                element.sendKeys(typedKeywords[rand1]);
+                element.sendKeys(configurator.getTypedKeywords()[rand1]);
             }
         }
     }
@@ -394,7 +391,7 @@ public class WebsiteExplorer {
      * @param element
      *            to interact with
      */
-    private static void processSelectElement(WebElement element) {
+    private void processSelectElement(WebElement element) {
         String identifier = HTMLLocatorBuilder.getElementIdentifier(element);
         Select select = new Select(element);
 
@@ -464,18 +461,18 @@ public class WebsiteExplorer {
                         case "text":
                         case "password":
                         case "email":
-                            int rand = (int) (Math.random() * (typedKeywords.length - 1));
+                            int rand = (int) (Math.random() * (configurator.getTypedKeywords().length - 1));
                             row = new SeleniumTableRow(
                                     "type",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
-                                    typedKeywords[rand]);
+                                    configurator.getTypedKeywords()[rand]);
                             System.out.println("row: " + row.toString());
                             history.add(row);
                             writeToHistoryFile(row, true);
                             visitedElements.add(e.toString());
                             // interact
                             e.clear();
-                            e.sendKeys(typedKeywords[rand]);
+                            e.sendKeys(configurator.getTypedKeywords()[rand]);
                             break;
                         case "radio":
                         case "checkbox":
@@ -592,7 +589,121 @@ public class WebsiteExplorer {
         return ret;
     }
 
+    /**
+     * Given a parent element, returns all anchor leaf nodes
+     * 
+     * @param parent
+     *            parent node
+     * @return all anchor leaf nodes
+     */
+    public static List<WebElement> findAllChildrenOfAnElement(WebElement parent) {
+        List<WebElement> all = parent.findElements(By.xpath("*"));
+        List<WebElement> descendants = null;
+        if (all.isEmpty()) {
+            return null;
+        }
+
+        List<WebElement> ret = new ArrayList<WebElement>();
+        for (WebElement item : all) {
+            ret.add(item);
+            descendants = findAllChildrenOfAnElement(item);
+            if (!(descendants == null || descendants.isEmpty())) {
+                for (WebElement i : descendants) {
+                    ret.add(i);
+                }
+            }
+
+        }
+        return ret;
+    }
+    
+    public static ArrayList<String> returnFullTextOfAnElement(WebElement parent){
+        List<WebElement> children = findAllChildrenOfAnElement(parent);
+        ArrayList<String> ret = new ArrayList<String>();
+        ret.add(parent.toString());
+        for (WebElement item : children)
+            ret.add(item.toString());
+        
+        return ret;
+    }
+
+    private void findMasterDetailElementsInSearchResultPage() {
+        Set<String> masterRetSet = new HashSet<String>(), detailRetSet = new HashSet<String>();
+
+        // extract master elements
+        List<WebElement> masterList = new ArrayList<WebElement>();
+
+        for (String id : configurator.getMasterIdentifiers()) {
+            masterList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase()
+                            + "\")]")));
+            masterList
+                    .addAll(driver.findElements(By.xpath("//*[contains(@id, \""
+                            + id.toLowerCase() + "\")]")));
+            masterList
+                    .addAll(driver.findElements(By
+                            .xpath("//*[contains(@name, \"" + id.toLowerCase()
+                                    + "\")]")));
+        }
+
+        // extract detail elements
+        List<WebElement> detailList = new ArrayList<WebElement>();
+
+        // search for class, name and id = "[a-zA-z]+[id][a-zA-z]+"
+        for (String id : configurator.getMasterIdentifiers()) {
+            detailList.addAll(driver.findElements(By
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase()
+                            + "\")]")));
+            detailList
+                    .addAll(driver.findElements(By.xpath("//*[contains(@id, \""
+                            + id.toLowerCase() + "\")]")));
+            detailList
+                    .addAll(driver.findElements(By
+                            .xpath("//*[contains(@name, \"" + id.toLowerCase()
+                                    + "\")]")));
+        }
+
+        for (WebElement elem : masterList) {
+            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            if (!(children == null || children.isEmpty()))
+                // masterRetSet.add(elem.toString());
+                masterRetSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+        }
+
+        for (WebElement elem : detailList) {
+            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            if (!(children == null || children.isEmpty()))
+                // detailRetSet.add(elem.toString());
+                detailRetSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+        }
+
+        // page -> elements
+        for (String s : masterRetSet) {
+            if (masterElements.containsKey(currentPage)) {
+                masterElements.get(currentPage).add(s);
+            } else {
+                HashSet<String> temp = new HashSet<String>();
+                temp.add(s);
+                masterElements.put(currentPage, temp);
+            }
+            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+        }
+
+        for (String s : detailRetSet) {
+            if (detailElements.containsKey(currentPage)) {
+                detailElements.get(currentPage).add(s);
+            } else {
+                HashSet<String> temp = new HashSet<String>();
+                temp.add(s);
+                detailElements.put(currentPage, temp);
+            }
+            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
+        }
+        System.out.println("menuElements size:" + menuElements.size());
+    }
+
     private void findMenuElementsInPage() {
+        // driver.get(baseUrl);
         Set<String> retSet = new HashSet<String>();
 
         // search for <nav> tag
@@ -601,39 +712,50 @@ public class WebsiteExplorer {
         masterList.addAll(driver.findElements(By.tagName("footer")));
 
         // search for class, name and id = "[a-zA-z]+[nav][a-zA-z]+"
-        for (String id : GlobalConstants.menuIdentifiers) {
+        for (String id : configurator.getMenuIdentifiers()) {
             masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
-            masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
-            masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
+                    .xpath("//*[contains(@class, \"" + id.toLowerCase()
+                            + "\")]")));
+            masterList
+                    .addAll(driver.findElements(By.xpath("//*[contains(@id, \""
+                            + id.toLowerCase() + "\")]")));
+            masterList
+                    .addAll(driver.findElements(By
+                            .xpath("//*[contains(@name, \"" + id.toLowerCase()
+                                    + "\")]")));
         }
+
+        if (masterList.size() == 0)
+            return;
 
         for (WebElement elem : masterList) {
             List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
             if (!(children == null || children.isEmpty()))
-                for (WebElement element : children) {
-                    if (element.getAttribute("href") != null)
-                        retSet.add(element.toString());
-                }
+                // for (WebElement element : children) {
+                // if (element.getAttribute("href") != null)
+                // retSet.add(element.toString());
+                retSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+            // }
         }
+        if (retSet.size() == 0)
+            return;
 
-        int prevSize = menuElements.size();
+        int prevSize = 0;
 
         // page -> elements
         for (String s : retSet) {
             if (menuElements.containsKey(currentPage)) {
                 menuElements.get(currentPage).add(s);
+                prevSize = menuElements.get(currentPage).size();
             } else {
                 HashSet<String> temp = new HashSet<String>();
                 temp.add(s);
                 menuElements.put(currentPage, temp);
+                prevSize = menuElements.get(currentPage).size();
             }
             // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
         }
-        System.out.println("menu elements found:"
-                + Math.abs(menuElements.size() - prevSize));
+        System.out.println("menu elements found:" + prevSize);
     }
 
     /**
@@ -643,7 +765,7 @@ public class WebsiteExplorer {
      *            child element node
      * @return parent form
      */
-    private static WebElement findParentForm(WebElement element) {
+    public static WebElement findParentForm(WebElement element) {
         WebElement current = element;
         while (!(current == null
                 || current.getTagName().toLowerCase().equals("form")
@@ -666,7 +788,7 @@ public class WebsiteExplorer {
         // Write history to file
         FileWriter output = null;
         try {
-            output = new FileWriter(new File(GlobalConstants.HISTORY_FILEPATH),
+            output = new FileWriter(new File(configurator.getHistoryFilepath()),
                     append);
         } catch (IOException e) {
             e.printStackTrace();
@@ -703,14 +825,14 @@ public class WebsiteExplorer {
         homeRedirections++;
         currAction--;
 
-        if (homeRedirections > NUM_ERRORS) {
+        if (homeRedirections > configurator.getNumRedirects()) {
             System.out.println("Maximum redirects, stopping.");
             return true;
         } else {
             System.out
                     .println("No suitable element found, going back to base URL. "
                             + "Redirects left:"
-                            + (NUM_ERRORS - homeRedirections));
+                            + (configurator.getNumActions() - homeRedirections));
             return false;
         }
     }
@@ -741,11 +863,11 @@ public class WebsiteExplorer {
         writeToHistoryFile(row, false);
         System.out.println(history.get(0).toString());
 
-        while (currAction < NUM_ACTIONS) {
+        while (currAction < configurator.getNumActions()) {
             currentPage = driver.getCurrentUrl();
 
             System.out.println("Action #" + currAction + " | Page URL is: "
-                    + currentPage + "|actions:" + currAction);
+                    + currentPage);
 
             // search for menu elements (before the element is visited)
             findMenuElementsInPage();
@@ -802,77 +924,6 @@ public class WebsiteExplorer {
         }
 
         driver.quit();
-    }
-
-    private void findMasterDetailElementsInSearchResultPage() {
-        Set<String> masterRetSet = new HashSet<String>(), detailRetSet = new HashSet<String>();
-
-        // extract master elements
-        List<WebElement> masterList = new ArrayList<WebElement>();
-
-        for (String id : GlobalConstants.masterIdentifiers) {
-            masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
-            masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
-            masterList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
-        }
-
-        // extract detail elements
-        List<WebElement> detailList = new ArrayList<WebElement>();
-
-        // search for class, name and id = "[a-zA-z]+[id][a-zA-z]+"
-        for (String id : GlobalConstants.masterIdentifiers) {
-            detailList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@class, \"" + id.toLowerCase() + "\")]")));
-            detailList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@id, \"" + id.toLowerCase() + "\")]")));
-            detailList.addAll(driver.findElements(By
-                    .xpath("//*[contains(@name, \"" + id.toLowerCase() + "\")]")));
-        }
-
-        for (WebElement elem : masterList) {
-            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
-            if (!(children == null || children.isEmpty()))
-                // for (WebElement element : children) {
-                // if (element.getAttribute("href") != null)
-                masterRetSet.add(elem.toString());
-            // }
-        }
-        
-        for (WebElement elem : detailList) {
-            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
-            if (!(children == null || children.isEmpty()))
-                // for (WebElement element : children) {
-                // if (element.getAttribute("href") != null)
-                detailRetSet.add(elem.toString());
-            // }
-        }
-
-        // page -> elements
-        for (String s : masterRetSet) {
-            if (masterElements.containsKey(currentPage)) {
-                masterElements.get(currentPage).add(s);
-            } else {
-                HashSet<String> temp = new HashSet<String>();
-                temp.add(s);
-                masterElements.put(currentPage, temp);
-            }
-            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
-        }
-        
-        for (String s : detailRetSet) {
-            if (detailElements.containsKey(currentPage)) {
-                detailElements.get(currentPage).add(s);
-            } else {
-                HashSet<String> temp = new HashSet<String>();
-                temp.add(s);
-                detailElements.put(currentPage, temp);
-            }
-            // System.out.println("menu: "+s+"|"+menuElements.get(s).size());
-        }
-        System.out.println("menuElements size:" + menuElements.size());
     }
 
 }

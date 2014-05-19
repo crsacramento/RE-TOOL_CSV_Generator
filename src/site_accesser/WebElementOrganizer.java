@@ -8,7 +8,10 @@ import java.util.regex.Pattern;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import configuration.Configurator;
+
 public class WebElementOrganizer {
+    private static Configurator conf = Configurator.getInstance();
 	/**
 	 * Does all checks that all elements have to respect (not visited, not
 	 * hidden, doesn't have keywords that no element should have)
@@ -23,7 +26,7 @@ public class WebElementOrganizer {
 		return e.isDisplayed()
 				&& !WebsiteExplorer.isElementAlreadyVisited(e)
 				&& !e.toString().toLowerCase()
-						.matches(".*" + GlobalConstants.generalWordsToExclude + ".*")
+						.matches(".*" + conf.getGeneralWordsToExclude() + ".*")
 				&& !e.toString().toLowerCase().matches(".*(disabled|readonly).*");
 	}
 	
@@ -63,17 +66,17 @@ public class WebElementOrganizer {
 			if (itPassesAllGeneralChecks(e)){
 				// test for search
 				if(e.toString().toLowerCase()
-							.matches(".*" + GlobalConstants.searchKeywords + ".*")){
+							.matches(".*" + conf.getSearchKeywords() + ".*")){
 					retList.get(3).add(e);
 				}else{
 					// test for sort
 					if(e.toString().toLowerCase()
-								.matches(".*" + GlobalConstants.sortKeywords + ".*")){
+								.matches(".*" + conf.getSortKeywords() + ".*")){
 						retList.get(4).add(e);
 					}else{
 						// test for login
 						if(e.toString().toLowerCase()
-									.matches(".*" + GlobalConstants.loginKeywords + ".*")){
+									.matches(".*" + conf.getLoginKeywords() + ".*")){
 							retList.get(5).add(e);
 						}else{
 							// doesn't go into a pattern, check for element type

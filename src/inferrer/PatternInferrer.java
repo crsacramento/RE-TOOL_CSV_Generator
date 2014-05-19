@@ -18,7 +18,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import site_accesser.GlobalConstants;
+import configuration.Configurator;
 import utilities.Filesystem;
 import inferrer.PatternRegister;
 
@@ -31,6 +31,8 @@ public class PatternInferrer {
     private static final String[][] STATE_ENUM = { LOGIN_STATES, INPUT_STATES,
             SORT_STATES, SEARCH_STATES };
 
+    private static Configurator conf = Configurator.getInstance();
+    
     private static int firstIndex = -1;
     private static int secondIndex = -1;
     private static String currentState = "NONE";
@@ -75,7 +77,7 @@ public class PatternInferrer {
         // open processed file
         System.out.println("********************************************");
         BufferedReader in = null;
-        File file = new File(GlobalConstants.PROCESSED_FILEPATH);
+        File file = new File(conf.getProcessedHistoryFilepath());
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(
                     file), /* "UTF8" */"ISO-8859-1"));
@@ -98,7 +100,12 @@ public class PatternInferrer {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
+        //write trailing sorts or searches
+        testForTrailingSort(lineNum);
+        testForTrailingSearch(lineNum);
+        testForTrailingLogin(lineNum);
+        
         // write to file
         writeParadigmFile();
 
@@ -108,6 +115,44 @@ public class PatternInferrer {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    private static void testForTrailingSort(int lineNum) {
+        if (firstIndex == 2 && secondIndex == 0) {
+            // sort without submit is still valid
+            patternsFound.put("SORT_" + patternIndex, lines);
+            patternIndex++;
+            String line = "";
+            for (int i : lines)
+                line += i + " ";
+            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
+            resetStates();
+        } 
+    }
+    private static void testForTrailingLogin(int lineNum) {
+        if (firstIndex == 0 && secondIndex == 3) {
+            // sort without submit is still valid
+            patternsFound.put("LOGIN_" + patternIndex, lines);
+            patternIndex++;
+            String line = "";
+            for (int i : lines)
+                line += i + " ";
+            System.out.println(lineNum + 1 + ": LOGIN|lines: " + line);
+            resetStates();
+        } 
+    }
+    
+    private static void testForTrailingSearch(int lineNum){
+        if (firstIndex == 3 && secondIndex == 0) {
+            // search without submit is still valid
+            patternsFound.put("SEARCH_" + patternIndex, lines);
+            patternIndex++;
+            String line = "";
+            for (int i : lines)
+                line += i + " ";
+            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
+            resetStates();
         }
     }
 
@@ -166,11 +211,11 @@ public class PatternInferrer {
 
             if (entry.getValue().size() > 1)
                 line = Filesystem.getLinesInFile(
-                        GlobalConstants.HISTORY_FILENAME, start, entry
+                        conf.getHistoryFilepath(), start, entry
                                 .getValue().get(entry.getValue().size() - 1));
             else
                 line = Filesystem.getLinesInFile(
-                        GlobalConstants.HISTORY_FILENAME, start);
+                        conf.getHistoryFilepath(), start);
 
             ArrayList<String> actions = new ArrayList<String>();
             ArrayList<String> targets = new ArrayList<String>();
@@ -179,7 +224,7 @@ public class PatternInferrer {
             for (int i = 0; i < line.length; ++i) {
                 if (line[i] == null)
                     continue;
-                String[] splits = line[i].split(GlobalConstants.SEPARATOR);
+                String[] splits = line[i].split(conf.getSeparator());
                 actions.add(splits[0]);
                 targets.add(splits[1]);
                 parameters.add(splits[2]);
@@ -269,6 +314,10 @@ public class PatternInferrer {
             } else if (matchLogin(words)) {
                 processLogin(words, lineNum);
             } else {
+                testForTrailingSort(lineNum);
+                testForTrailingSearch(lineNum);
+                testForTrailingLogin(lineNum);
+                
                 System.out
                         .println("doesnt match call, login, sort, search or input - ignored");
                 resetStates();
@@ -315,6 +364,7 @@ public class PatternInferrer {
     }
 
     private static void resetStates() {
+        System.out.println("***RESET***");
         firstIndex = -1;
         secondIndex = -1;
         updateCurrentState();
@@ -329,17 +379,9 @@ public class PatternInferrer {
 
     private static void processSearch(ArrayList<String> words, int lineNum) {
         // check if trailing sort or search
-        if (firstIndex == 2 && secondIndex == 0) {
-            // sort without submit is still valid
-            patternsFound.put("SORT_" + patternIndex, lines);
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
-            patternIndex++;
-            resetStates();
-        }
-
+        testForTrailingSort(lineNum);
+        testForTrailingLogin(lineNum);
+        
         if (matchSubmit(words)) {
             if (firstIndex == 3) {
                 if (secondIndex == 0) {
@@ -373,16 +415,8 @@ public class PatternInferrer {
 
     private static void processSort(ArrayList<String> words, int lineNum) {
         // check if trailing sort or search
-        if (firstIndex == 3 && secondIndex == 0) {
-            // search without submit is still valid
-            patternsFound.put("SEARCH_" + patternIndex, lines);
-            patternIndex++;
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
-            resetStates();
-        }
+        testForTrailingSearch(lineNum);
+        testForTrailingLogin(lineNum);
 
         if (matchSubmit(words) && (firstIndex == 2) && (secondIndex == 0)) {
             // full search
@@ -410,25 +444,9 @@ public class PatternInferrer {
 
     private static void processInput(ArrayList<String> words, int lineNum) {
         // check if trailing sort or search
-        if (firstIndex == 2 && secondIndex == 0) {
-            // sort without submit is still valid
-            patternsFound.put("SORT_" + patternIndex, lines);
-            patternIndex++;
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
-            resetStates();
-        } else if (firstIndex == 3 && secondIndex == 0) {
-            // search without submit is still valid
-            patternsFound.put("SEARCH_" + patternIndex, lines);
-            patternIndex++;
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
-            resetStates();
-        }
+        testForTrailingSort(lineNum);
+        testForTrailingSearch(lineNum);
+        testForTrailingLogin(lineNum);
 
         if (matchSubmit(words) && (firstIndex == 1) && (secondIndex == 0)) {
             // full input
@@ -456,26 +474,10 @@ public class PatternInferrer {
 
     private static void processLogin(ArrayList<String> words, int lineNum) {
         // check if trailing sort or search
-        if (firstIndex == 2 && secondIndex == 0) {
-            // sort without submit is still valid
-            patternsFound.put("SORT_" + patternIndex, lines);
-            patternIndex++;
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SORT|lines: " + line);
-            resetStates();
-        } else if (firstIndex == 3 && secondIndex == 0) {
-            // search without submit is still valid
-            patternsFound.put("SEARCH_" + patternIndex, lines);
-            patternIndex++;
-            String line = "";
-            for (int i : lines)
-                line += i + " ";
-            System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
-            resetStates();
-        }
-
+        testForTrailingSort(lineNum);
+        testForTrailingSearch(lineNum);
+        testForTrailingLogin(lineNum);
+        
         // "LOGIN","LOGIN_USER","LOGIN_PASS","LOGIN_USER_PASS","LOGIN_USER_PASS_SUBMIT"
         if (matchSubmit(words)) {
             if (firstIndex == 0) {

@@ -3,13 +3,10 @@ package processor;
 public class PatternMapEntry {
 	private String patternName;
 	private String identifyingRegex;
-	private String garbageRemovalRegex;
 
-	public PatternMapEntry(String _patternName, String _identifyingRegex,
-			String _garageRemovalRegex) {
+	public PatternMapEntry(String _patternName, String _identifyingRegex) {
 		patternName = _patternName;
 		identifyingRegex = _identifyingRegex;
-		garbageRemovalRegex = _garageRemovalRegex;
 	}
 
 	public String getPatternName() {
@@ -18,9 +15,5 @@ public class PatternMapEntry {
 
 	public String getIdentifyingRegex() {
 		return identifyingRegex;
-	}
-
-	public String getGarbageRemovalRegex() {
-		return garbageRemovalRegex;
 	}
 }

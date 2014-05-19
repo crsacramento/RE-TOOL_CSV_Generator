@@ -99,7 +99,7 @@ public class Filesystem {
         return getLinesInFile(filename, start, -1);
     }
 
-    public static String[] getLinesInFile(String filename, int start, int end) {
+    public static String[] getLinesInFile(String filepath, int start, int end) {
         if ((end < start && end != -1) || start < 0)
             return null;
         
@@ -111,8 +111,7 @@ public class Filesystem {
         String[] lines = new String[toRead];
         
         
-        File file = new File(System.getProperty("user.dir")
-                + File.separatorChar + filename);
+        File file = new File(filepath);
         FileReader fr;
 
         try {

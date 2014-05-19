@@ -1,8 +1,11 @@
 package site_accesser;
 
+import configuration.Configurator;
+
 public class SeleniumTableRow {
 	private String action, target, value;
-
+	private Configurator c = Configurator.getInstance();
+	
 	SeleniumTableRow(String a, String t, String v) {
 		action = a;
 		target = t;
@@ -34,7 +37,7 @@ public class SeleniumTableRow {
 	}
 
 	public String toString() {
-		return action + GlobalConstants.SEPARATOR + target
-				+ GlobalConstants.SEPARATOR + value;
+		return action + c.getSeparator() + target
+				+ c.getSeparator() + value;
 	}
 }

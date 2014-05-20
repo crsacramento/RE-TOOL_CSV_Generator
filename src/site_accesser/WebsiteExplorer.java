@@ -137,7 +137,7 @@ public class WebsiteExplorer {
                 // Map.Entry<String, WebElement> pair = it.next();
                 String pair = it.next();
                 if (// p.equals(pair.getKey().toString())&&
-                e.toString().equals(pair))
+                HTMLLocatorBuilder.getElementIdentifier(e).toLowerCase().equals(pair.toLowerCase()))
                     return true;
             }
         }
@@ -160,8 +160,7 @@ public class WebsiteExplorer {
         int allOptions = 0;
 
         for (int i = 0; i < list.size(); ++i) {
-            if (!list.get(i).isEmpty()
-                    && (i == 0 || i > 0 && isSearchingForPattern(TYPES[i]))) {
+            if (!list.get(i).isEmpty() && (i == 0 || i > 0)) {
                 nonEmpties.add(i);
                 type += TYPES[i] + "=" + list.get(i).size() + "|";
                 allOptions += list.get(i).size();
@@ -498,6 +497,7 @@ public class WebsiteExplorer {
                             break;
                         case "radio":
                         case "checkbox":
+                        case "button":
                             row = new SeleniumTableRow(
                                     "click",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
@@ -556,15 +556,53 @@ public class WebsiteExplorer {
         WebElement form = findParentForm(element);
         List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
         SeleniumTableRow row = null;
-
         for (WebElement e : children) {
             if (!e.toString().equals(element.toString())) {
-
-                row = new SeleniumTableRow("list",
-                        HTMLLocatorBuilder.getElementIdentifier(e), "EMPTY");
-                System.out.println("list siblings|row: " + row.toString());
-                history.add(row);
-                writeToHistoryFile(row, true);
+                if (e.getTagName().equals("input")) {
+                    switch (e.getAttribute("type")) {
+                        case "text":
+                        case "password":
+                        case "email":
+                            row = new SeleniumTableRow(
+                                    "type",// e.toString(),
+                                    HTMLLocatorBuilder.getElementIdentifier(e),
+                                    "EMPTY");
+                            System.out.println("list siblings|row: "
+                                    + row.toString());
+                            history.add(row);
+                            writeToHistoryFile(row, true);
+                            visitedElements.add(HTMLLocatorBuilder
+                                    .getElementIdentifier(e));
+                            break;
+                        case "radio":
+                        case "checkbox":
+                        case "button":
+                            row = new SeleniumTableRow(
+                                    "click",// e.toString(),
+                                    HTMLLocatorBuilder.getElementIdentifier(e),
+                                    "EMPTY");
+                            System.out.println("list siblings|row: "
+                                    + row.toString());
+                            history.add(row);
+                            writeToHistoryFile(row, true);
+                            visitedElements.add(HTMLLocatorBuilder
+                                    .getElementIdentifier(e));
+                            break;
+                    }
+                } else if (e.getTagName().toLowerCase().equals("select")) {
+                    List<WebElement> options = element.findElements(By
+                            .xpath(".//option"));
+                    if (options.size() != 0) {
+                        row = new SeleniumTableRow(
+                                "select",// e.toString(),
+                                HTMLLocatorBuilder.getElementIdentifier(e),
+                                "EMPTY");
+                        System.out.println("list siblings|row: "
+                                + row.toString());
+                        history.add(row);
+                        writeToHistoryFile(row, true);
+                    }
+                }
             }
         }
 
@@ -591,16 +629,9 @@ public class WebsiteExplorer {
 
         List<WebElement> ret = new ArrayList<WebElement>();
         for (WebElement item : all) {
-            if (item.getTagName().toLowerCase().equals("input")) {
-                switch (item.getAttribute("type")) {
-                    case "text":
-                    case "password":
-                    case "email":
-                    case "radio":
-                    case "checkbox": {
-                        ret.add(item);
-                    }
-                }
+            if (item.getTagName().toLowerCase().equals("input")
+                    && !item.getAttribute("type").equals("submit")) {
+                ret.add(item);
             } else if (item.getTagName().toLowerCase().equals("select")) {
                 ret.add(item);
             } else {
@@ -612,6 +643,7 @@ public class WebsiteExplorer {
                 }
             }
         }
+
         return ret;
     }
 
@@ -684,7 +716,7 @@ public class WebsiteExplorer {
         return ret;
     }
 
-    private void findMasterDetailElementsInSearchResultPage() {
+    public void findMasterDetailElementsInSearchResultPage() {
         Set<String> masterRetSet = new HashSet<String>(), detailRetSet = new HashSet<String>();
 
         // extract master elements
@@ -707,7 +739,7 @@ public class WebsiteExplorer {
         List<WebElement> detailList = new ArrayList<WebElement>();
 
         // search for class, name and id = "[a-zA-z]+[id][a-zA-z]+"
-        for (String id : configurator.getMasterIdentifiers()) {
+        for (String id : configurator.getDetailIdentifiers()) {
             detailList.addAll(driver.findElements(By
                     .xpath("//*[contains(@class, \"" + id.toLowerCase()
                             + "\")]")));
@@ -722,16 +754,22 @@ public class WebsiteExplorer {
 
         for (WebElement elem : masterList) {
             List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            String id = HTMLLocatorBuilder.getElementIdentifier(elem);
+            
             if (!(children == null || children.isEmpty()))
+                System.out.println("MASTER:"+id+"|"+children.size());
                 // masterRetSet.add(elem.toString());
-                masterRetSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+                masterRetSet.add(id);
         }
 
         for (WebElement elem : detailList) {
             List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            String id = HTMLLocatorBuilder.getElementIdentifier(elem);
+
             if (!(children == null || children.isEmpty()))
+                System.out.println("DETAIL:"+id+"|"+children.size());
                 // detailRetSet.add(elem.toString());
-                detailRetSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+                detailRetSet.add(id);
         }
 
         // page -> elements
@@ -754,7 +792,11 @@ public class WebsiteExplorer {
                 detailElements.put(currentPage, temp);
             }
         }
-        System.out.println("menuElements size:" + menuElements.size());
+        for(String s: configurator.getMasterIdentifiers())
+            System.out.println("\tm:"+s);
+        for(String s: configurator.getDetailIdentifiers())
+            System.out.println("\td:"+s);
+        System.out.println("masterElements size:" + masterElements.size()+"|"+"detailElements size:" + detailElements.size());
     }
 
     private void findMenuElementsInPage() {
@@ -901,108 +943,6 @@ public class WebsiteExplorer {
         return false;
     }
 
-    public void exploreWebsite() {
-
-        // set logger config
-        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
-                .setLevel(java.util.logging.Level.SEVERE);
-        driver.get(baseUrl);
-
-        try {
-            System.setErr(new PrintStream(new File("err.txt")));
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        }
-        try {
-            System.setOut(new PrintStream(new File("out.txt")));
-        } catch (FileNotFoundException e1) {
-            e1.printStackTrace();
-        }
-
-        // write 'open' action
-        String r = baseUrl.replaceFirst(
-                "/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
-        SeleniumTableRow row = new SeleniumTableRow("open", r, "EMPTY");
-        history.add(row);
-        writeToHistoryFile(row, false);
-        System.out.println(history.get(0).toString());
-
-        while (currAction < configurator.getNumActions()) {
-            currentPage = driver.getCurrentUrl();
-
-            System.out.println("Action #" + currAction + " | Page URL is: "
-                    + currentPage);
-
-            // search for menu elements (before the element is visited)
-            if (isSearchingForPattern("menu"))
-                findMenuElementsInPage();
-            WebElement element = chooseNextElement();
-
-            // see if one can search for master detail after search
-            if (lastAction.equals("SEARCH")
-                    && isSearchingForPattern("masterdetail")) {
-                findMasterDetailElementsInSearchResultPage();
-            }
-            if (element == null) {
-                // if no element is found, go back to home page
-                boolean stop = goBackToHome(r);
-                if (stop)
-                    break;
-            } else {
-
-                System.out.println("ELEMENT: "
-                        + element.toString()
-                        + (!element.getText().isEmpty() ? " (has text)"
-                                : " (no text)"));
-
-                System.out.println("LOCATOR:"
-                        + HTMLLocatorBuilder.getElementIdentifier(element));
-
-                if (isElementRelatedToLogin(element)
-                        && isSearchingForPattern("login")) {
-                    if (configurator.getLoginConfiguration().isEmpty()) {
-                        boolean processedLogin = processInvalidLogin(element);
-                        if (processedLogin)
-                            goBackToHome(r);
-                    } else {
-                        boolean processedLogin = processValidLogin(element);
-                        if (processedLogin)
-                            goBackToHome(r);
-                    }
-                }// dropdown list
-                else if (element.getTagName().toLowerCase().equals("select")) {
-                    if (!configurator.includeChildrenNodesOnInteraction())
-                        processSelectElement(element);
-                    else
-                        includeFormChildrenAndVisitElement(element);
-                } else if (isElementTextInputable(element)) {
-                    if (!configurator.includeChildrenNodesOnInteraction())
-                        processInputElement(element);
-                    else
-                        includeFormChildrenAndVisitElement(element);
-                } else {
-                    processAnchorElements(element);
-                }
-
-                if (wait) {
-                    // politeness delay
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(750);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    wait = true;
-                }
-
-                // increments action
-                currAction++;
-            }
-        }
-
-        driver.quit();
-    }
-
     private boolean processValidLogin(WebElement element) {
         if (element.getTagName().toLowerCase().equals("input")
                 || element.getTagName().toLowerCase().equals("select")) {
@@ -1045,24 +985,28 @@ public class WebsiteExplorer {
                             case "password":
                             case "email":
                                 row = new SeleniumTableRow(
-                                        "list",// e.toString(),
+                                        "type",// e.toString(),
                                         HTMLLocatorBuilder
                                                 .getElementIdentifier(e),
                                         "EMPTY");
                                 System.out.println("row: " + row.toString());
                                 history.add(row);
                                 writeToHistoryFile(row, true);
+                                visitedElements.add(HTMLLocatorBuilder
+                                        .getElementIdentifier(e));
                                 break;
                             case "radio":
                             case "checkbox":
                                 row = new SeleniumTableRow(
-                                        "list",// e.toString(),
+                                        "click",// e.toString(),
                                         HTMLLocatorBuilder
                                                 .getElementIdentifier(e),
                                         "EMPTY");
                                 System.out.println("row: " + row.toString());
                                 history.add(row);
                                 writeToHistoryFile(row, true);
+                                visitedElements.add(HTMLLocatorBuilder
+                                        .getElementIdentifier(e));
                                 break;
                         }
                     } else if (e.getTagName().toLowerCase().equals("select")) {
@@ -1070,12 +1014,14 @@ public class WebsiteExplorer {
                                 .xpath(".//option"));
                         if (options.size() != 0) {
                             row = new SeleniumTableRow(
-                                    "listSelect",// e.toString(),
+                                    "select",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
                             System.out.println("row: " + row.toString());
                             history.add(row);
                             writeToHistoryFile(row, true);
+                            visitedElements.add(HTMLLocatorBuilder
+                                    .getElementIdentifier(e));
                         }
                     }
                 }
@@ -1089,5 +1035,107 @@ public class WebsiteExplorer {
             processAnchorElements(element);
             return false;
         }
+    }
+
+    public void exploreWebsite() {
+
+        // set logger config
+        java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
+                .setLevel(java.util.logging.Level.SEVERE);
+        driver.get(baseUrl);
+
+        try {
+            System.setErr(new PrintStream(new File("err.txt")));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+        try {
+            System.setOut(new PrintStream(new File("out.txt")));
+        } catch (FileNotFoundException e1) {
+            e1.printStackTrace();
+        }
+
+        // write 'open' action
+        String r = baseUrl.replaceFirst(
+                "/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
+        SeleniumTableRow row = new SeleniumTableRow("open", r, "EMPTY");
+        history.add(row);
+        writeToHistoryFile(row, false);
+        System.out.println(history.get(0).toString());
+
+        while (currAction < configurator.getNumActions()) {
+            currentPage = driver.getCurrentUrl();
+
+            System.out.println("Action #" + currAction + " | Page URL is: "
+                    + currentPage);
+
+            // search for menu elements (before the element is visited)
+            if (isSearchingForPattern("menu"))
+                findMenuElementsInPage();
+
+            WebElement element = chooseNextElement();
+
+            // see if one can search for master detail after search
+            if (lastAction.equals("SEARCH")
+                    && isSearchingForPattern("masterdetail")) {
+                findMasterDetailElementsInSearchResultPage();
+            }
+            if (element == null) {
+                // if no element is found, go back to home page
+                boolean stop = goBackToHome(r);
+                if (stop)
+                    break;
+            } else {
+
+                System.out.println("ELEMENT: "
+                        + element.toString()
+                        + (!element.getText().isEmpty() ? " (has text)"
+                                : " (no text)"));
+
+                System.out.println("LOCATOR:"
+                        + HTMLLocatorBuilder.getElementIdentifier(element));
+
+                if (isElementRelatedToLogin(element)) {
+                    if (configurator.getLoginConfiguration().isEmpty()) {
+                        boolean processedLogin = processInvalidLogin(element);
+                        if (processedLogin)
+                            goBackToHome(r);
+                    } else {
+                        boolean processedLogin = processValidLogin(element);
+                        if (processedLogin)
+                            goBackToHome(r);
+                    }
+                }// dropdown list
+                else if (element.getTagName().toLowerCase().equals("select")) {
+                    if (!configurator.includeChildrenNodesOnInteraction())
+                        processSelectElement(element);
+                    else
+                        includeFormChildrenAndVisitElement(element);
+                } else if (isElementTextInputable(element)) {
+                    if (!configurator.includeChildrenNodesOnInteraction())
+                        processInputElement(element);
+                    else
+                        includeFormChildrenAndVisitElement(element);
+                } else {
+                    processAnchorElements(element);
+                }
+
+                if (wait) {
+                    // politeness delay
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(750);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    wait = true;
+                }
+
+                // increments action
+                currAction++;
+            }
+        }
+
+        driver.quit();
     }
 }

@@ -65,19 +65,19 @@
 	<processedHistoryFilepath>history.csv.processed</processedHistoryFilepath>
 	<patternsFilepath>patterns.paradigm</patternsFilepath>
 	<patternsToFind>
-		<item>All</item>
+		<!-- item>All</item-->
 		<item>Search</item>
 		<item>Sort</item>
 		<item>MasterDetail</item>
 		<item>Call</item>
 		<item>Input</item>
 		<item>Login</item>
-		<item>Menu</item>
+		<!--  item>Menu</item-->
 	</patternsToFind>
-	<loginConfiguration>
+	<!-- loginConfiguration>
 		<username>user-name</username>
 		<password>password</password>
-	</loginConfiguration>
+	</loginConfiguration-->
 	<tokenizerPatterns>
 		<patternEntry>
 			<name>submit</name>

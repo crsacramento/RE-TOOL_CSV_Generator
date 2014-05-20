@@ -57,17 +57,17 @@ public class WebElementOrganizer {
 		for (WebElement e : elementsToDistribute) {
 			if (itPassesAllGeneralChecks(e)){
 				// test for search
-				if(we.isSearchingForPattern("search") && e.toString().toLowerCase()
+				if(e.toString().toLowerCase()
 							.matches(".*" + conf.getSearchKeywords() + ".*")){
 					retList.get(3).add(e);
 				}else{
 					// test for sort
-					if(we.isSearchingForPattern("sort") && e.toString().toLowerCase()
+					if(e.toString().toLowerCase()
 								.matches(".*" + conf.getSortKeywords() + ".*")){
 						retList.get(4).add(e);
 					}else{
 						// test for login
-						if(we.isSearchingForPattern("login") && e.toString().toLowerCase()
+						if(e.toString().toLowerCase()
 									.matches(".*" + conf.getLoginKeywords() + ".*")){
 							retList.get(5).add(e);
 						}else{

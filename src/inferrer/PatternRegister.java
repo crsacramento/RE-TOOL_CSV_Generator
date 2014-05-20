@@ -354,11 +354,12 @@ public class PatternRegister {
                         mappingURL);
 
                 // write detail
-                if (!idNameMap.containsKey(detail)) {
-                    idNameMap.put(master, "detail_" + numberDetail);
+                if (!idNameMap.containsKey(detail) && detail != null) {
+                    idNameMap.put(detail, "detail_" + numberDetail);
                     numberDetail++;
                 }
-                writeDetailLine(idNameMap.get(detail));
+                if(detail != null)
+                    writeDetailLine(idNameMap.get(detail));
 
                 closeConfiguration();
             }

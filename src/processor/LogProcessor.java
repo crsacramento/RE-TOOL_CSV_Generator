@@ -12,10 +12,12 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import site_accesser.WebsiteExplorer;
 import configuration.Configurator;
 
 public class LogProcessor {
 	private static Configurator conf;
+	private static WebsiteExplorer we = WebsiteExplorer.getInstance();
 
 	// static String imageKeywords = "(img)";
 	// static String refineKeywords = "(refine)";
@@ -94,7 +96,7 @@ public class LogProcessor {
 		
 		// open reading file in UTF8
 		BufferedReader in = null;
-		File file = new File(conf.getHistoryFilepath());
+		File file = new File(we.getFilepath()+conf.getHistoryFilepath());
 		try {
 			in = new BufferedReader(new InputStreamReader(new FileInputStream(
 					file), /* "UTF8" */"ISO-8859-1"));
@@ -106,7 +108,7 @@ public class LogProcessor {
 		// open alphabet file
 		FileWriter output = null;
 		
-		File actualOutputFile = new File(conf.getProcessedHistoryFilepath());
+		File actualOutputFile = new File(we.getFilepath()+conf.getProcessedHistoryFilepath());
 
 		try {
 			output = new FileWriter(actualOutputFile);

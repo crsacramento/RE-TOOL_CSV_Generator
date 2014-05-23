@@ -13,12 +13,15 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import site_accesser.WebsiteExplorer;
 import configuration.Configurator;
 
 public class PatternRegister {
     private static Configurator conf = Configurator.getInstance();
+    private static WebsiteExplorer we = WebsiteExplorer.getInstance();
+    
     public static void initializePatternRegister(String baseUrl) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         // if file doesn't exist, then create it
         if (!file.exists()) {
             try {
@@ -48,7 +51,7 @@ public class PatternRegister {
     }
 
     public static void startPattern(String patternType, int number) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -83,7 +86,7 @@ public class PatternRegister {
     }
 
     public static void closePattern() {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -99,7 +102,7 @@ public class PatternRegister {
 
     private static void writeConfigurationLine(String actionType, String field,
             String value) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
 
         if (actionType.toLowerCase().contains("type")) {
             actionType = "inputs ";
@@ -123,7 +126,7 @@ public class PatternRegister {
     }
 
     private static void closeConfiguration() {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -140,7 +143,7 @@ public class PatternRegister {
             ArrayList<String> ids) {
         if (names.size() != ids.size())
             return;
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -157,7 +160,7 @@ public class PatternRegister {
     }
 
     private static void writeFields(HashMap<String, String> ids) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -179,7 +182,7 @@ public class PatternRegister {
 
     private static void openConfiguration(String check, String validity,
             String position, String result, String master, String mappingURL) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -208,7 +211,7 @@ public class PatternRegister {
     }
 
     private static void writeClosedConfigurationTag(String value, String check) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -226,7 +229,7 @@ public class PatternRegister {
     }
 
     public static void enterMenuItemContent(String url, HashSet<String> elements) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -245,7 +248,7 @@ public class PatternRegister {
 
     public static void endPatternRegister(int number) {
 
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -265,7 +268,7 @@ public class PatternRegister {
     }
 
     private static void writeRelations(int number) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -292,7 +295,7 @@ public class PatternRegister {
     }
 
     private static void writeDetailLine(String detail) {
-        File file = new File(conf.getPatternsFilepath());
+        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(

@@ -14,7 +14,7 @@ public class WebElementOrganizer {
     private static Configurator conf = Configurator.getInstance();
 	private static WebsiteExplorer we = WebsiteExplorer.getInstance();
 	
-	private static boolean itPassesAllGeneralChecks(WebElement e) {
+	public static boolean itPassesAllGeneralChecks(WebElement e) {
 		return e.isDisplayed()
 				&& !we.isElementAlreadyVisited(e)
 				&& !e.toString().toLowerCase()

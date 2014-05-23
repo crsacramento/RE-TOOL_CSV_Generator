@@ -79,7 +79,7 @@ public class PatternInferrer {
         // open processed file
         System.out.println("********************************************");
         BufferedReader in = null;
-        File file = new File(conf.getProcessedHistoryFilepath());
+        File file = new File(we.getFilepath()+conf.getProcessedHistoryFilepath());
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(
                     file), /* "UTF8" */"ISO-8859-1"));
@@ -215,24 +215,26 @@ public class PatternInferrer {
             int start = entry.getValue().get(0);
 
             if (entry.getValue().size() > 1)
-                line = Filesystem.getLinesInFile(conf.getHistoryFilepath(),
+                line = Filesystem.getLinesInFile(we.getFilepath()+conf.getHistoryFilepath(),
                         start, entry.getValue()
                                 .get(entry.getValue().size() - 1));
             else
-                line = Filesystem.getLinesInFile(conf.getHistoryFilepath(),
+                line = Filesystem.getLinesInFile(we.getFilepath()+conf.getHistoryFilepath(),
                         start);
 
             ArrayList<String> actions = new ArrayList<String>();
             ArrayList<String> targets = new ArrayList<String>();
             ArrayList<String> parameters = new ArrayList<String>();
 
-            for (int i = 0; i < line.length; ++i) {
-                if (line[i] == null)
-                    continue;
-                String[] splits = line[i].split(conf.getSeparator());
-                actions.add(splits[0]);
-                targets.add(splits[1]);
-                parameters.add(splits[2]);
+            if(!(line == null)){
+                for (int i = 0; i < line.length; ++i) {
+                    if (line[i] == null)
+                        continue;
+                    String[] splits = line[i].split(conf.getSeparator());
+                    actions.add(splits[0]);
+                    targets.add(splits[1]);
+                    parameters.add(splits[2]);
+                }
             }
 
             String patternType = pattern[0];

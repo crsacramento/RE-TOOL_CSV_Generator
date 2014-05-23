@@ -36,9 +36,14 @@ public class Configurator {
             instance = new Configurator();
         return instance;
     }
-
+    private static String filepath = null;
+    
     public Configurator() {
-        loadConfig();
+        //loadConfig();
+    }
+    
+    public static void initialize(String f){
+        filepath=f;
     }
 
     /** number of actions the crawler will execute before stopping */
@@ -220,8 +225,12 @@ public class Configurator {
             "patternsFilepath", "patternsToFind", "loginConfiguration",
             "tokenizerPatterns" };
 
-    private void loadConfig() {
-        File userOverride = new File("conf.xml");
+    public void loadConfig() {
+        File userOverride;
+        if(filepath==null)
+            userOverride = new File("conf.xml");
+        else userOverride = new File(filepath+"conf.xml");
+        
 
         if (!userOverride.exists()) {
             try {

@@ -47,6 +47,8 @@ public class PatternInferrer {
             masterElements, detailElements;
     private static String baseUrl = "default";
 
+    private static int writtenPatternIndex = 1;
+
     /**
      * @param menuElements
      *            the menuElements to set
@@ -79,7 +81,8 @@ public class PatternInferrer {
         // open processed file
         System.out.println("********************************************");
         BufferedReader in = null;
-        File file = new File(we.getFilepath()+conf.getProcessedHistoryFilepath());
+        File file = new File(we.getFilepath()
+                + conf.getProcessedHistoryFilepath());
         try {
             in = new BufferedReader(new InputStreamReader(new FileInputStream(
                     file), /* "UTF8" */"ISO-8859-1"));
@@ -160,12 +163,13 @@ public class PatternInferrer {
     }
 
     private static void writeParadigmFile() {
-        int number = 0;
         // write menu
         PatternRegister.initializePatternRegister(baseUrl);
         if (!(menuElements == null || menuElements.isEmpty())
                 && we.isSearchingForPattern("menu")) {
-            PatternRegister.startPattern("menu", number);// number doesnt matter
+            PatternRegister.startPattern("menu", writtenPatternIndex);// number
+                                                                      // doesnt
+                                                                      // matter
 
             Iterator<Entry<String, HashSet<String>>> it = menuElements
                     .entrySet().iterator();
@@ -176,7 +180,7 @@ public class PatternInferrer {
             }
 
             PatternRegister.closePattern();
-            number++;
+            writtenPatternIndex++;
         }
 
         // write search result pages' master detail
@@ -186,17 +190,19 @@ public class PatternInferrer {
             Set<String> keys = masterElements.keySet();
 
             for (String k : keys) {
-                PatternRegister.startPattern("masterDetail", number);// number
-                                                                     // doesn't
-                                                                     // matter
+                PatternRegister.startPattern("masterDetail",
+                        writtenPatternIndex);// number
+                // doesn't
+                // matter
                 Set<String> masters = masterElements.get(k);
                 Set<String> details = null;
                 if (detailElements.containsKey(k))
                     details = detailElements.get(k);
 
                 PatternRegister.enterMasterDetailContent(masters, details, k);
-                number++;
                 PatternRegister.closePattern();
+
+                writtenPatternIndex++;
             }
         }
 
@@ -209,28 +215,26 @@ public class PatternInferrer {
             Map.Entry<String, ArrayList<Integer>> entry = it.next();
             String[] pattern = entry.getKey().split("_");
 
-            PatternRegister.startPattern(pattern[0],
-                    Integer.parseInt(pattern[1]));
-
             int start = entry.getValue().get(0);
 
             if (entry.getValue().size() > 1)
-                line = Filesystem.getLinesInFile(we.getFilepath()+conf.getHistoryFilepath(),
-                        start, entry.getValue()
-                                .get(entry.getValue().size() - 1));
+                line = Filesystem.getLinesInFile(
+                        we.getFilepath() + conf.getHistoryFilepath(), start,
+                        entry.getValue().get(entry.getValue().size() - 1));
             else
-                line = Filesystem.getLinesInFile(we.getFilepath()+conf.getHistoryFilepath(),
-                        start);
+                line = Filesystem.getLinesInFile(
+                        we.getFilepath() + conf.getHistoryFilepath(), start);
 
-            ArrayList<String> actions = new ArrayList<String>();
-            ArrayList<String> targets = new ArrayList<String>();
-            ArrayList<String> parameters = new ArrayList<String>();
+            ArrayList<String> actions = new ArrayList<String>(), 
+                    targets = new ArrayList<String>(), 
+                    parameters = new ArrayList<String>();
 
-            if(!(line == null)){
+            if (!(line == null)) {
                 for (int i = 0; i < line.length; ++i) {
                     if (line[i] == null)
                         continue;
                     String[] splits = line[i].split(conf.getSeparator());
+
                     actions.add(splits[0]);
                     targets.add(splits[1]);
                     parameters.add(splits[2]);
@@ -238,42 +242,54 @@ public class PatternInferrer {
             }
 
             String patternType = pattern[0];
-            switch (patternType.toLowerCase()) {
-                case "login": {
-                    if(we.isSearchingForPattern("login"))
-                        PatternRegister.enterLoginContent(actions, targets,
-                            parameters);
-                    break;
-                }
-                case "search": {
-                    if(we.isSearchingForPattern("search"))
-                        PatternRegister.enterFindContent(actions, targets,
-                            parameters);
-                    break;
-                }
-                case "sort": {
-                    if(we.isSearchingForPattern("sort"))
-                        PatternRegister.enterSortContent(actions, targets,
-                            parameters);
-                    break;
-                }
-                case "call": {
-                    if(we.isSearchingForPattern("call"))
-                        PatternRegister.enterCallContent(actions, targets,
-                            parameters);
-                    break;
-                }
-                case "input": {
-                    if(we.isSearchingForPattern("input"))
-                        PatternRegister.enterInputContent(actions, targets,
-                            parameters);
-                    break;
-                }
-            }
-            PatternRegister.closePattern();
+            writeWholePattern(patternType.toLowerCase(), actions, targets,
+                    parameters);
+
         }
 
         PatternRegister.endPatternRegister(patternIndex + 1);
+    }
+
+    private static void writeWholePattern(String patternType,
+            ArrayList<String> actions, ArrayList<String> targets,
+            ArrayList<String> parameters) {
+        if (we.isSearchingForPattern(patternType)) {
+            ArrayList<String> cleanTargets = new ArrayList<String>(), 
+                    cleanActions = new ArrayList<String>(), 
+                    cleanParams = new ArrayList<String>();
+            for (int i = 0; i < targets.size(); ++i) {
+                if (!PatternRegister.isAlreadyWritten(
+                        patternType.toLowerCase(), targets.get(i))) {
+                    cleanActions.add(actions.get(i));
+                    cleanTargets.add(targets.get(i));
+                    cleanParams.add(parameters.get(i));
+                }
+            }
+            System.out.println(cleanTargets.size());
+            if (cleanTargets.size() > 0) {
+                PatternRegister.startPattern(patternType, writtenPatternIndex);
+
+                if (patternType.equals("login"))
+                    PatternRegister.enterLoginContent(cleanActions,
+                            cleanTargets, cleanParams);
+                else if (patternType.equals("search"))
+                    PatternRegister.enterFindContent(cleanActions,
+                            cleanTargets, cleanParams);
+                else if (patternType.equals("sort"))
+                    PatternRegister.enterSortContent(cleanActions,
+                            cleanTargets, cleanParams);
+                else if (patternType.equals("call"))
+                    PatternRegister.enterCallContent(cleanActions,
+                            cleanTargets, cleanParams);
+                else if (patternType.equals("input"))
+                    PatternRegister.enterInputContent(cleanActions,
+                            cleanTargets, cleanParams);
+
+                PatternRegister.closePattern();
+                writtenPatternIndex++;
+            }
+        }
+
     }
 
     private static void updateCurrentState() {
@@ -600,9 +616,5 @@ public class PatternInferrer {
 
     private static boolean matchInput(ArrayList<String> words) {
         return words.get(0).toLowerCase().matches(".*input.*");
-    }
-
-    public static void main(String[] args) {
-        startInferringProcess();
     }
 }

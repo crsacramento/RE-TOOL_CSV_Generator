@@ -259,7 +259,7 @@ public class WebsiteExplorer {
 
         element.click();
         // TODO remove - testing
-        //testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
+        testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
     }
 
     /**
@@ -281,7 +281,7 @@ public class WebsiteExplorer {
                 int rand1 = (int) Math.round(Math.random() * 100) + 1;
                 saveRow("type", identifier, "" + rand1);
                 // TODO remove - testing
-                //testing.incrementCorrelation();
+                testing.incrementCorrelation();
 
                 // interact
                 element.clear();
@@ -294,7 +294,7 @@ public class WebsiteExplorer {
                 saveRow("type", identifier, getConfigurator()
                         .getTypedKeywords()[rand1]);
                 // TODO remove - testing
-                //testing.incrementCorrelation();
+                testing.incrementCorrelation();
 
                 // interact
                 element.clear();
@@ -310,7 +310,7 @@ public class WebsiteExplorer {
                 int rand1 = (int) Math.round(Math.random() * 100) + 1;
                 saveRow("typeAndWait", identifier, "" + rand1);
                 // TODO remove - testing
-                //testing.incrementCorrelation();
+                testing.incrementCorrelation();
 
                 element.clear();
                 element.sendKeys(Integer.toString(rand1));
@@ -322,14 +322,14 @@ public class WebsiteExplorer {
                 saveRow("typeAndWait", identifier, getConfigurator()
                         .getTypedKeywords()[rand1]);
                 // TODO remove - testing
-                
 
                 // interact
                 element.clear();
                 element.sendKeys(getConfigurator().getTypedKeywords()[rand1]);
-                
-                //TODO
-                //testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
+
+                // TODO
+                testing.incrementHTML(driver.getPageSource(),
+                        driver.getCurrentUrl());
             }
         }
     }
@@ -345,29 +345,22 @@ public class WebsiteExplorer {
         List<WebElement> elems = element.findElements(By
                 .xpath("//input[@type='submit']"));
         List<WebElement> submit = new ArrayList<WebElement>();
+        System.out.println("elems.size()=" + elems.size());
+
         if (elems.size() > 0) {
             for (WebElement e : elems)
-                if (WebElementOrganizer.itPassesAllGeneralChecks(e)) {
-                    System.out
-                            .println("SUBMIT: "
-                                    + e.toString()
-                                    + "|"
-                                    + e.isDisplayed()
-                                    + "|"
-                                    + !isElementAlreadyVisited(e)
-                                    + "|"
-                                    + !e.toString()
-                                            .toLowerCase()
-                                            .matches(
-                                                    ".*"
-                                                            + configurator
-                                                                    .getGeneralWordsToExclude()
-                                                            + ".*")
-                                    + "|"
-                                    + !e.toString().toLowerCase()
-                                            .matches(".*(disabled|readonly).*"));
+                if (!e.toString()
+                        .toLowerCase()
+                        .matches(
+                                ".*" + configurator.getGeneralWordsToExclude()
+                                        + ".*")) {
+                    System.out.println("SUBMIT: " + e.toString());
+
                     submit.add(e);
                 }
+        }
+        if (submit.size() > 0) {
+
             if (submit.size() > 0) {
                 System.out.println("SUBMIT=len:" + submit.size());
                 saveRow("clickAndWait",
@@ -376,8 +369,8 @@ public class WebsiteExplorer {
                 // interact
                 submit.get(0).click();
                 // TODO remove - testing
-                //testing.incrementHTML(driver.getPageSource(),
-                        //driver.getCurrentUrl());
+                testing.incrementHTML(driver.getPageSource(),
+                        driver.getCurrentUrl());
             } else {
                 System.out.println("THERE ARE NO SUBMITS");
                 // invalid, do something else
@@ -393,29 +386,29 @@ public class WebsiteExplorer {
             List<WebElement> dynamicSubmits = new ArrayList<WebElement>();
             if (elems.size() > 0) {
                 for (WebElement sub : elems) {
-                    System.out.println("DYN_SUBMIT: " + sub.toString());
-                    dynamicSubmits.add(sub);
+                    if (!sub.toString()
+                            .toLowerCase()
+                            .matches(
+                                    ".*"
+                                            + configurator
+                                                    .getGeneralWordsToExclude()
+                                            + ".*")) {
+                        System.out.println("DYN_SUBMIT: " + sub.toString());
+                        dynamicSubmits.add(sub);
+                    }
                 }
-                if (dynamicSubmits.size() > 0) {
-                    System.out.println("DYN_SUBMIT=len:" + submit.size());
-                    saveRow("clickAndWait",
-                            HTMLLocatorBuilder
-                                    .getElementIdentifier(dynamicSubmits.get(0)),
-                            "EMPTY");
+            }
+            if (dynamicSubmits.size() > 0) {
+                System.out.println("DYN_SUBMIT=len:" + submit.size());
+                saveRow("clickAndWait",
+                        HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits
+                                .get(0)), "EMPTY");
 
-                    // interact
-                    dynamicSubmits.get(0).click();
-                    // TODO remove - testing
-                    //testing.incrementHTML(driver.getPageSource(),
-                            //driver.getCurrentUrl());
-                } else {
-                    System.out.println("THERE ARE NO SUBMITS");
-                    // invalid, do something else
-                    currAction--;
-                    wait = false;
-                    visitedElements.add(HTMLLocatorBuilder
-                            .getElementIdentifier(element));
-                }
+                // interact
+                dynamicSubmits.get(0).click();
+                // TODO remove - testing
+                testing.incrementHTML(driver.getPageSource(),
+                        driver.getCurrentUrl());
             } else {
                 System.out.println("THERE ARE NO SUBMITS");
                 // invalid, do something else
@@ -465,7 +458,7 @@ public class WebsiteExplorer {
                     saveRow("select", identifier,
                             "label=\"" + options.get(rand1).getText() + '"');
                     // TODO remove - testing
-                    //testing.incrementCorrelation();
+                    testing.incrementCorrelation();
 
                     handleFormSubmission(element);
                 } else {
@@ -474,8 +467,8 @@ public class WebsiteExplorer {
                             identifier, "label=\""
                                     + options.get(rand1).getText() + '"');
                     // TODO remove - testing
-                    //testing.incrementHTML(driver.getPageSource(),
-                            //driver.getCurrentUrl());
+                    testing.incrementHTML(driver.getPageSource(),
+                            driver.getCurrentUrl());
                 }
             }
         }
@@ -500,31 +493,31 @@ public class WebsiteExplorer {
                         case "text":
                         case "password":
                         case "email":
-                            saveRow("type",// e.toString(),
+                            saveRow("SIBLING:","type",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
                             // TODO remove - testing
-                            //testing.incrementCorrelation();
+                            testing.incrementCorrelation();
                             break;
                         case "radio":
                         case "checkbox":
                         case "button":
-                            saveRow("click",// e.toString(),
+                            saveRow("SIBLING:","click",
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
                             // TODO remove - testing
-                            //testing.incrementCorrelation();
+                            testing.incrementCorrelation();
                             break;
                     }
                 } else if (e.getTagName().toLowerCase().equals("select")) {
                     List<WebElement> options = element.findElements(By
                             .xpath(".//option"));
                     if (options.size() != 0) {
-                        saveRow("select",// e.toString(),
+                        saveRow("SIBLING:","select",// e.toString(),
                                 HTMLLocatorBuilder.getElementIdentifier(e),
                                 "EMPTY");
                         // TODO remove - testing
-                        //testing.incrementCorrelation();
+                        testing.incrementCorrelation();
                     }
                 }
             }
@@ -535,6 +528,15 @@ public class WebsiteExplorer {
             processInputElement(element);
         else
             processSelectElement(element);
+    }
+
+    private void saveRow(String string, String action,
+            String target, String parameter) {
+        SeleniumTableRow row = new SeleniumTableRow(action, target, parameter);
+        System.out.println(string+row.toString());
+        writeToHistoryFile(row, true);
+        visitedElements.add(target);
+        
     }
 
     /**
@@ -820,7 +822,7 @@ public class WebsiteExplorer {
     private boolean goBackToHome(String URL) {
         driver.get(baseUrl);
         // TODO remove - testing
-        //testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
+        testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
         saveRow("open", URL, "EMPTY");
         wait = true;
         homeRedirections++;
@@ -860,9 +862,9 @@ public class WebsiteExplorer {
         driver.get(baseUrl);
 
         // TODO remove, for testing
-        //testing.init(driver.getCurrentUrl(), driver.getPageSource());
-        //testing.setHistoryFilepath(new File(folderpath
-                //+ getConfigurator().getHistoryFilepath()).getAbsolutePath());
+        testing.init(driver.getCurrentUrl(), driver.getPageSource());
+        testing.setHistoryFilepath(new File(folderpath
+                + getConfigurator().getHistoryFilepath()).getAbsolutePath());
 
         try {
             System.setErr(new PrintStream(new File(folderpath + "err.txt")));
@@ -878,7 +880,9 @@ public class WebsiteExplorer {
         // write 'open' action
         String r = baseUrl.replaceFirst(
                 "/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
-        saveRow("open", r, "EMPTY");
+        SeleniumTableRow row = new SeleniumTableRow("open", r, "EMPTY");
+        System.out.println(row.toString());
+        writeToHistoryFile(row, false);
 
         while (currAction < getConfigurator().getNumActions()) {
             currentPage = driver.getCurrentUrl();
@@ -994,7 +998,7 @@ public class WebsiteExplorer {
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     content);
                             // TODO remove - testing
-                            //testing.incrementCorrelation();
+                            testing.incrementCorrelation();
                             // interact
                             e.clear();
                             e.sendKeys(content);
@@ -1006,7 +1010,7 @@ public class WebsiteExplorer {
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
                             // TODO remove - testing
-                            //testing.incrementCorrelation();
+                            testing.incrementCorrelation();
                             // interact
                             e.click();
                             break;
@@ -1022,7 +1026,7 @@ public class WebsiteExplorer {
                                 HTMLLocatorBuilder.getElementIdentifier(e),
                                 "label=\"" + options.get(rand1).getText() + '"');
                         // TODO remove - testing
-                        //testing.incrementCorrelation();
+                        testing.incrementCorrelation();
                         // interact
                         select.selectByIndex(rand1);
                     }

@@ -20,6 +20,20 @@ public class PatternRegister {
     private static Configurator conf = Configurator.getInstance();
     private static WebsiteExplorer we = WebsiteExplorer.getInstance();
     
+    static HashMap<String,HashSet<String>> duplicateControl = new HashMap<String,HashSet<String>>();
+    
+    public static boolean isAlreadyWritten(String type, String id){
+        HashSet<String> set = duplicateControl.get(type);
+        if(set == null){
+            set = new HashSet<String>();
+            set.add(id);
+            duplicateControl.put(type, set);
+            return false;
+        }else{
+            return !duplicateControl.get(type).add(id);
+        }
+    }
+    
     public static void initializePatternRegister(String baseUrl) {
         File file = new File(we.getFilepath()+conf.getPatternsFilepath());
         // if file doesn't exist, then create it
@@ -324,9 +338,9 @@ public class PatternRegister {
             String field = "field_" + i;
             if (targets.get(i).matches(".*(submit).*"))
                 continue;
-            else if (targets.get(i).matches(".*(user|mail).*"))
+            else if (targets.get(i).matches(".*(user|@type=email).*"))
                 field = "username";
-            else if (targets.get(i).matches(".*(pass).*"))
+            else if (targets.get(i).matches(".*(@type=password).*"))
                 field = "password";
 
             writeConfigurationLine(actions.get(i), field, parameters.get(i));

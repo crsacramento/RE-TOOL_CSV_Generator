@@ -1,2 +1,0 @@
-[ChangeDelta, position: 606, lines: [   <div align="center" style="display: none" class="box" id="addNewTodoDiv">] to [   <div align="center" style="display: inline;" class="box" id="addNewTodoDiv">]]
-[ChangeDelta, position: 640, lines: [         <select name="assignedUser" id="addNewTodoAssignedUser"><option></option></select>] to [         <select name="assignedUser" id="addNewTodoAssignedUser"><option value="testes">testes</option><option value="">-- Not assigned --</option></select>]]

@@ -105,9 +105,12 @@ public class ProcessStarter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
         System.out.println("-------TESTING-------");
-        //we.testing.escapeProcess();
+        we.testing.setHistoryFilepath(we.getFilepath());
+        we.testing.escapeProcess();
         System.out.println("-------TESTING-------");
+        
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);
         PatternInferrer.setMenuElements(we.menuElements);

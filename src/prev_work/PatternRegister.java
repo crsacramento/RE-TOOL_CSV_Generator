@@ -14,7 +14,7 @@ public class PatternRegister {
     // If it is Login/Sort/MasterDetail/Search/Menu
     String patternType;
     // Number increments with every pattern
-    static double number = 1.1;
+    static int number = 1;
 
     public static void main(String[] args) {
         // TODO Auto-generated method stub

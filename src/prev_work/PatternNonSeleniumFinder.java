@@ -16,7 +16,7 @@ public class PatternNonSeleniumFinder {
         // calcular media do tamanho dos HTMLs
         double fileSizeAverage = FileSizeMath.calculateAverageFileSize(System
                 .getProperty("user.dir") + "\\HTMLfinal\\");
-        // System.out.println(fileSizeAverage);
+        System.out.println("\tfileSizeAverage: "+fileSizeAverage);
 
         // keywords que podem indicar a presença de sort
         String[] sortKeywords = { "desc", "asc", "DESC", "ASC", "orderby",
@@ -35,6 +35,7 @@ public class PatternNonSeleniumFinder {
                 String keyword = sortKeywordsVector.get(j).toString();
                 if (pageInfo.get(i).getPageURL().contains(keyword)) {
                     keywordsInUrl.add(keyword);
+                    System.out.println("\tkeyword: "+keyword);
                 }
             }
 
@@ -51,7 +52,7 @@ public class PatternNonSeleniumFinder {
             Filesystem.saveToFile("final", Integer.toString(i + 1)
                     + "extraInfo",
                     "URL:" + pageInfo.get(i).getPageURL() + "\n", true);
-            System.out.println(ratio);
+            System.out.println("\tratio:"+ratio);
             for (String keyword : keywordsInUrl) {
                 // Se as keywords existirem, peso é adicionado ao SortCheck
                 if (keyword.equalsIgnoreCase("sort")

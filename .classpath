@@ -6,5 +6,8 @@
 	<classpathentry kind="lib" path="libs/JNativeHook.jar"/>
 	<classpathentry kind="lib" path="libs/jsoup-1.7.2.jar"/>
 	<classpathentry kind="lib" path="libs/selenium-server-standalone-2.40.0.jar"/>
+	<classpathentry kind="lib" path="libs/commons-lang3-3.3.1.jar"/>
+	<classpathentry kind="lib" path="libs/selenium-java-2.41.0.jar"/>
+	<classpathentry kind="lib" path="libs/commons-io-2.4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

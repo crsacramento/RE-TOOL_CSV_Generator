@@ -67,20 +67,28 @@ public class BrowserHandlerTesting {
         HTMLFileIndex++;
         pageInfo.add(new PageInfo(pageURL,
                 correlationBetweenSeleniumStepAndHtmlFiles));
-
+        System.out
+        .println( "INIT|correlation:"
+                + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
         patterns.initializePatternRegister();
     }
 
     public void escapeProcess() {
+        System.out.println("start");
         processList();
+        System.out.println("processList");
         PatternNonSeleniumFinder.ProcessUrlsAndHTMLSize(pageInfo);
+        System.out
+                .println("PatternNonSeleniumFinder.ProcessUrlsAndHTMLSize(pageInfo)");
         try {
             processSeleniumActions();
         } catch (IOException e1) {
             // TODO Auto-generated catch block
             e1.printStackTrace();
         }
+        System.out.println("processSeleniumActions");
         PatternNonSeleniumFinder.testForMasterDetail();
+        System.out.println("PatternNonSeleniumFinder.testForMasterDetail();");
         patterns.endPatternRegister();
     }
 
@@ -92,10 +100,16 @@ public class BrowserHandlerTesting {
         // System.out.println("correlation: "+correlationBetweenSeleniumStepAndHtmlFiles);
         pageInfo.add(new PageInfo(url,
                 correlationBetweenSeleniumStepAndHtmlFiles));
+        System.out
+        .println( "INC_HTML|correlation:"
+                + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
     }
 
     public void incrementCorrelation() {
         correlationBetweenSeleniumStepAndHtmlFiles++;
+        System.out
+                .println( "INC_CORR|correlation:"
+                        + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
     }
 
     private void processSeleniumActions() throws IOException {
@@ -162,7 +176,7 @@ public class BrowserHandlerTesting {
         ArrayList<SeleniumIDEElement> ret = new ArrayList<SeleniumIDEElement>();
         BufferedReader br = null;
 
-        File file = new File(historyFilepath);
+        File file = new File(historyFilepath + c.getHistoryFilepath());
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(
                     file.getAbsoluteFile()), "UTF-8"));
@@ -192,6 +206,7 @@ public class BrowserHandlerTesting {
 
         for (int i = 2; i <= HTMLFileIndex - 1; i++) {
             pageChanges.add(DiffUtility.differenceBetweenFiles(i - 1, i));
+            System.out.println("\t" + (i - 1) + "|" + i);
         }
 
         int file = 2;
@@ -200,6 +215,7 @@ public class BrowserHandlerTesting {
             String changes = DiffUtility.convertPatchToString(patch);
             Filesystem.saveToFile("final", Integer.toString(file), changes,
                     false);
+            System.out.println("\tfinal" + Integer.toString(file));
             file++;
         }
 

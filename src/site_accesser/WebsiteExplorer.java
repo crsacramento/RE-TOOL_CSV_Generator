@@ -19,8 +19,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
+import prev_work.BrowserHandlerTesting;
 import configuration.Configurator;
-import data_gen.BrowserHandlerTesting;
 
 public class WebsiteExplorer {
     /**

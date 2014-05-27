@@ -1,4 +1,4 @@
-package data_gen;
+package prev_work;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,14 +10,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import configuration.Configurator;
-import prev_work.DiffUtility;
-import prev_work.Filesystem;
-import prev_work.PageInfo;
-import prev_work.PatternNonSeleniumFinder;
-import prev_work.PatternRegister;
-import prev_work.SeleniumHTMLInteraction;
-import prev_work.SeleniumIDEElement;
-import prev_work.TypeActionHandlers;
 import difflib.Patch;
 
 public class BrowserHandlerTesting {
@@ -52,13 +44,14 @@ public class BrowserHandlerTesting {
     }
 
     public void init(String url, String pageSource) {
-        deleteFolder(new File(System.getProperty("user.dir") + "\\HTMLtemp"
-                + "\\"));
-        new File(System.getProperty("user.dir") + "\\HTMLtemp" + "\\").mkdirs();
-        deleteFolder(new File(System.getProperty("user.dir") + "\\HTMLfinal"
-                + "\\"));
-        new File(System.getProperty("user.dir") + "\\HTMLfinal" + "\\")
-                .mkdirs();
+        deleteFolder(new File(System.getProperty("user.dir")
+                + File.separatorChar + "HTMLtemp" + File.separatorChar));
+        new File(System.getProperty("user.dir") + File.separatorChar
+                + "HTMLtemp" + File.separatorChar).mkdirs();
+        deleteFolder(new File(System.getProperty("user.dir")
+                + File.separatorChar + "HTMLfinal" + File.separatorChar));
+        new File(System.getProperty("user.dir") + File.separatorChar
+                + "HTMLfinal" + File.separatorChar).mkdirs();
 
         pageURL = url;
 
@@ -67,9 +60,9 @@ public class BrowserHandlerTesting {
         HTMLFileIndex++;
         pageInfo.add(new PageInfo(pageURL,
                 correlationBetweenSeleniumStepAndHtmlFiles));
-        System.out
-        .println( "INIT|correlation:"
-                + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
+        System.out.println("INIT|correlation:"
+                + correlationBetweenSeleniumStepAndHtmlFiles + "|HTML index:"
+                + HTMLFileIndex);
         patterns.initializePatternRegister();
     }
 
@@ -100,16 +93,16 @@ public class BrowserHandlerTesting {
         // System.out.println("correlation: "+correlationBetweenSeleniumStepAndHtmlFiles);
         pageInfo.add(new PageInfo(url,
                 correlationBetweenSeleniumStepAndHtmlFiles));
-        System.out
-        .println( "INC_HTML|correlation:"
-                + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
+        System.out.println("INC_HTML|correlation:"
+                + correlationBetweenSeleniumStepAndHtmlFiles + "|HTML index:"
+                + HTMLFileIndex);
     }
 
     public void incrementCorrelation() {
         correlationBetweenSeleniumStepAndHtmlFiles++;
-        System.out
-                .println( "INC_CORR|correlation:"
-                        + correlationBetweenSeleniumStepAndHtmlFiles+"|HTML index:" + HTMLFileIndex);
+        System.out.println("INC_CORR|correlation:"
+                + correlationBetweenSeleniumStepAndHtmlFiles + "|HTML index:"
+                + HTMLFileIndex);
     }
 
     private void processSeleniumActions() throws IOException {

@@ -95,7 +95,7 @@ public class PatternRegister {
             e.printStackTrace();
         }
 
-        number += 0.1;
+        number += 1;
     }
 
     public void endPatternRegister() {
@@ -120,6 +120,6 @@ public class PatternRegister {
             e.printStackTrace();
         }
 
-        number += 0.1;
+        number += 1;
     }
 }

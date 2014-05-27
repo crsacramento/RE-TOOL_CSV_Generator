@@ -69,6 +69,8 @@ public class ProcessStarter {
         // baseURL = "http://www.geforce.com/";
         // baseURL = "http://www.reddit.com/";
         // baseURL = "http://www.9gag.com/";
+        // baseURL = "http://www.gamestop.com";
+        // baseURL = "http://www.gamespot.com";
         // baseURL =
         // "http://www.game-debate.com/games/index.php?g_id=625&game=The%20Elder%20Scrolls%20V";
         // baseURL="http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=shoes";
@@ -83,6 +85,7 @@ public class ProcessStarter {
         
         c.loadConfig();
         WebsiteExplorer.setConfigurator(c);
+        
         //we.getDriver().get(baseURL);
         
         //we.findMasterDetailElementsInSearchResultPage();
@@ -107,10 +110,10 @@ public class ProcessStarter {
             e.printStackTrace();
         }
         
-        System.out.println("-------TESTING-------");
-        we.testing.setHistoryFilepath(we.getFilepath());
-        we.testing.escapeProcess();
-        System.out.println("-------TESTING-------");
+        /*System.out.println("-------TESTING-------");
+        we.getTesting().setHistoryFilepath(we.getFilepath());
+        we.getTesting().escapeProcess();
+        System.out.println("-------TESTING-------");*/
         
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);

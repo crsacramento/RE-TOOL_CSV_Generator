@@ -17,7 +17,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.support.ui.Select;
 
 import prev_work.BrowserHandlerTesting;
 import configuration.Configurator;
@@ -31,10 +30,7 @@ public class WebsiteExplorer {
     /**
      * filepath to folder where all files produced will be written
      */
-    private String folderpath = "";
-    /* action history */
-    // private static ArrayList<SeleniumTableRow> history = new
-    // ArrayList<SeleniumTableRow>();
+    private static String folderpath = "";
 
     /** set of visited elements */
     private static Set<String> visitedElements = new HashSet<String>();
@@ -76,7 +72,7 @@ public class WebsiteExplorer {
 
     private static String lastAction = "NONE", currentAction = "NONE";
 
-    public BrowserHandlerTesting testing = new BrowserHandlerTesting();
+    private BrowserHandlerTesting testing = new BrowserHandlerTesting();
 
     /**
      * @return the filepath
@@ -126,7 +122,7 @@ public class WebsiteExplorer {
 
     public static void initialize(String URL, String filepath) {
         WebsiteExplorer.getInstance().baseUrl = URL;
-        WebsiteExplorer.getInstance().folderpath = filepath;
+        WebsiteExplorer.folderpath = filepath;
     }
 
     /**
@@ -143,7 +139,7 @@ public class WebsiteExplorer {
      *            HTML element
      * @return element was visited or not
      */
-    public boolean isElementAlreadyVisited(WebElement e) {
+    protected boolean isElementAlreadyVisited(WebElement e) {
         if (visitedElements.isEmpty())
             return false;
         else {
@@ -209,7 +205,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private boolean isElementTextInputable(WebElement e) {
+    protected static boolean isElementTextInputable(WebElement e) {
         if (e.getTagName().toLowerCase().equals("textarea"))
             return true;
         if (e.getTagName().toLowerCase().equals("input")) {
@@ -227,7 +223,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private boolean isElementRelatedToLogin(WebElement e) {
+    protected static boolean isElementRelatedToLogin(WebElement e) {
         return e.toString().toLowerCase()
                 .matches(".*" + getConfigurator().getLoginKeywords() + ".*");
     }
@@ -238,7 +234,7 @@ public class WebsiteExplorer {
      * @param e
      *            element to check
      */
-    private boolean isInputElementExpectingNumbers(WebElement e) {
+    protected static boolean isInputElementExpectingNumbers(WebElement e) {
         String types = "((type=\\\")?number|price|quantity|qty\\s|zip\\s?code)";
         if (e.toString().matches(".*" + types + ".*"))
             return true;
@@ -246,362 +242,13 @@ public class WebsiteExplorer {
         return false;
     }
 
-    /**
-     * Does necessary operations to interact with an anchor element
-     * 
-     * @param e
-     *            element to interact with
-     */
-    private void processAnchorElements(WebElement element) {
-        // link
-        saveRow("clickAndWait",
-                HTMLLocatorBuilder.getElementIdentifier(element), "EMPTY");
-
-        element.click();
-        // TODO remove - testing
-        testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
-    }
-
-    /**
-     * Does necessary operations to interact with an input element
-     * 
-     * @param e
-     *            element to interact with
-     */
-    private void processInputElement(WebElement element) {
-        String identifier = HTMLLocatorBuilder.getElementIdentifier(element);
-
-        // if form doesn't submit dynamically, submit
-        // form manually
-        if (!element.toString().matches(".*onchange=.*submit.*")) {
-
-            // verify if input wants numbers or words
-            if (isInputElementExpectingNumbers(element)) {
-                // it wants an integer value
-                int rand1 = (int) Math.round(Math.random() * 100) + 1;
-                saveRow("type", identifier, "" + rand1);
-                // TODO remove - testing
-                testing.incrementCorrelation();
-
-                // interact
-                element.clear();
-                element.sendKeys(Integer.toString(rand1));
-            } else {
-                // insert random keyword
-                int rand1 = (int) Math.round(Math.random()
-                        * (getConfigurator().getTypedKeywords().length - 1));
-
-                saveRow("type", identifier, getConfigurator()
-                        .getTypedKeywords()[rand1]);
-                // TODO remove - testing
-                testing.incrementCorrelation();
-
-                // interact
-                element.clear();
-                element.sendKeys(getConfigurator().getTypedKeywords()[rand1]);
-            }
-
-            handleFormSubmission(element);
-        } else {
-            // add 'andWait' suffix to mark page change
-
-            if (isInputElementExpectingNumbers(element)) {
-                // it wants an integer value
-                int rand1 = (int) Math.round(Math.random() * 100) + 1;
-                saveRow("typeAndWait", identifier, "" + rand1);
-                // TODO remove - testing
-                testing.incrementCorrelation();
-
-                element.clear();
-                element.sendKeys(Integer.toString(rand1));
-            } else {
-                // insert random keyword
-                int rand1 = (int) Math.round(Math.random()
-                        * (getConfigurator().getTypedKeywords().length - 1));
-
-                saveRow("typeAndWait", identifier, getConfigurator()
-                        .getTypedKeywords()[rand1]);
-                // TODO remove - testing
-
-                // interact
-                element.clear();
-                element.sendKeys(getConfigurator().getTypedKeywords()[rand1]);
-
-                // TODO
-                testing.incrementHTML(driver.getPageSource(),
-                        driver.getCurrentUrl());
-            }
-        }
-    }
-
-    /**
-     * Submits a previously visited form.
-     * 
-     * @param element
-     *            element inside the form to be visited.
-     */
-    private void handleFormSubmission(WebElement element) {
-        // search for conventional submit elements
-        List<WebElement> elems = element.findElements(By
-                .xpath("//input[@type='submit']"));
-        List<WebElement> submit = new ArrayList<WebElement>();
-        System.out.println("elems.size()=" + elems.size());
-
-        if (elems.size() > 0) {
-            for (WebElement e : elems)
-                if (!e.toString()
-                        .toLowerCase()
-                        .matches(
-                                ".*" + configurator.getGeneralWordsToExclude()
-                                        + ".*")) {
-                    System.out.println("SUBMIT: " + e.toString());
-
-                    submit.add(e);
-                }
-        }
-        if (submit.size() > 0) {
-
-            if (submit.size() > 0) {
-                System.out.println("SUBMIT=len:" + submit.size());
-                saveRow("clickAndWait",
-                        HTMLLocatorBuilder.getElementIdentifier(submit.get(0)),
-                        "EMPTY");
-                // interact
-                submit.get(0).click();
-                // TODO remove - testing
-                testing.incrementHTML(driver.getPageSource(),
-                        driver.getCurrentUrl());
-            } else {
-                System.out.println("THERE ARE NO SUBMITS");
-                // invalid, do something else
-                currAction--;
-                wait = false;
-                visitedElements.add(HTMLLocatorBuilder
-                        .getElementIdentifier(element));
-            }
-        } else {
-            // search for elements that dynamically submit forms
-            elems = element.findElements(By
-                    .xpath("//*[contains(@onclick,'submit')]"));
-            List<WebElement> dynamicSubmits = new ArrayList<WebElement>();
-            if (elems.size() > 0) {
-                for (WebElement sub : elems) {
-                    if (!sub.toString()
-                            .toLowerCase()
-                            .matches(
-                                    ".*"
-                                            + configurator
-                                                    .getGeneralWordsToExclude()
-                                            + ".*")) {
-                        System.out.println("DYN_SUBMIT: " + sub.toString());
-                        dynamicSubmits.add(sub);
-                    }
-                }
-            }
-            if (dynamicSubmits.size() > 0) {
-                System.out.println("DYN_SUBMIT=len:" + submit.size());
-                saveRow("clickAndWait",
-                        HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits
-                                .get(0)), "EMPTY");
-
-                // interact
-                dynamicSubmits.get(0).click();
-                // TODO remove - testing
-                testing.incrementHTML(driver.getPageSource(),
-                        driver.getCurrentUrl());
-            } else {
-                System.out.println("THERE ARE NO SUBMITS");
-                // invalid, do something else
-                currAction--;
-                wait = false;
-                visitedElements.add(HTMLLocatorBuilder
-                        .getElementIdentifier(element));
-            }
-        }
-
-    }
-
-    /**
-     * Does necessary operations to interact with a dropdown menu element
-     * 
-     * @param element
-     *            to interact with
-     */
-    private void processSelectElement(WebElement element) {
-        String identifier = HTMLLocatorBuilder.getElementIdentifier(element);
-        Select select = new Select(element);
-
-        // select random option
-        List<WebElement> options = element.findElements(By.xpath(".//option"));
-        if (options.size() == 0) {
-            // invalid, do something else
-            currAction--;
-            wait = false;
-            visitedElements.add(identifier);
-        } else {
-            System.out.println("options:" + options.size());
-            int rand1 = (int) Math.round(Math.random() * (options.size() - 1));
-            System.out.println("OPTION TEXT:" + options.get(rand1).getText());
-
-            if (options.get(rand1).getText().isEmpty()) {
-                // invalid, do something else
-                currAction--;
-                wait = false;
-                visitedElements.add(identifier);
-            } else {
-                // it's a valid option
-                select.selectByIndex(rand1);
-
-                if (!element.toString().matches(".*onchange=\".*submit\".*")) {
-                    // if form doesn't submit dynamically, submit
-                    // form manually
-                    saveRow("select", identifier,
-                            "label=\"" + options.get(rand1).getText() + '"');
-                    // TODO remove - testing
-                    testing.incrementCorrelation();
-
-                    handleFormSubmission(element);
-                } else {
-                    // add 'andWait' suffix to mark page change
-                    saveRow("selectAndWait",// element.toString(),
-                            identifier, "label=\""
-                                    + options.get(rand1).getText() + '"');
-                    // TODO remove - testing
-                    testing.incrementHTML(driver.getPageSource(),
-                            driver.getCurrentUrl());
-                }
-            }
-        }
-    }
-
-    /**
-     * Includes element siblings (other inputs and selects that are children of
-     * the element's form parent) and lists them on the history file without
-     * interacting with them.
-     * 
-     * @param element
-     *            element to interact with
-     */
-    private void includeFormChildrenAndVisitElement(WebElement element) {
-        WebElement form = findParentForm(element);
-        List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
-
-        for (WebElement e : children) {
-            if (!e.toString().equals(element.toString())) {
-                if (e.getTagName().equals("input")) {
-                    switch (e.getAttribute("type")) {
-                        case "text":
-                        case "password":
-                        case "email":
-                            saveRow("SIBLING:","type",// e.toString(),
-                                    HTMLLocatorBuilder.getElementIdentifier(e),
-                                    "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
-                            break;
-                        case "radio":
-                        case "checkbox":
-                        case "button":
-                            saveRow("SIBLING:","click",
-                                    HTMLLocatorBuilder.getElementIdentifier(e),
-                                    "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
-                            break;
-                    }
-                } else if (e.getTagName().toLowerCase().equals("select")) {
-                    List<WebElement> options = element.findElements(By
-                            .xpath(".//option"));
-                    if (options.size() != 0) {
-                        saveRow("SIBLING:","select",// e.toString(),
-                                HTMLLocatorBuilder.getElementIdentifier(e),
-                                "EMPTY");
-                        // TODO remove - testing
-                        testing.incrementCorrelation();
-                    }
-                }
-            }
-        }
-
-        // process element
-        if (isElementTextInputable(element))
-            processInputElement(element);
-        else
-            processSelectElement(element);
-    }
-
-    private void saveRow(String string, String action,
-            String target, String parameter) {
+    protected static void saveRow(String string, String action, String target,
+            String parameter) {
         SeleniumTableRow row = new SeleniumTableRow(action, target, parameter);
-        System.out.println(string+row.toString());
+        System.out.println(string + row.toString());
         writeToHistoryFile(row, true);
         visitedElements.add(target);
-        
-    }
 
-    /**
-     * Given a form element, returns all input and select leaf nodes
-     * 
-     * @param form
-     * @return all input and select leaf nodes
-     */
-    private List<WebElement> findInputAndSelectChildNodesGivenParentForm(
-            WebElement form) {
-        List<WebElement> all = form.findElements(By.xpath("*"));
-        List<WebElement> descendants = null;
-        if (all.isEmpty()) {
-            return null;
-        }
-
-        List<WebElement> ret = new ArrayList<WebElement>();
-        for (WebElement item : all) {
-            if (item.getTagName().toLowerCase().equals("input")
-                    && !item.getAttribute("type").equals("submit")) {
-                ret.add(item);
-            } else if (item.getTagName().toLowerCase().equals("select")) {
-                ret.add(item);
-            } else {
-                descendants = findInputAndSelectChildNodesGivenParentForm(item);
-                if (!(descendants == null || descendants.isEmpty())) {
-                    for (WebElement i : descendants) {
-                        ret.add(i);
-                    }
-                }
-            }
-        }
-
-        return ret;
-    }
-
-    /**
-     * Given a parent element, returns all anchor leaf nodes
-     * 
-     * @param parent
-     *            parent node
-     * @return all anchor leaf nodes
-     */
-    private List<WebElement> findChildrenAnchorNodesGivenParent(
-            WebElement parent) {
-        List<WebElement> all = parent.findElements(By.xpath("*"));
-        List<WebElement> descendants = null;
-        if (all.isEmpty()) {
-            return null;
-        }
-
-        List<WebElement> ret = new ArrayList<WebElement>();
-        for (WebElement item : all) {
-            if (item.getTagName().toLowerCase().equals("a")) {
-                ret.add(item);
-            } else {
-                descendants = findChildrenAnchorNodesGivenParent(item);
-                if (!(descendants == null || descendants.isEmpty())) {
-                    for (WebElement i : descendants) {
-                        ret.add(i);
-                    }
-                }
-            }
-        }
-        return ret;
     }
 
     /*
@@ -670,7 +317,8 @@ public class WebsiteExplorer {
         }
 
         for (WebElement elem : masterList) {
-            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            List<WebElement> children = WebElementProcessor
+                    .findChildrenAnchorNodesGivenParent(elem);
             String id = HTMLLocatorBuilder.getElementIdentifier(elem);
 
             if (!(children == null || children.isEmpty()))
@@ -678,7 +326,8 @@ public class WebsiteExplorer {
         }
 
         for (WebElement elem : detailList) {
-            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            List<WebElement> children = WebElementProcessor
+                    .findChildrenAnchorNodesGivenParent(elem);
             String id = HTMLLocatorBuilder.getElementIdentifier(elem);
 
             if (!(children == null || children.isEmpty()))
@@ -737,7 +386,8 @@ public class WebsiteExplorer {
             return;
 
         for (WebElement elem : masterList) {
-            List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
+            List<WebElement> children = WebElementProcessor
+                    .findChildrenAnchorNodesGivenParent(elem);
             if (!(children == null || children.isEmpty()))
                 retSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
         }
@@ -762,24 +412,6 @@ public class WebsiteExplorer {
     }
 
     /**
-     * Given a WebElement, finds the parent form
-     * 
-     * @param element
-     *            child element node
-     * @return parent form
-     */
-    private WebElement findParentForm(WebElement element) {
-        WebElement current = element;
-        while (!(current == null
-                || current.getTagName().toLowerCase().equals("form")
-                || current.getTagName().toLowerCase().equals("html") || current
-                .getTagName().toLowerCase().equals("body"))) {
-            current = current.findElement(By.xpath(".."));
-        }
-        return current;
-    }
-
-    /**
      * Writes crawling history to history file
      * 
      * @param r
@@ -787,12 +419,12 @@ public class WebsiteExplorer {
      * @param append
      *            true=append to file contents;false=reset file contents
      */
-    private void writeToHistoryFile(SeleniumTableRow r, boolean append) {
+    private static void writeToHistoryFile(SeleniumTableRow r, boolean append) {
         // Write history to file
         FileWriter output = null;
         try {
             output = new FileWriter(new File(folderpath
-                    + getConfigurator().getHistoryFilepath()), append);
+                    + configurator.getHistoryFilepath()), append);
         } catch (IOException e) {
             e.printStackTrace();
             System.exit(1);
@@ -819,11 +451,11 @@ public class WebsiteExplorer {
      *            base URL
      * @return if exploring cycle should stop or not
      */
-    private boolean goBackToHome(String URL) {
+    public boolean goBackToHome() {
         driver.get(baseUrl);
         // TODO remove - testing
         testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
-        saveRow("open", URL, "EMPTY");
+        saveRow("open", baseUrl, "EMPTY");
         wait = true;
         homeRedirections++;
         currAction--;
@@ -855,7 +487,7 @@ public class WebsiteExplorer {
     }
 
     public void exploreWebsite() {
-
+        
         // set logger config
         java.util.logging.Logger.getLogger("com.gargoylesoftware.htmlunit")
                 .setLevel(java.util.logging.Level.SEVERE);
@@ -903,37 +535,11 @@ public class WebsiteExplorer {
             }
             if (element == null) {
                 // if no element is found, go back to home page
-                boolean stop = goBackToHome(r);
+                boolean stop = goBackToHome();
                 if (stop)
                     break;
             } else {
-
-                System.out.println("ELEMENT: "
-                        + element.toString()
-                        + (!element.getText().isEmpty() ? " (has text)"
-                                : " (no text)"));
-
-                System.out.println("LOCATOR:"
-                        + HTMLLocatorBuilder.getElementIdentifier(element));
-
-                if (isElementRelatedToLogin(element)) {
-                    boolean processedLogin = processLogin(element);
-                    if (processedLogin)
-                        goBackToHome(r);
-                }// dropdown list
-                else if (element.getTagName().toLowerCase().equals("select")) {
-                    if (!getConfigurator().includeChildrenNodesOnInteraction())
-                        processSelectElement(element);
-                    else
-                        includeFormChildrenAndVisitElement(element);
-                } else if (isElementTextInputable(element)) {
-                    if (!getConfigurator().includeChildrenNodesOnInteraction())
-                        processInputElement(element);
-                    else
-                        includeFormChildrenAndVisitElement(element);
-                } else {
-                    processAnchorElements(element);
-                }
+                WebElementProcessor.processElement(element);
 
                 if (wait) {
                     // politeness delay
@@ -954,95 +560,7 @@ public class WebsiteExplorer {
         driver.quit();
     }
 
-    /**
-     * If element is input or select, visits a login form completely, inserting
-     * invalid words (if no loginConfiguration was specified) or user-defined
-     * login credentials and returns true; if element is a link, clicks on it
-     * and returns false.
-     * 
-     * @param element
-     *            chosen element to visit
-     * @return if login form was visited or not
-     */
-    private boolean processLogin(WebElement element) {
-        if (element.getTagName().toLowerCase().equals("input")
-                || element.getTagName().toLowerCase().equals("select")) {
-            // login form, fill all form inputs
-            WebElement form = findParentForm(element);
-            List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
-            String username = "username", password = "password";
-            if (!configurator.getLoginConfiguration().isEmpty()) {
-                username = configurator.getLoginConfiguration().get("username");
-                password = configurator.getLoginConfiguration().get("password");
-            }
-            String content = "";
-
-            for (WebElement e : children) {
-                if (e.getTagName().toLowerCase().equals("input")) {
-                    switch (e.getAttribute("type")) {
-                        case "text":
-                        case "password":
-                        case "email":
-                            if (e.toString().matches(
-                                    "user(\\s|_)?(name|id)?|e?mail")) {
-                                content = username;
-                            } else if (e.toString().matches("pass(word)?")) {
-                                content = password;
-                            } else {
-                                int rand = (int) (Math.random() * (getConfigurator()
-                                        .getTypedKeywords().length - 1));
-                                content = getConfigurator().getTypedKeywords()[rand];
-                            }
-
-                            saveRow("type",
-                                    HTMLLocatorBuilder.getElementIdentifier(e),
-                                    content);
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
-                            // interact
-                            e.clear();
-                            e.sendKeys(content);
-                            break;
-                        case "radio":
-                        case "checkbox":
-                        case "button":
-                            saveRow("click",
-                                    HTMLLocatorBuilder.getElementIdentifier(e),
-                                    "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
-                            // interact
-                            e.click();
-                            break;
-                    }
-                } else if (e.getTagName().toLowerCase().equals("select")) {
-                    List<WebElement> options = element.findElements(By
-                            .xpath(".//option"));
-                    if (options.size() != 0) {
-                        int rand1 = (int) Math.round(Math.random()
-                                * (options.size() - 1));
-                        Select select = new Select(e);
-                        saveRow("select",
-                                HTMLLocatorBuilder.getElementIdentifier(e),
-                                "label=\"" + options.get(rand1).getText() + '"');
-                        // TODO remove - testing
-                        testing.incrementCorrelation();
-                        // interact
-                        select.selectByIndex(rand1);
-                    }
-                }
-            }
-
-            handleFormSubmission(form);
-            return true;
-        } else {
-            // login link
-            processAnchorElements(element);
-            return false;
-        }
-    }
-
-    private void saveRow(String action, String target, String parameter) {
+    protected static void saveRow(String action, String target, String parameter) {
         SeleniumTableRow row = new SeleniumTableRow(action, target, parameter);
         System.out.println(row.toString());
         writeToHistoryFile(row, true);
@@ -1062,6 +580,21 @@ public class WebsiteExplorer {
      */
     public static void setConfigurator(Configurator configurator) {
         WebsiteExplorer.configurator = configurator;
+    }
+
+    public BrowserHandlerTesting getTesting() {
+        // TODO Auto-generated method stub
+        return testing;
+    }
+
+    public void handleError(String message, WebElement element) {
+        System.out.println(element);
+        // invalid, do something else
+        currAction--;
+        wait = false;
+        visitedElements.add(HTMLLocatorBuilder
+                .getElementIdentifier(element));
+        
     }
 
 }

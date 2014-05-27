@@ -19,23 +19,23 @@ import configuration.Configurator;
 public class PatternRegister {
     private static Configurator conf = Configurator.getInstance();
     private static WebsiteExplorer we = WebsiteExplorer.getInstance();
-    
-    static HashMap<String,HashSet<String>> duplicateControl = new HashMap<String,HashSet<String>>();
-    
-    public static boolean isAlreadyWritten(String type, String id){
+
+    static HashMap<String, HashSet<String>> duplicateControl = new HashMap<String, HashSet<String>>();
+
+    public static boolean isAlreadyWritten(String type, String id) {
         HashSet<String> set = duplicateControl.get(type);
-        if(set == null){
+        if (set == null) {
             set = new HashSet<String>();
             set.add(id);
             duplicateControl.put(type, set);
             return false;
-        }else{
+        } else {
             return !duplicateControl.get(type).add(id);
         }
     }
-    
+
     public static void initializePatternRegister(String baseUrl) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         // if file doesn't exist, then create it
         if (!file.exists()) {
             try {
@@ -54,8 +54,8 @@ public class PatternRegister {
             bw.write("<Paradigm:Model xmi:version=\"2.0\"\n "
                     + "xmlns:xmi=\"http://www.omg.org/XMI\" "
                     + "xmlns:Paradigm=\"http://www.example.org/Paradigm\"\n"
-                    + "title=\"" + baseUrl + "\"/>\n");
-            bw.write("\t<node xsi:type=\"Paradigm:Init\" name=\"Init\""
+                    + "title=\"" + baseUrl + "\" >\n");
+            bw.write("\t<nodes xsi:type=\"Paradigm:Init\" name=\"Init\""
                     + " number=\"0\" outgoingLinks=\"//@relations.0\"/>\n");
             bw.close();
         } catch (IOException e) {
@@ -65,7 +65,7 @@ public class PatternRegister {
     }
 
     public static void startPattern(String patternType, int number) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -88,7 +88,7 @@ public class PatternRegister {
             else if (patternType.trim().toLowerCase().equals("call"))
                 pattern = "Call";
 
-            bw.write("\t<node xsi:type=\"Paradigm:" + pattern + "\" name=\""
+            bw.write("\t<nodes xsi:type=\"Paradigm:" + pattern + "\" name=\""
                     + pattern + "" + number + "\" number=\"" + number
                     + "\" incomingLinks=\"//@relations." + (number - 1)
                     + "\" outgoingLinks=\"//@relations." + (number) + "\">\n");
@@ -100,31 +100,24 @@ public class PatternRegister {
     }
 
     public static void closePattern() {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
 
         Writer bw;
         try {
             bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
-            bw.write("\t</node>\n");
+            bw.write("\t</nodes>\n");
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static void writeConfigurationLine(String actionType, String field,
-            String value) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+    private static void writeConfigurationLine(String field, String value) {
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
 
-        if (actionType.toLowerCase().contains("type")) {
-            actionType = "inputs ";
-        } else if (actionType.toLowerCase().contains("click")) {
-            actionType = "clicks ";
-        } else if (actionType.toLowerCase().contains("select")) {
-            actionType = "selects";
-        }
+        String actionType = "inputs ";
 
         Writer bw;
         try {
@@ -140,7 +133,7 @@ public class PatternRegister {
     }
 
     private static void closeConfiguration() {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -154,19 +147,21 @@ public class PatternRegister {
     }
 
     private static void writeFields(ArrayList<String> names,
-            ArrayList<String> ids) {
+            ArrayList<String> ids, boolean putS) {
         if (names.size() != ids.size())
             return;
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
             for (int i = 0; i < names.size(); ++i)
-                bw.write("\t\t<fields name=\""
-                        + names.get(i).replaceAll("\"", "") + "\" id=\""
-                        + ids.get(i).replaceAll("\"", "") + "\"/>\n");
+                bw.write("\t\t<field" + (putS ? "s" : "") + " name=\""
+                        + names.get(i).replaceAll("\"|&|£|»|«|´|`|º|", "")
+                        + "\" id=\""
+                        + ids.get(i).replaceAll("\"|&|£|»|«|´|`|º|", "")
+                        + "\"/>\n");
             bw.close();
         } catch (IOException e) {
             e.printStackTrace();
@@ -174,7 +169,7 @@ public class PatternRegister {
     }
 
     private static void writeFields(HashMap<String, String> ids) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -184,8 +179,11 @@ public class PatternRegister {
             while (it.hasNext()) {
                 // Map.Entry<String, WebElement> pair = it.next();
                 Map.Entry<String, String> pair = it.next();
-                bw.write("\t\t<fields name=\"" + pair.getValue() + "\" id=\""
-                        + pair.getKey() + "\"/>\n");
+                bw.write("\t\t<fields name=\""
+                        + pair.getValue().replaceAll("\"|&|£|»|«|´|`|º|", "")
+                        + "\" id=\""
+                        + pair.getKey().replaceAll("\"|&|£|»|«|´|`|º|", "")
+                        + "\"/>\n");
             }
 
             bw.close();
@@ -196,7 +194,7 @@ public class PatternRegister {
 
     private static void openConfiguration(String check, String validity,
             String position, String result, String master, String mappingURL) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -208,7 +206,7 @@ public class PatternRegister {
                             : "")
                     + (!(check == null || check.isEmpty()) ? "check=\"" + check
                             + "\" " : "")
-                    + (!(position == null || position.isEmpty()) ? "position=\""
+                    + (!(position == null || position.isEmpty()) ? "Position=\""
                             + position + "\" "
                             : "")
                     + (!(result == null || position.isEmpty()) ? "result=\""
@@ -225,15 +223,15 @@ public class PatternRegister {
     }
 
     private static void writeClosedConfigurationTag(String value, String check) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
             bw.write("\t\t<configurations "
-                    + (!(value == null || value.isEmpty()) ? "value=\"" + value.replaceAll("\"", "")
-                            + "\" " : "")
+                    + (!(value == null || value.isEmpty()) ? "value=\""
+                            + value.replaceAll("\"", "") + "\" " : "")
                     + (!(check == null || check.isEmpty()) ? "check=\"" + check
                             + "\" " : "") + "/>\n");
             bw.close();
@@ -243,7 +241,7 @@ public class PatternRegister {
     }
 
     public static void enterMenuItemContent(String url, HashSet<String> elements) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -251,7 +249,8 @@ public class PatternRegister {
                             file.getAbsoluteFile(), true), "UTF-8"));
             bw.write("\t\t<page URL=\"" + url + "\">\n");
             for (String s : elements) {
-                bw.write("\t\t\t<item element=\"" + s.replaceAll("\"", "\\\"") + "\"/>\n");
+                bw.write("\t\t\t<item element=\"" + s.replaceAll("\"", "\\\"")
+                        + "\"/>\n");
             }
             bw.write("\t\t</page>\n");
             bw.close();
@@ -262,7 +261,7 @@ public class PatternRegister {
 
     public static void endPatternRegister(int number) {
 
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -270,9 +269,9 @@ public class PatternRegister {
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
 
-            bw.write("\t<node xsi:type=\"Paradigm:End\" name=\"End\""
+            bw.write("\t<nodes xsi:type=\"Paradigm:End\" name=\"End\""
                     + " number=\"" + number
-                    + "\" outgoingLinks=\"//@relations." + (number - 1) + "\""
+                    + "\" incomingLinks=\"//@relations." + (number - 1) + "\""
                     + "/>\n\n");
             bw.close();
             writeRelations(number);
@@ -282,7 +281,7 @@ public class PatternRegister {
     }
 
     private static void writeRelations(int number) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
 
         Writer bw;
         try {
@@ -309,7 +308,7 @@ public class PatternRegister {
     }
 
     private static void writeDetailLine(String detail) {
-        File file = new File(we.getFilepath()+conf.getPatternsFilepath());
+        File file = new File(we.getFilepath() + conf.getPatternsFilepath());
         Writer bw;
         try {
             bw = new BufferedWriter(
@@ -343,13 +342,13 @@ public class PatternRegister {
             else if (targets.get(i).matches(".*(@type=password).*"))
                 field = "password";
 
-            writeConfigurationLine(actions.get(i), field, parameters.get(i));
+            writeConfigurationLine(field, parameters.get(i));
             names.add(field);
             ids.add(targets.get(i));
         }
         closeConfiguration();
 
-        writeFields(names, ids);
+        writeFields(names, ids,true);
     }
 
     public static void enterMasterDetailContent(Set<String> masters,
@@ -375,7 +374,7 @@ public class PatternRegister {
                     idNameMap.put(detail, "detail_" + numberDetail);
                     numberDetail++;
                 }
-                if(detail != null)
+                if (detail != null)
                     writeDetailLine(idNameMap.get(detail));
 
                 closeConfiguration();
@@ -400,14 +399,13 @@ public class PatternRegister {
         for (int i = 0; i < actions.size(); ++i) {
             if (targets.get(i).matches(".*(submit).*"))
                 continue;
-            writeConfigurationLine(actions.get(i), "find_" + i,
-                    parameters.get(i));
+            writeConfigurationLine("find_" + i, parameters.get(i));
             names.add("find_" + i);
             ids.add(targets.get(i));
         }
         closeConfiguration();
 
-        writeFields(names, ids);
+        writeFields(names, ids, true);
     }
 
     public static void enterSortContent(ArrayList<String> actions,
@@ -423,13 +421,12 @@ public class PatternRegister {
         for (int i = 0; i < actions.size(); ++i) {
             if (targets.get(i).matches(".*(submit).*"))
                 continue;
-            writeConfigurationLine(actions.get(i), "sort_" + i,
-                    parameters.get(i));
+            writeConfigurationLine("sort_" + i, parameters.get(i));
             names.add("sort_" + i);
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids);
+        writeFields(names, ids,true);
     }
 
     public static void enterCallContent(ArrayList<String> actions,
@@ -439,7 +436,7 @@ public class PatternRegister {
                 || actions.size() != parameters.size())
             return;
 
-        String check = "PageChange";
+        String check = "";
 
         ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
 
@@ -449,7 +446,7 @@ public class PatternRegister {
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids);
+        writeFields(names, ids,false);
     }
 
     public static void enterInputContent(ArrayList<String> actions,
@@ -469,6 +466,6 @@ public class PatternRegister {
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids);
+        writeFields(names, ids,false);
     }
 }

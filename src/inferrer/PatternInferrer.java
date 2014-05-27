@@ -247,7 +247,7 @@ public class PatternInferrer {
 
         }
 
-        PatternRegister.endPatternRegister(writtenPatternIndex + 1);
+        PatternRegister.endPatternRegister(writtenPatternIndex);
     }
 
     private static void writeWholePattern(String patternType,

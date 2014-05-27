@@ -56,7 +56,7 @@ public class HTMLLocatorBuilder {
     private static String getXpathIdentifier(WebElement e) {
         String[] PREFERRED_ATTRIBUTES = { "id", "class", "name", "title",
                 "value", "alt", "src", "href", "type", "action", "onclick",
-                "onchange" };
+                "onchange","onfocus","onkeyup","onkeypress" };
         String locator = "//" + e.getTagName();
         boolean first = true;
 

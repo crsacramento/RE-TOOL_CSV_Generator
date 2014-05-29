@@ -26,11 +26,11 @@
 		  select element, if children elements should be included  in the history file, 
 		  but not interacted with.
 	-->
-	<actions>30</actions>
+	<actions>50</actions>
 	<redirections>5</redirections>
-	<includeChildrenNodesOnInteraction>true</includeChildrenNodesOnInteraction>
+	<includeChildrenNodesOnInteraction>false</includeChildrenNodesOnInteraction>
 	<searchKeywords>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</searchKeywords>
-	<sortKeywords>(sort|asc\s|desc\s)</sortKeywords>
+	<sortKeywords>(sort|(\s|_)?asc(\s|_)|(\s|_)?desc(\s|_))</sortKeywords>
 	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\s|_)?(in|out)|log(ged)?(\s|_)?(in|out)))</loginKeywords>
 	<generalWordsToExclude>(buy|sell|edit|delete|mailto|add(\s|_)?to(\s|_)?cart|checkout)</generalWordsToExclude>
 	<typedKeywords>

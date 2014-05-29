@@ -55,17 +55,20 @@ public class HTMLLocatorBuilder {
 
     private static String getXpathIdentifier(WebElement e) {
         String[] PREFERRED_ATTRIBUTES = { "id", "class", "name", "title",
-                "value", "alt", "src", "href", "type", "action", "onclick",
+                "alt", "src", "href", "type", "action", "onclick",
                 "onchange","onfocus","onkeyup","onkeypress" };
         String locator = "//" + e.getTagName();
         boolean first = true;
+        boolean openedSquareBracket = false;
 
         // searches for attributes in array
         for (String attr : PREFERRED_ATTRIBUTES) {
             if (e.getAttribute(attr) != null
                     && !e.getAttribute(attr).matches("^\\s*$")) {
-                if (first)
+                if (first){
                     locator += '[';
+                    openedSquareBracket=true;
+                }
                 else
                     locator += " and ";
 
@@ -91,7 +94,8 @@ public class HTMLLocatorBuilder {
             }
         }
 
-        locator += ']';
+        if(openedSquareBracket)
+            locator += ']';
         locator = locator.replaceAll("\\s+", " ");
 
         return locator;

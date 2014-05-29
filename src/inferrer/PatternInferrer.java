@@ -225,9 +225,7 @@ public class PatternInferrer {
                 line = Filesystem.getLinesInFile(
                         we.getFilepath() + conf.getHistoryFilepath(), start);
 
-            ArrayList<String> actions = new ArrayList<String>(), 
-                    targets = new ArrayList<String>(), 
-                    parameters = new ArrayList<String>();
+            ArrayList<String> actions = new ArrayList<String>(), targets = new ArrayList<String>(), parameters = new ArrayList<String>();
 
             if (!(line == null)) {
                 for (int i = 0; i < line.length; ++i) {
@@ -254,9 +252,7 @@ public class PatternInferrer {
             ArrayList<String> actions, ArrayList<String> targets,
             ArrayList<String> parameters) {
         if (we.isSearchingForPattern(patternType)) {
-            ArrayList<String> cleanTargets = new ArrayList<String>(), 
-                    cleanActions = new ArrayList<String>(), 
-                    cleanParams = new ArrayList<String>();
+            ArrayList<String> cleanTargets = new ArrayList<String>(), cleanActions = new ArrayList<String>(), cleanParams = new ArrayList<String>();
             for (int i = 0; i < targets.size(); ++i) {
                 if (!PatternRegister.isAlreadyWritten(
                         patternType.toLowerCase(), targets.get(i))) {
@@ -265,27 +261,44 @@ public class PatternInferrer {
                     cleanParams.add(parameters.get(i));
                 }
             }
-            System.out.println(cleanTargets.size());
+            
             if (cleanTargets.size() > 0) {
-                PatternRegister.startPattern(patternType, writtenPatternIndex);
 
-                if (patternType.equals("login"))
-                    PatternRegister.enterLoginContent(cleanActions,
-                            cleanTargets, cleanParams);
-                else if (patternType.equals("search"))
-                    PatternRegister.enterFindContent(cleanActions,
-                            cleanTargets, cleanParams);
-                else if (patternType.equals("sort"))
-                    PatternRegister.enterSortContent(cleanActions,
-                            cleanTargets, cleanParams);
-                else if (patternType.equals("call"))
-                    PatternRegister.enterCallContent(cleanActions,
-                            cleanTargets, cleanParams);
-                else if (patternType.equals("input"))
-                    PatternRegister.enterInputContent(cleanActions,
-                            cleanTargets, cleanParams);
+                if (patternType.equals("input")) {
+                    for (int i = 0; i < cleanActions.size(); ++i) {
+                        ArrayList<String> a = new ArrayList<String>(),
+                                t = new ArrayList<String>(),
+                                p = new ArrayList<String>();
+                        a.add(cleanActions.get(i));
+                        t.add(cleanTargets.get(i));
+                        p.add(cleanParams.get(i));
+                        PatternRegister.startPattern(patternType,
+                                writtenPatternIndex);
+                        PatternRegister.enterInputContent(a,
+                                t, p);
+                        PatternRegister.closePattern();
+                        
+                        writtenPatternIndex++;
+                    }
+                } else {
+                    PatternRegister.startPattern(patternType,
+                            writtenPatternIndex);
 
-                PatternRegister.closePattern();
+                    if (patternType.equals("login"))
+                        PatternRegister.enterLoginContent(cleanActions,
+                                cleanTargets, cleanParams);
+                    else if (patternType.equals("search"))
+                        PatternRegister.enterFindContent(cleanActions,
+                                cleanTargets, cleanParams);
+                    else if (patternType.equals("sort"))
+                        PatternRegister.enterSortContent(cleanActions,
+                                cleanTargets, cleanParams);
+                    else if (patternType.equals("call"))
+                        PatternRegister.enterCallContent(cleanActions,
+                                cleanTargets, cleanParams);
+
+                    PatternRegister.closePattern();
+                }
                 writtenPatternIndex++;
             }
         }

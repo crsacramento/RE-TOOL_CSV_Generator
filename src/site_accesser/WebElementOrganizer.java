@@ -15,7 +15,7 @@ public class WebElementOrganizer {
 		return e.isDisplayed()
 				&& !we.isElementAlreadyVisited(e)
 				&& !e.toString().toLowerCase()
-						.matches(".*" + WebsiteExplorer.getConfigurator().getGeneralWordsToExclude() + ".*")
+						.matches(".*" + we.getConfigurator().getGeneralWordsToExclude() + ".*")
 				&& !e.toString().toLowerCase().matches(".*(disabled|readonly).*");
 	}
 	
@@ -55,17 +55,17 @@ public class WebElementOrganizer {
 			if (itPassesAllGeneralChecks(e)){
 				// test for search
 				if(e.toString().toLowerCase()
-							.matches(".*" + WebsiteExplorer.getConfigurator().getSearchKeywords() + ".*")){
+							.matches(".*" + we.getConfigurator().getSearchKeywords() + ".*")){
 					retList.get(3).add(e);
 				}else{
 					// test for sort
 					if(e.toString().toLowerCase()
-								.matches(".*" + WebsiteExplorer.getConfigurator().getSortKeywords() + ".*")){
+								.matches(".*" + we.getConfigurator().getSortKeywords() + ".*")){
 						retList.get(4).add(e);
 					}else{
 						// test for login
 						if(e.toString().toLowerCase()
-									.matches(".*" + WebsiteExplorer.getConfigurator().getLoginKeywords() + ".*")){
+									.matches(".*" + we.getConfigurator().getLoginKeywords() + ".*")){
 							retList.get(5).add(e);
 						}else{
 							// doesn't go into a pattern, check for element type

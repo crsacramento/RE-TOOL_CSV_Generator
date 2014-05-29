@@ -62,7 +62,7 @@ public class BrowserHandlerTesting {
                 correlationBetweenSeleniumStepAndHtmlFiles));
         System.out.println("INIT|correlation:"
                 + correlationBetweenSeleniumStepAndHtmlFiles + "|HTML index:"
-                + HTMLFileIndex);
+                + HTMLFileIndex+"\n");
         patterns.initializePatternRegister();
     }
 

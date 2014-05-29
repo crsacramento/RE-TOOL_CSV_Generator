@@ -27,8 +27,8 @@ public class PatternRegister {
     }
 
     public void initializePatternRegister() {
-        File file = new File(System.getProperty("user.dir") + "\\HTML"
-                + "final" + "\\" + "patterns.paradigm");
+        File file = new File(System.getProperty("user.dir") + File.separatorChar+"HTML"
+                + "final" + File.separatorChar + "patterns.paradigm");
         // if file doesnt exists, then create it
         if (!file.exists()) {
             try {
@@ -43,9 +43,9 @@ public class PatternRegister {
         try {
             fw = new FileWriter(file.getAbsoluteFile(), true);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+            bw.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
             bw.write("<Paradigm:Model xmi:version=\"2.0\" \n"
-                    +"xmlns:xmi=\"http://www.omg.org/XMI\" "
+                    +"xmlns:xmi=\"http://www.omg.org/XMI\" \n"
                     +"\nxmlns:Paradigm=\"http://www.example.org/Paradigm\" title=\"patterns\"/>\n");
             bw.write("<nodes xsi:type=\"Paradigm:Init\" name=\"XInit\" number=\"1.0\"/>\n");
             // bw.newLine();
@@ -59,8 +59,8 @@ public class PatternRegister {
 
     public static void addPattern(String patternType2) {
 
-        File file = new File(System.getProperty("user.dir") + "\\HTML"
-                + "final" + "\\" + "patterns.paradigm");
+        File file = new File(System.getProperty("user.dir") + File.separatorChar+"HTML"
+                + "final" + File.separatorChar + "patterns.paradigm");
 
         FileWriter fw;
         try {
@@ -100,8 +100,8 @@ public class PatternRegister {
 
     public void endPatternRegister() {
 
-        File file = new File(System.getProperty("user.dir") + "\\HTML"
-                + "final" + "\\" + "patterns.paradigm");
+        File file = new File(System.getProperty("user.dir") + File.separatorChar+"HTML"
+                + "final" + File.separatorChar + "patterns.paradigm");
 
         FileWriter fw;
         try {

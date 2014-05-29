@@ -23,6 +23,9 @@ public class PatternRegister {
     static HashMap<String, HashSet<String>> duplicateControl = new HashMap<String, HashSet<String>>();
 
     public static boolean isAlreadyWritten(String type, String id) {
+        if(type == null || id == null)
+            return true;
+        
         HashSet<String> set = duplicateControl.get(type);
         if (set == null) {
             set = new HashSet<String>();

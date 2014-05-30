@@ -565,7 +565,7 @@ public class WebsiteExplorer {
                 if (stop)
                     break;
             } else {
-                boolean error = false;  
+                boolean error = false;
                 System.out.println("ELEMENT: "
                         + element.toString()
                         + (!element.getText().isEmpty() ? " (has text)"
@@ -574,15 +574,19 @@ public class WebsiteExplorer {
 
                 if (isElementRelatedToLogin(element)) {
                     boolean processedLogin = processLogin(element);
-                    if (processedLogin)
-                        goBackToHome();
+                    if (processedLogin) {
+                        driver.get(baseUrl);
+                        // TODO remove - testing
+                        testing.incrementHTML(driver.getPageSource(),
+                                driver.getCurrentUrl());
+                        saveRow("open", baseUrl, "EMPTY");
+                    }
                 }// dropdown list
                 else if (element.getTagName().toLowerCase().equals("select")) {
                     if (!getConfigurator().includeChildrenNodesOnInteraction())
-                        if(!error)
+                        if (!error)
                             error = processSelectElement(element);
-                    else
-                        if(!error)
+                        else if (!error)
                             error = includeFormChildrenAndVisitElement(element);
                 } else if (isElementTextInputable(element)) {
                     if (!getConfigurator().includeChildrenNodesOnInteraction())
@@ -599,7 +603,7 @@ public class WebsiteExplorer {
                     if (stop)
                         break;
                 }
-                
+
                 if (wait) {
                     // politeness delay
                     try {
@@ -659,7 +663,7 @@ public class WebsiteExplorer {
             // login form, fill all form inputs
             WebElement form = findParentForm(element);
             List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
-            
+
             String username = "username", password = "password";
             if (!getConfigurator().getLoginConfiguration().isEmpty()) {
                 username = getConfigurator().getLoginConfiguration().get(
@@ -667,7 +671,7 @@ public class WebsiteExplorer {
                 password = getConfigurator().getLoginConfiguration().get(
                         "password");
             }
-            
+
             String content = "";
 
             for (WebElement e : children) {
@@ -676,10 +680,12 @@ public class WebsiteExplorer {
                         case "text":
                         case "password":
                         case "email":
-                            if (e.toString().matches(
-                                    ".*(user(\\s|_)?(name|id)?|e?mail|log(\\s|_)?in).*")) {
+                            if (e.toString()
+                                    .matches(
+                                            ".*(user(\\s|_)?(name|id)?|e?mail|log(\\s|_)?in).*")) {
                                 content = username;
-                            } else if (e.toString().matches(".*(pass(word)?).*")) {
+                            } else if (e.toString()
+                                    .matches(".*(pass(word)?).*")) {
                                 content = password;
                             } else {
                                 int rand = (int) (Math.random() * (getConfigurator()
@@ -947,7 +953,7 @@ public class WebsiteExplorer {
      * 
      * @param element
      *            element to interact with
-     * @return 
+     * @return
      */
     public boolean includeFormChildrenAndVisitElement(WebElement element) {
         WebElement form = findParentForm(element);

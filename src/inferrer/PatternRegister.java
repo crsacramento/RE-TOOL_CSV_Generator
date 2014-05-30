@@ -462,8 +462,6 @@ public class PatternRegister {
         ArrayList<String> names = new ArrayList<String>(), ids = new ArrayList<String>();
 
         for (int i = 0; i < actions.size(); ++i) {
-            if (targets.get(i).matches(".*(submit).*"))
-                continue;
             writeClosedConfigurationTag(parameters.get(i), "");
             names.add("input_" + i);
             ids.add(targets.get(i));

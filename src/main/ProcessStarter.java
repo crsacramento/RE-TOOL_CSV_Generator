@@ -59,9 +59,8 @@ public class ProcessStarter {
             }
         }
 
-        baseURL = "http://app.rasc.ch/tudu/welcome.action";
-        // baseURL = "https://www.amazon.com/";
-        // baseURL = "http://www.sapo.pt/";
+        // baseURL = "http://app.rasc.ch/tudu/welcome.action";
+        baseURL = "https://www.amazon.com/";
         // baseURL = "https://www.yahoo.com/";
         // baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
         // baseURL = "http://www.fe.up.pt/";
@@ -75,9 +74,6 @@ public class ProcessStarter {
         // baseURL = "http://www.gamestop.com";
         // baseURL = "http://www.gamespot.com";
         // baseURL = "http://www.mcgame.com/";
-        // baseURL =
-        // "http://www.game-debate.com/games/index.php?g_id=625&game=The%20Elder%20Scrolls%20V";
-        // baseURL="http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=shoes";
 
         Configurator c = Configurator.getInstance();
         WebsiteExplorer we = WebsiteExplorer.getInstance();
@@ -91,32 +87,20 @@ public class ProcessStarter {
         c.loadConfig();
         WebsiteExplorer.setConfigurator(c);
 
-        // we.getDriver().get(baseURL);
-
-        // we.findMasterDetailElementsInSearchResultPage();
-        /*
-         * WebElement user = we.getDriver().findElement(By.name("j_username"));
-         * WebElement pass = we.getDriver().findElement(By.name("j_password"));
-         * 
-         * user.sendKeys("testes"); pass.sendKeys("321abc"); String prev =
-         * we.getDriver().getPageSource(); user.submit();
-         * 
-         * String after = we.getDriver().getPageSource();
-         * System.out.println(prev.equals(after));
-         * System.out.println(we.getDriver
-         * ().findElement(By.xpath("//*[@id=\"menuTable\"]")).toString());
-         */
-
         try {
             we.exploreWebsite();
         } catch (Exception e) {
             e.printStackTrace();
         }
 
-        System.out.println("-------TESTING-------");
-        we.getTesting().setHistoryFilepath(we.getFilepath());
-        we.getTesting().escapeProcess();
-        System.out.println("-------TESTING-------");
+        try {
+            System.out.println("-------TESTING-------");
+            we.getTesting().setHistoryFilepath(we.getFilepath());
+            we.getTesting().escapeProcess();
+            System.out.println("-------TESTING-------");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);
@@ -169,25 +153,6 @@ public class ProcessStarter {
             }
         }
 
-        // baseURL = "http://app.rasc.ch/tudu/welcome.action";
-        // baseURL = "https://www.amazon.com/";
-        // baseURL = "http://www.sapo.pt/";
-        // baseURL = "https://www.yahoo.com/";
-        // baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
-        // baseURL = "http://www.fe.up.pt/";
-        // baseURL = "http://en.wikipedia.org";
-        // baseURL = "http://www.ebay.com/";
-        // baseURL = "http://www.youtube.com/";
-        // baseURL = "http://store.steampowered.com/";
-        // baseURL = "http://www.geforce.com/";
-        // baseURL = "http://www.reddit.com/";
-        // baseURL = "http://www.9gag.com/";
-        // baseURL = "http://www.gamestop.com";
-        // baseURL = "http://www.gamespot.com";
-        // baseURL =
-        // "http://www.game-debate.com/games/index.php?g_id=625&game=The%20Elder%20Scrolls%20V";
-        // baseURL="http://www.amazon.com/s/ref=nb_sb_noss_1?url=search-alias%3Daps&field-keywords=shoes";
-
         Configurator c = Configurator.getInstance();
         WebsiteExplorer we = WebsiteExplorer.getInstance();
         if (!(f == null)) {
@@ -199,32 +164,6 @@ public class ProcessStarter {
 
         c.loadConfig();
         WebsiteExplorer.setConfigurator(c);
-
-        // we.getDriver().get(baseURL);
-
-        // we.findMasterDetailElementsInSearchResultPage();
-        /*
-         * WebElement user = we.getDriver().findElement(By.name("j_username"));
-         * WebElement pass = we.getDriver().findElement(By.name("j_password"));
-         * 
-         * user.sendKeys("testes"); pass.sendKeys("321abc"); String prev =
-         * we.getDriver().getPageSource(); user.submit();
-         * 
-         * String after = we.getDriver().getPageSource();
-         * System.out.println(prev.equals(after));
-         * System.out.println(we.getDriver
-         * ().findElement(By.xpath("//*[@id=\"menuTable\"]")).toString());
-         */
-
-        /*
-         * try { we.exploreWebsite(); } catch (Exception e) {
-         * e.printStackTrace(); }
-         * 
-         * System.out.println("-------TESTING-------");
-         * we.getTesting().setHistoryFilepath(we.getFilepath());
-         * we.getTesting().escapeProcess();
-         * System.out.println("-------TESTING-------");
-         */
 
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);

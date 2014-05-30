@@ -24,75 +24,75 @@ public class LogProcessor {
 
 	private static ArrayList<PatternMapEntry> patterns;
 
-	public static void defaultSetupPatternList() {
+	/*public static void defaultSetupPatternList() {
 		setPatterns(new ArrayList<PatternMapEntry>());
 	
-		getPatterns().add(new PatternMapEntry("submit", "submit"));
+		patterns.add(new PatternMapEntry("submit", "submit"));
 		
 		// identify home page
-		getPatterns().add(new PatternMapEntry("homeLink",
+		patterns.add(new PatternMapEntry("homeLink",
 				"(home|main\\s?page|index|logo)"));
-		getPatterns().add(new PatternMapEntry("imageLink", "img"));
+		patterns.add(new PatternMapEntry("imageLink", "img"));
 		//patterns.add(new PatternMapEntry("searchRefineLink", "refine",
 			//	"refine|link"));
 		//patterns.add(new PatternMapEntry("navLink", "\\s?nav\\s",
 			//	"\\s?nav\\s"));
 		// specific types of links (next,previous,first,last)
-		getPatterns().add(new PatternMapEntry("nextLink", "link(.*)next"
+		patterns.add(new PatternMapEntry("nextLink", "link(.*)next"
 				));
-		getPatterns().add(new PatternMapEntry("previousLink", "link(.*)prev(ious)?"
+		patterns.add(new PatternMapEntry("previousLink", "link(.*)prev(ious)?"
 				));
-		getPatterns().add(new PatternMapEntry("firstLink", "link(.*)first"
+		patterns.add(new PatternMapEntry("firstLink", "link(.*)first"
 				));
-		getPatterns().add(new PatternMapEntry("lastLink", "link(.*)last"
+		patterns.add(new PatternMapEntry("lastLink", "link(.*)last"
 				));
-		getPatterns().add(new PatternMapEntry("languageLink", "lang"
+		patterns.add(new PatternMapEntry("languageLink", "lang"
 				));
-		getPatterns().add(new PatternMapEntry("buttonLink", "href.*(button|btn)"
+		patterns.add(new PatternMapEntry("buttonLink", "href.*(button|btn)"
 				));
-		getPatterns().add(new PatternMapEntry("link", "link|href|button|btn"
+		patterns.add(new PatternMapEntry("link", "link|href|button|btn"
 				));		
-		getPatterns().add(new PatternMapEntry("searchResultLink",
+		patterns.add(new PatternMapEntry("searchResultLink",
 				"search.*result(.*row)?"));
-		getPatterns().add(new PatternMapEntry("option", "option" ));
+		patterns.add(new PatternMapEntry("option", "option" ));
 
 		// session start links
-		getPatterns().add(new PatternMapEntry("login",
+		patterns.add(new PatternMapEntry("login",
 				"sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)"
 				));
 		// login related patterns
-		getPatterns().add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?"
+		patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?"
 				));
-		getPatterns().add(new PatternMapEntry("password", "pass(word)?"));
-		getPatterns().add(new PatternMapEntry("verifyPassword",
+		patterns.add(new PatternMapEntry("password", "pass(word)?"));
+		patterns.add(new PatternMapEntry("verifyPassword",
 				"verify(\\s|_)?pass(word)?"));
-		getPatterns().add(new PatternMapEntry("email", "e?mail"));
+		patterns.add(new PatternMapEntry("email", "e?mail"));
 		
 		// mostly related to 'click' actions
-		getPatterns().add(new PatternMapEntry("checkbox", "checkbox"
+		patterns.add(new PatternMapEntry("checkbox", "checkbox"
 				));
-		getPatterns().add(new PatternMapEntry("collapse", "collapse"));
+		patterns.add(new PatternMapEntry("collapse", "collapse"));
 		// first/last name
-		getPatterns().add(new PatternMapEntry("firstName", "first(.*)name"));
-		getPatterns().add(new PatternMapEntry("lastName", "last(.*)name"));
+		patterns.add(new PatternMapEntry("firstName", "first(.*)name"));
+		patterns.add(new PatternMapEntry("lastName", "last(.*)name"));
 
-		getPatterns().add(new PatternMapEntry("sort", "sort|asc\\s|desc\\s"));
-		getPatterns().add(new PatternMapEntry("search",
+		patterns.add(new PatternMapEntry("sort", "sort|asc\\s|desc\\s"));
+		patterns.add(new PatternMapEntry("search",
 				"\\sq\\s|query|qry|search|pesq(uisa)?|procura(r)?|busca(dor)?"));
-		getPatterns().add(new PatternMapEntry("button", "button|btn"));
+		patterns.add(new PatternMapEntry("button", "button|btn"));
 
-		getPatterns().add(new PatternMapEntry("captcha", "captcha"));
-		getPatterns().add(new PatternMapEntry("auth", "auth"));
-		getPatterns().add(new PatternMapEntry("numberInput",
+		patterns.add(new PatternMapEntry("captcha", "captcha"));
+		patterns.add(new PatternMapEntry("auth", "auth"));
+		patterns.add(new PatternMapEntry("numberInput",
 				"number|price|quantity|qty\\s|zip\\s?code"));
-		getPatterns().add(new PatternMapEntry("input", "input"));
-		getPatterns().add(new PatternMapEntry("clear", "clear"));
-	}
+		patterns.add(new PatternMapEntry("input", "input"));
+		patterns.add(new PatternMapEntry("clear", "clear"));
+	}*/
 
 	public static void processHistoryFile() {
 	    conf = Configurator.getInstance();
-		if(getPatterns() == null)
-		    defaultSetupPatternList();
+		//if(getPatterns() == null)
+		//    defaultSetupPatternList();
 		
 		// open reading file in UTF8
 		BufferedReader in = null;

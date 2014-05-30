@@ -30,9 +30,9 @@
 	<redirections>5</redirections>
 	<includeChildrenNodesOnInteraction>false</includeChildrenNodesOnInteraction>
 	<searchKeywords>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</searchKeywords>
-	<sortKeywords>(sort|(\s|_)?asc(\s|_)|(\s|_)?desc(\s|_))</sortKeywords>
-	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\s|_)?(in|out)|log(ged)?(\s|_)?(in|out)))</loginKeywords>
-	<generalWordsToExclude>(buy|sell|edit|delete|mailto|add(\s|_)?to(\s|_)?cart|checkout)</generalWordsToExclude>
+	<sortKeywords>(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))</sortKeywords>
+	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))</loginKeywords>
+	<generalWordsToExclude>(buy|sell|edit|delete|mailto|add(\\s|_)?to(\\s|_)?cart|checkout)</generalWordsToExclude>
 	<typedKeywords>
         <item>curtains</item>
         <item>coffee</item>
@@ -72,20 +72,24 @@
 		<item>Call</item>
 		<item>Input</item>
 		<item>Login</item>
-		<!--  item>Menu</item-->
+		<item>Menu</item>
 	</patternsToFind>
 	<!-- loginConfiguration>
 		<username>user-name</username>
 		<password>password</password>
 	</loginConfiguration-->
 	<tokenizerPatterns>
+	    <patternEntry>
+            <name>login</name>
+            <regex>sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)</regex>
+        </patternEntry>
 		<patternEntry>
 			<name>submit</name>
 			<regex>submit</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>homeLink</name>
-			<regex>(home|main(\s|_)?page|index|logo)</regex>
+			<regex>(home|main(\\s|_)?page|index|logo)</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>imageLink</name>
@@ -128,16 +132,12 @@
 			<regex>option</regex>
 		</patternEntry>
 		<patternEntry>
-			<name>login</name>
-			<regex>sign(ed)?(\s|_)?(in|out)|log(ged)?(\s|_)?(in|out)</regex>
-		</patternEntry>
-		<patternEntry>
 			<name>username</name>
-			<regex>user(\s|_)?(name|id)?</regex>
+			<regex>user(\\s|_)?(name|id)?</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>verifyPassword</name>
-			<regex>verify(\s|_)?pass(word)?</regex>
+			<regex>verify(\\s|_)?pass(word)?</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>password</name>
@@ -157,15 +157,15 @@
 		</patternEntry>
 		<patternEntry>
 			<name>firstName</name>
-			<regex>first(\s|_)?name</regex>
+			<regex>first(\\s|_)?name</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>lastName</name>
-			<regex>last(\s|_)?name</regex>
+			<regex>last(\\s|_)?name</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>sort</name>
-			<regex>sort|asc(\s|_)|desc(\s|_)</regex>
+			<regex>sort|asc(\\s|_)|desc(\\s|_)</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>search</name>
@@ -181,11 +181,11 @@
 		</patternEntry>
 		<patternEntry>
 			<name>numberInput</name>
-			<regex>number|price|quantity|qty\s|zip(\s|_)?code</regex>
+			<regex>number|price|quantity|qty\\s|zip(\\s|_)?code</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>input</name>
-			<regex>input</regex>
+			<regex>input|textarea|type=text</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>clear</name>

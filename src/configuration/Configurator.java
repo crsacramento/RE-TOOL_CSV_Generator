@@ -394,7 +394,7 @@ public class Configurator {
                         b1 = true;
                         break;
                     } else if (str.toLowerCase().matches(
-                            "search|sort|masterdetail|call|input|login")) {
+                            "search|sort|masterdetail|call|input|login|menu")) {
                         arr2.add(str);
                     }
                 }

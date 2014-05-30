@@ -110,6 +110,7 @@ public class PatternInferrer {
         testForTrailingSort(lineNum);
         testForTrailingSearch(lineNum);
         testForTrailingLogin(lineNum);
+        testForTrailingInput(lineNum);
 
         // write to file
         writeParadigmFile();
@@ -158,6 +159,18 @@ public class PatternInferrer {
             for (int i : lines)
                 line += i + " ";
             System.out.println(lineNum + 1 + ": SEARCH|lines: " + line);
+            resetStates();
+        }
+    }
+    private static void testForTrailingInput(int lineNum) {
+        if (firstIndex == 1 && secondIndex == 0) {
+            // search without submit is still valid
+            patternsFound.put("INPUT_" + patternIndex, lines);
+            patternIndex++;
+            String line = "";
+            for (int i : lines)
+                line += i + " ";
+            System.out.println(lineNum + 1 + ": INPUT|lines: " + line);
             resetStates();
         }
     }
@@ -266,12 +279,16 @@ public class PatternInferrer {
 
                 if (patternType.equals("input")) {
                     for (int i = 0; i < cleanActions.size(); ++i) {
+                        // ignore submits
+                        if (targets.get(i).matches(".*(submit).*"))
+                            continue;
                         ArrayList<String> a = new ArrayList<String>(),
                                 t = new ArrayList<String>(),
                                 p = new ArrayList<String>();
                         a.add(cleanActions.get(i));
                         t.add(cleanTargets.get(i));
                         p.add(cleanParams.get(i));
+                        
                         PatternRegister.startPattern(patternType,
                                 writtenPatternIndex);
                         PatternRegister.enterInputContent(a,
@@ -358,6 +375,7 @@ public class PatternInferrer {
                 testForTrailingSort(lineNum);
                 testForTrailingSearch(lineNum);
                 testForTrailingLogin(lineNum);
+                testForTrailingInput(lineNum);
 
                 System.out
                         .println("doesnt match call, login, sort, search or input - ignored");
@@ -374,7 +392,7 @@ public class PatternInferrer {
                     line += i + " ";
             for (String i : words)
                 word += i + " ";
-            System.out.println(lineNum + ": words:" + word + "|" + currentState
+            System.out.println((lineNum+1) + ": words:" + word + "|" + currentState
                     + (!line.isEmpty() ? "|lines: " + line : ""));
         } else
             alreadyWroteOnThisLine = false;
@@ -382,18 +400,10 @@ public class PatternInferrer {
     }
 
     private static void processLink(ArrayList<String> words, int lineNum) {
-        // check if trailing sort or search
-        if (firstIndex == 2 && secondIndex == 0) {
-            // sort without submit is still valid
-            patternsFound.put("SORT_" + patternIndex, lines);
-            patternIndex++;
-            resetStates();
-        } else if (firstIndex == 3 && secondIndex == 0) {
-            // search without submit is still valid
-            patternsFound.put("SEARCH_" + patternIndex, lines);
-            patternIndex++;
-            resetStates();
-        }
+        testForTrailingSort(lineNum);
+        testForTrailingSearch(lineNum);
+        testForTrailingLogin(lineNum);
+        testForTrailingInput(lineNum);
 
         System.out.println(lineNum + ": CALL");
         ArrayList<Integer> a = new ArrayList<Integer>();
@@ -422,6 +432,7 @@ public class PatternInferrer {
         // check if trailing sort or search
         testForTrailingSort(lineNum);
         testForTrailingLogin(lineNum);
+        testForTrailingInput(lineNum);
 
         if (matchSubmit(words)) {
             if (firstIndex == 3) {
@@ -458,6 +469,7 @@ public class PatternInferrer {
         // check if trailing sort or search
         testForTrailingSearch(lineNum);
         testForTrailingLogin(lineNum);
+        testForTrailingInput(lineNum);
 
         if (matchSubmit(words) && (firstIndex == 2) && (secondIndex == 0)) {
             // full search
@@ -517,7 +529,7 @@ public class PatternInferrer {
         // check if trailing sort or search
         testForTrailingSort(lineNum);
         testForTrailingSearch(lineNum);
-        testForTrailingLogin(lineNum);
+        testForTrailingInput(lineNum);
 
         // "LOGIN","LOGIN_USER","LOGIN_PASS","LOGIN_USER_PASS","LOGIN_USER_PASS_SUBMIT"
         if (matchSubmit(words)) {
@@ -562,15 +574,15 @@ public class PatternInferrer {
                     setStates(0, 1);// LOGIN_USER
                     lines.add(lineNum);
                 } else if (secondIndex == 1) {// curr state LOGIN_USER
-                    // duplicate writes on user, state keeps the same
-                    lines.add(lineNum);
+                    // duplicate writes on user, reset
+                    resetStates();
                 } else if (secondIndex == 2) {// curr state LOGIN_PASS
                     // has password, got user, change state
                     lines.add(lineNum);
                     setStates(0, 3);// LOGIN_USER_PASS
                 } else if (secondIndex == 3) {// curr state LOGIN_USER_PASSWORD
-                    // keep same state
-                    lines.add(lineNum);
+                    // reset
+                    resetStates();
                 }
             } else {
                 // starts login
@@ -586,10 +598,11 @@ public class PatternInferrer {
                     lines.add(lineNum);
                     setStates(0, 3);
                 } else if (secondIndex == 2) {// curr state LOGIN_PASS
-                    // duplicate writes on pass, state keeps the same
-                    lines.add(lineNum);
+                    // 2 passwords means it's a register instead of a login form - reset
+                    resetStates();
                 } else if (secondIndex == 3) {// curr state LOGIN_USER_PASS
-                    lines.add(lineNum);
+                    // same as above
+                    resetStates();
                 }
             } else {
                 // starts login
@@ -628,6 +641,6 @@ public class PatternInferrer {
     }
 
     private static boolean matchInput(ArrayList<String> words) {
-        return words.get(0).toLowerCase().matches(".*input.*");
+        return words.get(0).toLowerCase().matches(".*(input|(first|last)name).*");
     }
 }

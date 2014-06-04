@@ -36,20 +36,23 @@ public class Configurator {
             instance = new Configurator();
         return instance;
     }
+
     private static String filepath = null;
-    
+
     public Configurator() {
-        //loadConfig();
+        // loadConfig();
     }
-    
-    public static void initialize(String f){
-        filepath=f;
+
+    public static void initialize(String f) {
+        filepath = f;
     }
 
     /** number of actions the crawler will execute before stopping */
     private int numActions = 30;
     /** number of redirects to the home page the crawler will do before stopping */
     private int numRedirects = 5;
+    /** time to wait (in milliseconds) after each action */
+    private int politenessDelay = 500;
     /** words to insert in text input elements */
     private String[] typedKeywords = { "curtains", "coffee", "phone", "shirt",
             "computer", "dress", "banana", "sandals" };
@@ -117,6 +120,13 @@ public class Configurator {
      */
     public int getNumRedirects() {
         return numRedirects;
+    }
+
+    /**
+     * @return the politenessDelay
+     */
+    public int getPolitenessDelay() {
+        return politenessDelay;
     }
 
     /**
@@ -227,10 +237,10 @@ public class Configurator {
 
     public void loadConfig() {
         File userOverride;
-        if(filepath==null)
+        if (filepath == null)
             userOverride = new File("conf.xml");
-        else userOverride = new File(filepath+"conf.xml");
-        
+        else
+            userOverride = new File(filepath + "conf.xml");
 
         if (!userOverride.exists()) {
             try {
@@ -287,10 +297,14 @@ public class Configurator {
 
                         Node firstPersonNode = children.item(i);
                         if (firstPersonNode.getNodeType() == Node.ELEMENT_NODE) {
-                            if(firstPersonNode.getNodeName().equals("username")){
-                                username = firstPersonNode.getFirstChild().getNodeValue();
-                            }else if(firstPersonNode.getNodeName().equals("password")){
-                                password = firstPersonNode.getFirstChild().getNodeValue();
+                            if (firstPersonNode.getNodeName()
+                                    .equals("username")) {
+                                username = firstPersonNode.getFirstChild()
+                                        .getNodeValue();
+                            } else if (firstPersonNode.getNodeName().equals(
+                                    "password")) {
+                                password = firstPersonNode.getFirstChild()
+                                        .getNodeValue();
                             }
                         }
                     }
@@ -301,7 +315,7 @@ public class Configurator {
                         System.err
                                 .println("In a login configuration there must exist a username and a password node");
                     }
-                } 
+                }
             }
         }
     }
@@ -402,7 +416,7 @@ public class Configurator {
                     patternsToSearch = new String[arr2.size()];
                     for (int i = 0; i < arr2.size(); ++i)
                         patternsToSearch[i] = arr2.get(i);
-                }else{
+                } else {
                     patternsToSearch = new String[] { "all" };
                 }
 
@@ -428,7 +442,8 @@ public class Configurator {
                 System.err.println("Invalid content on tag " + name
                         + ", must have boolean value");
             return true;
-        } else if (name.equals("actions") || name.equals("redirections")) {
+        } else if (name.equals("actions") || name.equals("redirections")
+                || name.equals("politenessDelay")) {
             int parse = -1;
             try {
                 parse = Integer.parseInt(content);
@@ -441,8 +456,10 @@ public class Configurator {
 
             if (name.equals("actions"))
                 numActions = parse;
-            else
+            else if (name.equals("redirections"))
                 numRedirects = parse;
+            else
+                politenessDelay= parse;
             return true;
         } else if (name.equals("searchKeywords") || name.equals("sortKeywords")
                 || name.equals("loginKeywords")
@@ -490,4 +507,5 @@ public class Configurator {
         } else
             return false;
     }
+
 }

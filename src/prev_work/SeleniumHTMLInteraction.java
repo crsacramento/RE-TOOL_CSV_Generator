@@ -61,7 +61,8 @@ public class SeleniumHTMLInteraction {
     // compare current url with previous (or current)html
     public static void findURLSearchVariablesInHTML(String url, int pageWanted)
             throws IOException {
-        System.out.println("\tfindURLSearchVariablesInHTML("+url+","+pageWanted+")");
+        System.out.println("\tfindURLSearchVariablesInHTML(" + url + ","
+                + pageWanted + ")");
         // split the url, only the part after the last '/' will be considered
         String[] urlparts = url.split("/");
         String urlToQuery = urlparts[urlparts.length - 1];
@@ -88,8 +89,10 @@ public class SeleniumHTMLInteraction {
                         .equals(parametersSeparated[j].split("=")[0])) {
                     String sentence = "FOUND SEARCH WITH TYPE "
                             + typea.get(i).attr("type") + ", CATEGORY "
-                            + typea.get(i).attr("name") + " AND OPTION "
-                            + parametersSeparated[j].split("=")[1];
+                            + typea.get(i).attr("name");
+                    if (parametersSeparated[j].split("=").length > 1)
+                        sentence += " AND OPTION "
+                                + parametersSeparated[j].split("=")[1];
                     if (!searchParameters.contains(sentence)) {
                         searchParameters.add(sentence);
                         Filesystem.saveToFile("final",
@@ -102,7 +105,7 @@ public class SeleniumHTMLInteraction {
             }
 
         }
-System.out.println("\tpassed inputs");
+        System.out.println("\tpassed inputs");
         // gets all the selects
         Elements types = doc.select("select");
         for (int i = 0; i != types.size(); i++) {

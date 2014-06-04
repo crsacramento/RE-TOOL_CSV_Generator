@@ -4,6 +4,7 @@
 	    actions: number of actions the crawler will execute before stopping
 	    redirections: number of redirects to the home page the crawler will do 
 	       before stopping
+	    politenessDelay: time to wait (in milliseconds) after each action
 	    typedKeywords: list of words to insert in text input elements
 		searchKeywords: regex with keywords that identify search elements
 		sortKeywords: regex with keywords that identify sort elements
@@ -28,6 +29,7 @@
 	-->
 	<actions>50</actions>
 	<redirections>5</redirections>
+	<politenessDelay>500</politenessDelay>
 	<includeChildrenNodesOnInteraction>false</includeChildrenNodesOnInteraction>
 	<searchKeywords>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</searchKeywords>
 	<sortKeywords>(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))</sortKeywords>

@@ -23,9 +23,9 @@ public class PatternRegister {
     static HashMap<String, HashSet<String>> duplicateControl = new HashMap<String, HashSet<String>>();
 
     public static boolean isAlreadyWritten(String type, String id) {
-        if(type == null || id == null)
+        if (type == null || id == null)
             return true;
-        
+
         HashSet<String> set = duplicateControl.get(type);
         if (set == null) {
             set = new HashSet<String>();
@@ -250,10 +250,10 @@ public class PatternRegister {
             bw = new BufferedWriter(
                     new OutputStreamWriter(new FileOutputStream(
                             file.getAbsoluteFile(), true), "UTF-8"));
-            bw.write("\t\t<page URL=\"" + url + "\">\n");
+            bw.write("\t\t<page mappingURL=\""+url+"\" >\n");
             for (String s : elements) {
-                bw.write("\t\t\t<item element=\"" + s.replaceAll("\"", "\\\"")
-                        + "\"/>\n");
+                bw.write("\t\t\t<item id=\"" + s.replaceAll("\"", "\\\"")
+                        +"\" />\n");
             }
             bw.write("\t\t</page>\n");
             bw.close();
@@ -351,7 +351,7 @@ public class PatternRegister {
         }
         closeConfiguration();
 
-        writeFields(names, ids,true);
+        writeFields(names, ids, true);
     }
 
     public static void enterMasterDetailContent(Set<String> masters,
@@ -429,7 +429,7 @@ public class PatternRegister {
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids,true);
+        writeFields(names, ids, true);
     }
 
     public static void enterCallContent(ArrayList<String> actions,
@@ -449,7 +449,7 @@ public class PatternRegister {
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids,false);
+        writeFields(names, ids, false);
     }
 
     public static void enterInputContent(ArrayList<String> actions,
@@ -467,6 +467,6 @@ public class PatternRegister {
             ids.add(targets.get(i));
         }
 
-        writeFields(names, ids,false);
+        writeFields(names, ids, false);
     }
 }

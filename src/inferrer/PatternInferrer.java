@@ -180,20 +180,20 @@ public class PatternInferrer {
         PatternRegister.initializePatternRegister(baseUrl);
         if (!(menuElements == null || menuElements.isEmpty())
                 && we.isSearchingForPattern("menu")) {
-            PatternRegister.startPattern("menu", writtenPatternIndex);// number
-                                                                      // doesnt
-                                                                      // matter
+            
 
             Iterator<Entry<String, HashSet<String>>> it = menuElements
                     .entrySet().iterator();
             while (it.hasNext()) {
+                PatternRegister.startPattern("menu", writtenPatternIndex);
                 Map.Entry<String, HashSet<String>> entry = it.next();
                 PatternRegister.enterMenuItemContent(entry.getKey(),
                         entry.getValue());
+                PatternRegister.closePattern();
+                writtenPatternIndex++;
             }
 
-            PatternRegister.closePattern();
-            writtenPatternIndex++;
+            
         }
 
         // write search result pages' master detail
@@ -641,6 +641,6 @@ public class PatternInferrer {
     }
 
     private static boolean matchInput(ArrayList<String> words) {
-        return words.get(0).toLowerCase().matches(".*(input|(first|last)name).*");
+        return (words.get(0).toLowerCase().matches(".*(input|(first|last)name).*") && !words.get(0).toLowerCase().matches(".*(email|user|pass|search|sort|submit|checkbox|radio|button).*"));
     }
 }

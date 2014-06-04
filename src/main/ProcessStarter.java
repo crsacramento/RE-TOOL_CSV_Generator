@@ -60,7 +60,7 @@ public class ProcessStarter {
         }
 
         // baseURL = "http://app.rasc.ch/tudu/welcome.action";
-        baseURL = "https://www.amazon.com/";
+         baseURL = "https://www.amazon.com/";
         // baseURL = "https://www.yahoo.com/";
         // baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
         // baseURL = "http://www.fe.up.pt/";

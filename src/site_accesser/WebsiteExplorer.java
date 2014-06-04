@@ -71,7 +71,7 @@ public class WebsiteExplorer {
     /** web driver */
     private HtmlUnitDriver driver = null;
 
-    private String lastAction = "NONE", currentAction = "NONE";
+    //private String lastAction = "NONE", currentAction = "NONE";
 
     private BrowserHandlerTesting testing = new BrowserHandlerTesting();
 
@@ -211,8 +211,8 @@ public class WebsiteExplorer {
             int rand1 = (int) Math.round(Math.random()
                     * (nonEmpties.size() - 1));
             if (rand1 >= 0) {
-                lastAction = currentAction;
-                currentAction = TYPES[nonEmpties.get(rand1)];
+                //lastAction = currentAction;
+                //currentAction = TYPES[nonEmpties.get(rand1)];
 
                 List<WebElement> randChosenList = list.get(nonEmpties
                         .get(rand1));
@@ -415,7 +415,8 @@ public class WebsiteExplorer {
         for (WebElement elem : masterList) {
             List<WebElement> children = findChildrenAnchorNodesGivenParent(elem);
             if (!(children == null || children.isEmpty()))
-                retSet.add(HTMLLocatorBuilder.getElementIdentifier(elem));
+                for (WebElement c : children)
+                    retSet.add(HTMLLocatorBuilder.getElementIdentifier(c));
         }
         if (retSet.size() == 0)
             return;
@@ -555,8 +556,8 @@ public class WebsiteExplorer {
             WebElement element = chooseNextElement();
 
             // see if one can search for master detail after search
-            if (lastAction.equals("SEARCH")
-                    && isSearchingForPattern("masterdetail")) {
+            if (/*lastAction.equals("SEARCH")
+                    &&*/ isSearchingForPattern("masterdetail")) {
                 findMasterDetailElementsInSearchResultPage();
             }
             if (element == null) {
@@ -607,7 +608,7 @@ public class WebsiteExplorer {
                 if (wait) {
                     // politeness delay
                     try {
-                        TimeUnit.MILLISECONDS.sleep(750);
+                        TimeUnit.MILLISECONDS.sleep(configurator.getPolitenessDelay());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

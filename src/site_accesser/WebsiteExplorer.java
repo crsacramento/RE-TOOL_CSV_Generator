@@ -71,7 +71,7 @@ public class WebsiteExplorer {
     /** web driver */
     private HtmlUnitDriver driver = null;
 
-    //private String lastAction = "NONE", currentAction = "NONE";
+    // private String lastAction = "NONE", currentAction = "NONE";
 
     private BrowserHandlerTesting testing = new BrowserHandlerTesting();
 
@@ -154,7 +154,7 @@ public class WebsiteExplorer {
     }
 
     public void handleError(String message, WebElement element) {
-        System.out.println(element);
+        System.out.println(message);
         // invalid, do something else
         currAction--;
         wait = false;
@@ -211,8 +211,8 @@ public class WebsiteExplorer {
             int rand1 = (int) Math.round(Math.random()
                     * (nonEmpties.size() - 1));
             if (rand1 >= 0) {
-                //lastAction = currentAction;
-                //currentAction = TYPES[nonEmpties.get(rand1)];
+                // lastAction = currentAction;
+                // currentAction = TYPES[nonEmpties.get(rand1)];
 
                 List<WebElement> randChosenList = list.get(nonEmpties
                         .get(rand1));
@@ -556,8 +556,7 @@ public class WebsiteExplorer {
             WebElement element = chooseNextElement();
 
             // see if one can search for master detail after search
-            if (/*lastAction.equals("SEARCH")
-                    &&*/ isSearchingForPattern("masterdetail")) {
+            if (isSearchingForPattern("masterdetail")) {
                 findMasterDetailElementsInSearchResultPage();
             }
             if (element == null) {
@@ -572,7 +571,7 @@ public class WebsiteExplorer {
                         + (!element.getText().isEmpty() ? " (has text)"
                                 : " (no text)") + " | LOCATOR:"
                         + HTMLLocatorBuilder.getElementIdentifier(element));
-
+                // login
                 if (isElementRelatedToLogin(element)) {
                     boolean processedLogin = processLogin(element);
                     if (processedLogin) {
@@ -582,20 +581,22 @@ public class WebsiteExplorer {
                                 driver.getCurrentUrl());
                         saveRow("open", baseUrl, "EMPTY");
                     }
-                }// dropdown list
-                else if (element.getTagName().toLowerCase().equals("select")) {
-                    if (!getConfigurator().includeChildrenNodesOnInteraction())
+
+                } else if (element.getTagName().toLowerCase().equals("a")) {
+                    processAnchorElements(element);
+                } else if (getConfigurator()
+                        .includeChildrenNodesOnInteraction()) {
+                    // input or select
+                    if (!error)
+                        error = includeFormChildrenAndVisitElement(element);
+                } else {
+                    if (element.getTagName().toLowerCase().equals("select")) {
                         if (!error)
                             error = processSelectElement(element);
-                        else if (!error)
-                            error = includeFormChildrenAndVisitElement(element);
-                } else if (isElementTextInputable(element)) {
-                    if (!getConfigurator().includeChildrenNodesOnInteraction())
-                        processInputElement(element);
-                    else
-                        includeFormChildrenAndVisitElement(element);
-                } else {
-                    processAnchorElements(element);
+                    } else if (isElementTextInputable(element)) {
+                        if (!error)
+                            error = processInputElement(element);
+                    }
                 }
 
                 if (error) {
@@ -608,7 +609,8 @@ public class WebsiteExplorer {
                 if (wait) {
                     // politeness delay
                     try {
-                        TimeUnit.MILLISECONDS.sleep(configurator.getPolitenessDelay());
+                        TimeUnit.MILLISECONDS.sleep(configurator
+                                .getPolitenessDelay());
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

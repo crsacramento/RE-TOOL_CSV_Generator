@@ -283,26 +283,27 @@ public class Configurator {
             boolean processed = processSimpleTag(tag.item(0).getNodeName(), tag
                     .item(0).getFirstChild().getNodeValue());
             if (!processed) {
-                if (s.equals("typedKeywords") || s.equals("menuIdentifiers")
-                        || s.equals("masterIdentifiers")
-                        || s.equals("detailIdentifiers")
-                        || s.equals("patternsToFind")) {
+                if (s.toLowerCase().equals("typedKeywords")
+                        || s.toLowerCase().equals("menuIdentifiers")
+                        || s.toLowerCase().equals("masterIdentifiers")
+                        || s.toLowerCase().equals("detailIdentifiers")
+                        || s.toLowerCase().equals("patternsToFind")) {
                     processItemListTag(tag);
-                } else if (s.equals("tokenizerPatterns")) {
+                } else if (s.toLowerCase().equals("tokenizerPatterns")) {
                     processTokenizerPatternList(tag);
-                } else if (s.equals("loginConfiguration")) {
+                } else if (s.toLowerCase().equals("loginConfiguration")) {
                     NodeList children = tag.item(0).getChildNodes();
                     String username = null, password = null;
                     for (int i = 0; i < children.getLength(); i++) {
 
                         Node firstPersonNode = children.item(i);
                         if (firstPersonNode.getNodeType() == Node.ELEMENT_NODE) {
-                            if (firstPersonNode.getNodeName()
+                            if (firstPersonNode.getNodeName().toLowerCase()
                                     .equals("username")) {
                                 username = firstPersonNode.getFirstChild()
                                         .getNodeValue();
-                            } else if (firstPersonNode.getNodeName().equals(
-                                    "password")) {
+                            } else if (firstPersonNode.getNodeName()
+                                    .toLowerCase().equals("password")) {
                                 password = firstPersonNode.getFirstChild()
                                         .getNodeValue();
                             }
@@ -334,7 +335,7 @@ public class Configurator {
 
         for (int i = 0; i < children.getLength(); ++i) {
             Node n = children.item(i);
-            if (n.getNodeName().equals("patternEntry")) {
+            if (n.getNodeName().toLowerCase().equals("patternEntry")) {
 
                 Element patternEntryElement = (Element) n;
                 NodeList nameList = patternEntryElement
@@ -391,15 +392,15 @@ public class Configurator {
 
         if (b) {
             String s = tag.item(0).getNodeName();
-            if (s.equals("typedKeywords")) {
+            if (s.toLowerCase().equals("typedKeywords")) {
                 typedKeywords = array;
-            } else if (s.equals("menuIdentifiers")) {
+            } else if (s.toLowerCase().equals("menuIdentifiers")) {
                 menuIdentifiers = array;
-            } else if (s.equals("masterIdentifiers")) {
+            } else if (s.toLowerCase().equals("masterIdentifiers")) {
                 masterIdentifiers = array;
-            } else if (s.equals("detailIdentifiers")) {
+            } else if (s.toLowerCase().equals("detailIdentifiers")) {
                 detailIdentifiers = array;
-            } else if (s.equals("patternsToFind")) {
+            } else if (s.toLowerCase().equals("patternsToFind")) {
                 // patternsToSearch = array;
                 ArrayList<String> arr2 = new ArrayList<String>();
                 boolean b1 = false;
@@ -433,17 +434,18 @@ public class Configurator {
      *            tag value
      */
     private boolean processSimpleTag(String name, String content) {
-        if (name.equals("includeChildrenNodesOnInteraction")) {
-            if (content.matches("t(rue)?|1")) {
+        if (name.toLowerCase().equals("includeChildrenNodesOnInteraction")) {
+            if (content.toLowerCase().matches(".*t(rue)?|1.*")) {
                 includeChildrenNodesOnInteraction = true;
-            } else if (content.matches("f(alse)?|0"))
-                includeChildrenNodesOnInteraction = true;
+            } else if (content.toLowerCase().matches(".*f(alse)?|0.*"))
+                includeChildrenNodesOnInteraction = false;
             else
                 System.err.println("Invalid content on tag " + name
                         + ", must have boolean value");
             return true;
-        } else if (name.equals("actions") || name.equals("redirections")
-                || name.equals("politenessDelay")) {
+        } else if (name.toLowerCase().equals("actions")
+                || name.toLowerCase().equals("redirections")
+                || name.toLowerCase().equals("politenessDelay")) {
             int parse = -1;
             try {
                 parse = Integer.parseInt(content);
@@ -454,16 +456,17 @@ public class Configurator {
                 return false;
             }
 
-            if (name.equals("actions"))
+            if (name.toLowerCase().equals("actions"))
                 numActions = parse;
-            else if (name.equals("redirections"))
+            else if (name.toLowerCase().equals("redirections"))
                 numRedirects = parse;
             else
-                politenessDelay= parse;
+                politenessDelay = parse;
             return true;
-        } else if (name.equals("searchKeywords") || name.equals("sortKeywords")
-                || name.equals("loginKeywords")
-                || name.equals("generalWordsToExclude")) {
+        } else if (name.toLowerCase().equals("searchKeywords")
+                || name.toLowerCase().equals("sortKeywords")
+                || name.toLowerCase().equals("loginKeywords")
+                || name.toLowerCase().equals("generalWordsToExclude")) {
             try {
                 Pattern.compile(content);
             } catch (PatternSyntaxException e) {
@@ -473,19 +476,19 @@ public class Configurator {
                 return false;
             }
 
-            if (name.equals("searchKeywords")) {
+            if (name.toLowerCase().equals("searchKeywords")) {
                 searchKeywords = content;
-            } else if (name.equals("sortKeywords")) {
+            } else if (name.toLowerCase().equals("sortKeywords")) {
                 sortKeywords = content;
-            } else if (name.equals("loginKeywords")) {
+            } else if (name.toLowerCase().equals("loginKeywords")) {
                 loginKeywords = content;
-            } else if (name.equals("generalWordsToExclude")) {
+            } else if (name.toLowerCase().equals("generalWordsToExclude")) {
                 generalWordsToExclude = content;
             }
             return true;
-        } else if (name.equals("historyFilepath")
-                || name.equals("processedHistoryFilepath")
-                || name.equals("patternsFilepath")) {
+        } else if (name.toLowerCase().equals("historyFilepath")
+                || name.toLowerCase().equals("processedHistoryFilepath")
+                || name.toLowerCase().equals("patternsFilepath")) {
             File f = new File(content);
             try {
                 f.getCanonicalPath();
@@ -496,11 +499,11 @@ public class Configurator {
                 return false;
             }
 
-            if (name.equals("historyFilepath")) {
+            if (name.toLowerCase().equals("historyFilepath")) {
                 historyFilepath = content;
-            } else if (name.equals("processedHistoryFilepath")) {
+            } else if (name.toLowerCase().equals("processedHistoryFilepath")) {
                 processedHistoryFilepath = content;
-            } else if (name.equals("patternsFilepath")) {
+            } else if (name.toLowerCase().equals("patternsFilepath")) {
                 patternsFilepath = content;
             }
             return true;

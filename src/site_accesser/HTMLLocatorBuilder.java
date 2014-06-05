@@ -90,7 +90,7 @@ public class HTMLLocatorBuilder {
             if (!text.isEmpty() && !text.matches("^\\s*$")) {
                 locator += " and contains(text(),\'"
                         + text.replace("^\\s+", "").replace("\\s+$", "")
-                        + "\')]";
+                        + "\')";
             }
         }
 

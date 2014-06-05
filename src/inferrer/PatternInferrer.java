@@ -180,8 +180,6 @@ public class PatternInferrer {
         PatternRegister.initializePatternRegister(baseUrl);
         if (!(menuElements == null || menuElements.isEmpty())
                 && we.isSearchingForPattern("menu")) {
-            
-
             Iterator<Entry<String, HashSet<String>>> it = menuElements
                     .entrySet().iterator();
             while (it.hasNext()) {
@@ -192,8 +190,6 @@ public class PatternInferrer {
                 PatternRegister.closePattern();
                 writtenPatternIndex++;
             }
-
-            
         }
 
         // write search result pages' master detail
@@ -203,14 +199,15 @@ public class PatternInferrer {
             Set<String> keys = masterElements.keySet();
 
             for (String k : keys) {
-                PatternRegister.startPattern("masterDetail",
-                        writtenPatternIndex);// number
-                // doesn't
-                // matter
                 Set<String> masters = masterElements.get(k);
-                Set<String> details = null;
-                if (detailElements.containsKey(k))
-                    details = detailElements.get(k);
+                Set<String> details = detailElements.get(k);
+                
+                if(masters == null || details == null)
+                    continue;
+                
+                PatternRegister.startPattern("masterDetail",
+                        writtenPatternIndex);
+                
 
                 PatternRegister.enterMasterDetailContent(masters, details, k);
                 PatternRegister.closePattern();
@@ -345,6 +342,7 @@ public class PatternInferrer {
         if (lineBuffer != null) {
             if (matchLink(words)) {
                 processLink(words, lineNum);
+                resetStates();
             } else if (matchSubmit(words)) {
                 // might be a submit to login, input, search or sort
                 switch (firstIndex) {
@@ -411,7 +409,7 @@ public class PatternInferrer {
         patternsFound.put("CALL_" + patternIndex, a);
         patternIndex++;
         alreadyWroteOnThisLine = true;
-        resetStates();
+        //resetStates();
     }
 
     private static void resetStates() {
@@ -560,6 +558,8 @@ public class PatternInferrer {
             }
         } else if (words.get(0).toLowerCase()
                 .matches(".*(login|auth|captcha).*")) {
+            if(words.get(0).toLowerCase().equals("clicklogin"))
+                processLink(words, lineNum);
             if (firstIndex == 0) {
                 // doesnt alter states, can go in any state
                 lines.add(lineNum);

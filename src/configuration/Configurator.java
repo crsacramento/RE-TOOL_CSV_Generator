@@ -434,7 +434,7 @@ public class Configurator {
      *            tag value
      */
     private boolean processSimpleTag(String name, String content) {
-        if (name.toLowerCase().equals("includeChildrenNodesOnInteraction")) {
+        if (name.equals("includeChildrenNodesOnInteraction")) {
             if (content.toLowerCase().matches(".*t(rue)?|1.*")) {
                 includeChildrenNodesOnInteraction = true;
             } else if (content.toLowerCase().matches(".*f(alse)?|0.*"))
@@ -443,9 +443,9 @@ public class Configurator {
                 System.err.println("Invalid content on tag " + name
                         + ", must have boolean value");
             return true;
-        } else if (name.toLowerCase().equals("actions")
-                || name.toLowerCase().equals("redirections")
-                || name.toLowerCase().equals("politenessDelay")) {
+        } else if (name.equals("actions")
+                || name.equals("redirections")
+                || name.equals("politenessDelay")) {
             int parse = -1;
             try {
                 parse = Integer.parseInt(content);
@@ -456,17 +456,17 @@ public class Configurator {
                 return false;
             }
 
-            if (name.toLowerCase().equals("actions"))
+            if (name.equals("actions"))
                 numActions = parse;
-            else if (name.toLowerCase().equals("redirections"))
+            else if (name.equals("redirections"))
                 numRedirects = parse;
             else
                 politenessDelay = parse;
             return true;
-        } else if (name.toLowerCase().equals("searchKeywords")
-                || name.toLowerCase().equals("sortKeywords")
-                || name.toLowerCase().equals("loginKeywords")
-                || name.toLowerCase().equals("generalWordsToExclude")) {
+        } else if (name.equals("searchKeywords")
+                || name.equals("sortKeywords")
+                || name.equals("loginKeywords")
+                || name.equals("generalWordsToExclude")) {
             try {
                 Pattern.compile(content);
             } catch (PatternSyntaxException e) {
@@ -476,19 +476,19 @@ public class Configurator {
                 return false;
             }
 
-            if (name.toLowerCase().equals("searchKeywords")) {
+            if (name.equals("searchKeywords")) {
                 searchKeywords = content;
-            } else if (name.toLowerCase().equals("sortKeywords")) {
+            } else if (name.equals("sortKeywords")) {
                 sortKeywords = content;
-            } else if (name.toLowerCase().equals("loginKeywords")) {
+            } else if (name.equals("loginKeywords")) {
                 loginKeywords = content;
-            } else if (name.toLowerCase().equals("generalWordsToExclude")) {
+            } else if (name.equals("generalWordsToExclude")) {
                 generalWordsToExclude = content;
             }
             return true;
-        } else if (name.toLowerCase().equals("historyFilepath")
-                || name.toLowerCase().equals("processedHistoryFilepath")
-                || name.toLowerCase().equals("patternsFilepath")) {
+        } else if (name.equals("historyFilepath")
+                || name.equals("processedHistoryFilepath")
+                || name.equals("patternsFilepath")) {
             File f = new File(content);
             try {
                 f.getCanonicalPath();
@@ -499,11 +499,11 @@ public class Configurator {
                 return false;
             }
 
-            if (name.toLowerCase().equals("historyFilepath")) {
+            if (name.equals("historyFilepath")) {
                 historyFilepath = content;
-            } else if (name.toLowerCase().equals("processedHistoryFilepath")) {
+            } else if (name.equals("processedHistoryFilepath")) {
                 processedHistoryFilepath = content;
-            } else if (name.toLowerCase().equals("patternsFilepath")) {
+            } else if (name.equals("patternsFilepath")) {
                 patternsFilepath = content;
             }
             return true;

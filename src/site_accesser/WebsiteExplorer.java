@@ -239,7 +239,7 @@ public class WebsiteExplorer {
             return true;
         if (e.getTagName().toLowerCase().equals("input")) {
             String types = "(type=\"(text|search|email)\")";
-            if (e.toString().matches(".*" + types + ".*"))
+            if (e.toString().toLowerCase().matches(".*" + types + ".*"))
                 return true;
         }
 
@@ -254,7 +254,7 @@ public class WebsiteExplorer {
      */
     protected boolean isElementRelatedToLogin(WebElement e) {
         return e.toString().toLowerCase()
-                .matches(".*" + getConfigurator().getLoginKeywords() + ".*");
+                .toLowerCase().matches(".*" + getConfigurator().getLoginKeywords() + ".*");
     }
 
     /**
@@ -264,8 +264,8 @@ public class WebsiteExplorer {
      *            element to check
      */
     protected boolean isInputElementExpectingNumbers(WebElement e) {
-        String types = "((type=\\\")?number|price|quantity|qty\\s|zip\\s?code)";
-        if (e.toString().matches(".*" + types + ".*"))
+        String types = "((type=\\\")?number|price|quantity|qty\\s|zip(\\s|_)?code)";
+        if (e.toString().toLowerCase().matches(".*" + types + ".*"))
             return true;
 
         return false;
@@ -448,6 +448,7 @@ public class WebsiteExplorer {
      */
     private void writeToHistoryFile(SeleniumTableRow r, boolean append) {
         // Write history to file
+        
         FileWriter output = null;
         try {
             output = new FileWriter(new File(folderpath
@@ -667,7 +668,7 @@ public class WebsiteExplorer {
             WebElement form = findParentForm(element);
             List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
 
-            String username = "username", password = "password";
+            String username = "banana", password = "apple";
             if (!getConfigurator().getLoginConfiguration().isEmpty()) {
                 username = getConfigurator().getLoginConfiguration().get(
                         "username");
@@ -684,11 +685,11 @@ public class WebsiteExplorer {
                         case "password":
                         case "email":
                             if (e.toString()
-                                    .matches(
+                                    .toLowerCase().matches(
                                             ".*(user(\\s|_)?(name|id)?|e?mail|log(\\s|_)?in).*")) {
                                 content = username;
                             } else if (e.toString()
-                                    .matches(".*(pass(word)?).*")) {
+                                    .toLowerCase().matches(".*(pass(word)?).*")) {
                                 content = password;
                             } else {
                                 int rand = (int) (Math.random() * (getConfigurator()
@@ -755,7 +756,7 @@ public class WebsiteExplorer {
 
         // if form doesn't submit dynamically, submit
         // form manually
-        if (!element.toString().matches(".*onchange=.*submit.*")) {
+        if (!element.toString().toLowerCase().matches(".*onchange=.*submit.*")) {
 
             // verify if input wants numbers or words
             if (isInputElementExpectingNumbers(element)) {
@@ -834,7 +835,7 @@ public class WebsiteExplorer {
             for (WebElement e : elems)
                 if (!e.toString()
                         .toLowerCase()
-                        .matches(
+                        .toLowerCase().matches(
                                 ".*"
                                         + getConfigurator()
                                                 .getGeneralWordsToExclude()
@@ -869,7 +870,7 @@ public class WebsiteExplorer {
                 for (WebElement sub : elems) {
                     if (!sub.toString()
                             .toLowerCase()
-                            .matches(
+                            .toLowerCase().matches(
                                     ".*"
                                             + getConfigurator()
                                                     .getGeneralWordsToExclude()
@@ -926,7 +927,7 @@ public class WebsiteExplorer {
                 // it's a valid option
                 select.selectByIndex(rand1);
 
-                if (!element.toString().matches(".*onchange=\".*submit\".*")) {
+                if (!element.toString().toLowerCase().matches(".*onchange=\".*submit\".*")) {
                     // if form doesn't submit dynamically, submit
                     // form manually
                     saveRow("select", identifier,

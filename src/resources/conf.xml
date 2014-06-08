@@ -31,7 +31,7 @@
 	<redirections>5</redirections>
 	<politenessDelay>500</politenessDelay>
 	<includeChildrenNodesOnInteraction>false</includeChildrenNodesOnInteraction>
-	<searchKeywords>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</searchKeywords>
+	<searchKeywords>(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)</searchKeywords>
 	<sortKeywords>(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))</sortKeywords>
 	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))</loginKeywords>
 	<generalWordsToExclude>(buy|sell|edit|delete|mailto|add(\\s|_)?to(\\s|_)?cart|checkout)</generalWordsToExclude>
@@ -57,6 +57,8 @@
 		<item>refine</item>
 		<item>relatedSearches</item>
 		<item>spell</item>
+		<item>category</item>
+		<item>categories</item>
 	</masterIdentifiers>
 	<detailIdentifiers>
 		<item>results</item>
@@ -95,7 +97,7 @@
 		</patternEntry>
 		<patternEntry>
 			<name>imageLink</name>
-			<regex>img</regex>
+			<regex>link(.*)img|img(.*)link</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>nextLink</name>
@@ -139,7 +141,7 @@
 		</patternEntry>
 		<patternEntry>
 			<name>verifyPassword</name>
-			<regex>verify(\\s|_)?pass(word)?</regex>
+			<regex>verify(\\s|_)?pass(word)?|pass(word)?(\\s|_)?confirm(ation)?</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>password</name>
@@ -171,7 +173,7 @@
 		</patternEntry>
 		<patternEntry>
 			<name>search</name>
-			<regex>(\"q\"|q(ue)?ry|search|pesq(uisa)?|procura(r)?|busca(dor)?)</regex>
+			<regex>(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>captcha</name>
@@ -187,7 +189,7 @@
 		</patternEntry>
 		<patternEntry>
 			<name>input</name>
-			<regex>input|textarea|type=text</regex>
+			<regex>\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>clear</name>

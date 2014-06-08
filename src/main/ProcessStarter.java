@@ -64,8 +64,8 @@ public class ProcessStarter {
         // baseURL = "https://www.yahoo.com/";
         // baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
         // baseURL = "http://www.fe.up.pt/";
-        // baseURL = "http://en.wikipedia.org";
-         baseURL = "http://www.ebay.com/";
+         baseURL = "http://en.wikipedia.org";
+        // baseURL = "http://www.ebay.com/";
         // baseURL = "http://www.youtube.com/";
         // baseURL = "http://store.steampowered.com/";
         // baseURL = "http://www.geforce.com/";
@@ -87,7 +87,7 @@ public class ProcessStarter {
         c.loadConfig();
         WebsiteExplorer.setConfigurator(c);
 
-        try {
+        /*try {
             we.exploreWebsite();
         } catch (Exception e) {
             e.printStackTrace();
@@ -100,7 +100,7 @@ public class ProcessStarter {
             System.out.println("-------TESTING-------");
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
 
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);

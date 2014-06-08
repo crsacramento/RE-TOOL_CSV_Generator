@@ -191,8 +191,7 @@ public class WebsiteExplorer {
     private WebElement chooseNextElement() {
         String[] TYPES = { "SELECT", "INPUT", "CALL", "SEARCH", "SORT", "LOGIN" };
 
-        List<ArrayList<WebElement>> list = WebElementOrganizer
-                .setupElementList();
+        List<HashSet<WebElement>> list = WebElementOrganizer.setupElementList();
 
         ArrayList<Integer> nonEmpties = new ArrayList<Integer>();
         String type = "";
@@ -214,8 +213,8 @@ public class WebsiteExplorer {
                 // lastAction = currentAction;
                 // currentAction = TYPES[nonEmpties.get(rand1)];
 
-                List<WebElement> randChosenList = list.get(nonEmpties
-                        .get(rand1));
+                ArrayList<WebElement> randChosenList = new ArrayList<WebElement>(
+                        list.get(nonEmpties.get(rand1)));
                 int rand2 = (int) Math.round(Math.random()
                         * (randChosenList.size() - 1));
                 if (rand2 >= 0)
@@ -253,8 +252,8 @@ public class WebsiteExplorer {
      *            element to check
      */
     protected boolean isElementRelatedToLogin(WebElement e) {
-        return e.toString().toLowerCase()
-                .toLowerCase().matches(".*" + getConfigurator().getLoginKeywords() + ".*");
+        return e.toString().toLowerCase().toLowerCase()
+                .matches(".*" + getConfigurator().getLoginKeywords() + ".*");
     }
 
     /**
@@ -448,7 +447,7 @@ public class WebsiteExplorer {
      */
     private void writeToHistoryFile(SeleniumTableRow r, boolean append) {
         // Write history to file
-        
+
         FileWriter output = null;
         try {
             output = new FileWriter(new File(folderpath
@@ -685,11 +684,12 @@ public class WebsiteExplorer {
                         case "password":
                         case "email":
                             if (e.toString()
-                                    .toLowerCase().matches(
+                                    .toLowerCase()
+                                    .matches(
                                             ".*(user(\\s|_)?(name|id)?|e?mail|log(\\s|_)?in).*")) {
                                 content = username;
-                            } else if (e.toString()
-                                    .toLowerCase().matches(".*(pass(word)?).*")) {
+                            } else if (e.toString().toLowerCase()
+                                    .matches(".*(pass(word)?).*")) {
                                 content = password;
                             } else {
                                 int rand = (int) (Math.random() * (getConfigurator()
@@ -833,34 +833,21 @@ public class WebsiteExplorer {
 
         if (elems.size() > 0) {
             for (WebElement e : elems)
-                if (!e.toString()
-                        .toLowerCase()
-                        .toLowerCase().matches(
-                                ".*"
-                                        + getConfigurator()
-                                                .getGeneralWordsToExclude()
-                                        + ".*")) {
+                if (WebElementOrganizer.itPassesAllGeneralChecks(e)) {
                     System.out.println("SUBMIT: " + e.toString());
-
                     submit.add(e);
                 }
         }
         if (submit.size() > 0) {
-
-            if (submit.size() > 0) {
-                System.out.println("SUBMIT=len:" + submit.size());
-                saveRow("clickAndWait",
-                        HTMLLocatorBuilder.getElementIdentifier(submit.get(0)),
-                        "EMPTY");
-                // interact
-                submit.get(0).click();
-                // TODO remove - testing
-                testing.incrementHTML(getDriver().getPageSource(), getDriver()
-                        .getCurrentUrl());
-            } else {
-                handleError("THERE ARE NO SUBMITS", element);
-                return true;
-            }
+            System.out.println("SUBMIT=len:" + submit.size());
+            saveRow("clickAndWait",
+                    HTMLLocatorBuilder.getElementIdentifier(submit.get(0)),
+                    "EMPTY");
+            // interact
+            submit.get(0).click();
+            // TODO remove - testing
+            testing.incrementHTML(getDriver().getPageSource(), getDriver()
+                    .getCurrentUrl());
         } else {
             // search for elements that dynamically submit forms
             elems = element.findElements(By
@@ -868,13 +855,7 @@ public class WebsiteExplorer {
             List<WebElement> dynamicSubmits = new ArrayList<WebElement>();
             if (elems.size() > 0) {
                 for (WebElement sub : elems) {
-                    if (!sub.toString()
-                            .toLowerCase()
-                            .toLowerCase().matches(
-                                    ".*"
-                                            + getConfigurator()
-                                                    .getGeneralWordsToExclude()
-                                            + ".*")) {
+                    if (WebElementOrganizer.itPassesAllGeneralChecks(sub)) {
                         System.out.println("DYN_SUBMIT: " + sub.toString());
                         dynamicSubmits.add(sub);
                     }
@@ -892,7 +873,7 @@ public class WebsiteExplorer {
                 testing.incrementHTML(getDriver().getPageSource(), getDriver()
                         .getCurrentUrl());
             } else {
-                handleError("THERE ARE NO DYNAMIC SUBMITS", element);
+                handleError("THERE ARE NO DYNAMIC OR STATIC SUBMITS", element);
                 return true;
             }
         }
@@ -927,7 +908,8 @@ public class WebsiteExplorer {
                 // it's a valid option
                 select.selectByIndex(rand1);
 
-                if (!element.toString().toLowerCase().matches(".*onchange=\".*submit\".*")) {
+                if (!element.toString().toLowerCase()
+                        .matches(".*onchange=\".*submit\".*")) {
                     // if form doesn't submit dynamically, submit
                     // form manually
                     saveRow("select", identifier,

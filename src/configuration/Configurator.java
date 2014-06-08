@@ -48,7 +48,7 @@ public class Configurator {
     }
 
     /** number of actions the crawler will execute before stopping */
-    private int numActions = 30;
+    private int numActions = 50;
     /** number of redirects to the home page the crawler will do before stopping */
     private int numRedirects = 5;
     /** time to wait (in milliseconds) after each action */
@@ -61,16 +61,13 @@ public class Configurator {
     private boolean includeChildrenNodesOnInteraction = false;
 
     /** keywords that identify search elements */
-    private String searchKeywords = "(\\sq\\s|query|qry|search|"
-            + "pesq(uisa)?|procura(r)?|busca(dor)?)";
+    private String searchKeywords = "(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)";
     /** keywords that identify sort elements */
-    private String sortKeywords = "(sort|asc\\s|desc\\s)";
+    private String sortKeywords = "(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))";
     /** keywords that identify login elements */
-    private String loginKeywords = "(user(name)?|pass(word)?|"
-            + "e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))";
+    private String loginKeywords = "(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))";
     /** keywords that identify elements that SHOULD NOT BE ACCESSED */
-    private String generalWordsToExclude = "(buy|sell|edit|"
-            + "delete|mailto|add(\\s|_)?to(\\s|_)?cart|checkout)";
+    private String generalWordsToExclude = "(buy|sell|mailto|add(\\s|_)?to(\\s|_)?cart|checkout)";
     /** keywords that identify menu elements */
     private String[] menuIdentifiers = { "nav", "head", "menu", "top", "head",
             "foot" };
@@ -443,8 +440,7 @@ public class Configurator {
                 System.err.println("Invalid content on tag " + name
                         + ", must have boolean value");
             return true;
-        } else if (name.equals("actions")
-                || name.equals("redirections")
+        } else if (name.equals("actions") || name.equals("redirections")
                 || name.equals("politenessDelay")) {
             int parse = -1;
             try {
@@ -463,8 +459,7 @@ public class Configurator {
             else
                 politenessDelay = parse;
             return true;
-        } else if (name.equals("searchKeywords")
-                || name.equals("sortKeywords")
+        } else if (name.equals("searchKeywords") || name.equals("sortKeywords")
                 || name.equals("loginKeywords")
                 || name.equals("generalWordsToExclude")) {
             try {

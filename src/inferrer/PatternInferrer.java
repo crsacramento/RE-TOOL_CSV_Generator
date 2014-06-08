@@ -298,8 +298,6 @@ public class PatternInferrer {
                     }
                 } else {
                     if (patternType.equals("login")) {
-                        for(String s : cleanTargets)
-                        System.out.println("cleanTargets:"+s);
                         PatternRegister.startPattern(patternType,
                                 writtenPatternIndex);
                         PatternRegister.enterLoginContent(cleanActions,

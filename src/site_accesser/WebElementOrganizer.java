@@ -1,6 +1,7 @@
 package site_accesser;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,12 +17,12 @@ public class WebElementOrganizer {
 				&& !we.isElementAlreadyVisited(e)
 				&& !e.toString().toLowerCase()
 						.matches(".*" + we.getConfigurator().getGeneralWordsToExclude() + ".*")
-				&& !e.toString().toLowerCase().matches(".*(disabled|readonly).*");
+				&& !e.toString().toLowerCase().matches(".*(disabled|readonly|hidden).*");
 	}
 	
-	private static ArrayList<ArrayList<WebElement>> initialSetupElementList(){
-		ArrayList<ArrayList<WebElement>> elemList = new 
-			ArrayList<ArrayList<WebElement>>();
+	private static ArrayList<HashSet<WebElement>> initialSetupElementList(){
+		ArrayList<HashSet<WebElement>> elemList = new 
+			ArrayList<HashSet<WebElement>>();
 		/**
 		 * 0 -> input
 		 * 1 -> select
@@ -31,16 +32,15 @@ public class WebElementOrganizer {
 		 * 5 -> login
 		 */
 		for(int i = 0; i < 6;++i)
-			elemList.add(new ArrayList<WebElement>());
+			elemList.add(new HashSet<WebElement>());
 		return elemList;
 	}
 
-	private static ArrayList<ArrayList<WebElement>> distributeElementsOverTheLists(
-		List<WebElement> elementsToDistribute, 
-		ArrayList<ArrayList<WebElement>> masterElemList) {
+	private static ArrayList<HashSet<WebElement>> distributeElementsOverTheLists(
+		HashSet<WebElement> fields, 
+		ArrayList<HashSet<WebElement>> masterElemList) {
 
-		//List<WebElement> text = fields;
-		ArrayList<ArrayList<WebElement>> retList = masterElemList;
+		ArrayList<HashSet<WebElement>> retList = masterElemList;
 		
 		/**
 		 * 0 -> select
@@ -50,22 +50,22 @@ public class WebElementOrganizer {
 		 * 4 -> sort 
 		 * 5 -> login
 		 */
+		
 		// get all form inputs
-		for (WebElement e : elementsToDistribute) {
-			if (itPassesAllGeneralChecks(e)){
+		for (WebElement e : fields) {
+		    String id = HTMLLocatorBuilder.getElementIdentifier(e);
+			
+            if (itPassesAllGeneralChecks(e)){
 				// test for search
-				if(e.toString().toLowerCase()
-							.matches(".*" + we.getConfigurator().getSearchKeywords() + ".*")){
+				if(id.matches(".*" + we.getConfigurator().getSearchKeywords() + ".*")){
 					retList.get(3).add(e);
 				}else{
 					// test for sort
-					if(e.toString().toLowerCase()
-								.matches(".*" + we.getConfigurator().getSortKeywords() + ".*")){
+					if(id.matches(".*" + we.getConfigurator().getSortKeywords() + ".*")){
 						retList.get(4).add(e);
 					}else{
 						// test for login
-						if(e.toString().toLowerCase()
-									.matches(".*" + we.getConfigurator().getLoginKeywords() + ".*")){
+						if(id.matches(".*" + we.getConfigurator().getLoginKeywords() + ".*")){
 							retList.get(5).add(e);
 						}else{
 							// doesn't go into a pattern, check for element type
@@ -80,7 +80,7 @@ public class WebElementOrganizer {
 								// dropdown
 								retList.get(0).add(e);
 							}
-							else if(e.getTagName().toLowerCase().equals("a")){
+							else /*if(e.getTagName().toLowerCase().equals("a"))*/{
 								// link
 								retList.get(2).add(e);
 							}
@@ -150,25 +150,31 @@ public class WebElementOrganizer {
 		return retList;
 	}
 
-	public static ArrayList<ArrayList<WebElement>> setupElementList(){
-		ArrayList<ArrayList<WebElement>> elemList = initialSetupElementList();
-		ArrayList<List<WebElement>> fields = new ArrayList<List<WebElement>>();
+	public static ArrayList<HashSet<WebElement>> setupElementList(){
+		ArrayList<HashSet<WebElement>> elemList = initialSetupElementList();
+		HashSet<WebElement> fields = new HashSet<WebElement>();
 
 		// include elements
-		fields.add(we.getDriver().findElements(By.xpath("//input[@type='text']")));
-		fields.add(we.getDriver().findElements(By.xpath("//input[@type='number']")));
-		fields.add(we.getDriver().findElements(By.xpath("//input[@type='search']")));
-		fields.add(we.getDriver().findElements(By.xpath("//input[@type='password']")));
-		fields.add(we.getDriver().findElements(By.xpath("//input[@type='email']")));
-		fields.add(we.getDriver().findElements(By.tagName("textarea")));
-		fields.add(we.getDriver().findElements(By.tagName("select")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='text']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='number']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='month']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='week']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='range']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='time']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='tel']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='url']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='search']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='password']")));
+		fields.addAll(we.getDriver().findElements(By.xpath("//input[@type='email']")));
+		fields.addAll(we.getDriver().findElements(By.tagName("textarea")));
+		fields.addAll(we.getDriver().findElements(By.tagName("select")));
 		// anchor elements need a more rigorous selection process, it's why they 
 		// get their own function
-		fields.add(getLinks());
+		fields.addAll(getLinks());
 
-		for (List<WebElement> list : fields) {
-			elemList = distributeElementsOverTheLists(list, elemList);
-		}	
+		
+		elemList = distributeElementsOverTheLists(fields, elemList);
+			
 
 		return elemList;
 	}

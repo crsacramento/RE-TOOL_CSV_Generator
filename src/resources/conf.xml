@@ -156,7 +156,7 @@
 			<regex>checkbox</regex>
 		</patternEntry>
 		<patternEntry>
-			<name>collapseButton</name>
+			<name>collapse</name>
 			<regex>collapse</regex>
 		</patternEntry>
 		<patternEntry>
@@ -191,6 +191,10 @@
 			<name>input</name>
 			<regex>\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]</regex>
 		</patternEntry>
+		<patternEntry>
+            <name>button</name>
+            <regex>button</regex>
+        </patternEntry>
 		<patternEntry>
 			<name>clear</name>
 			<regex>clear</regex>

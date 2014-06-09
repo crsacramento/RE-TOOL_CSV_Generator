@@ -61,6 +61,7 @@ public class LogProcessor {
         patterns.add(new PatternMapEntry(
                 "input",
                 "\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]"));
+        patterns.add(new PatternMapEntry("button", "button"));
         patterns.add(new PatternMapEntry("clear", "clear"));
 
     }

@@ -65,15 +65,16 @@ public class ProcessStarter {
         // baseURL = "http://www.juventude.gov.pt/Paginas/default.aspx";
         // baseURL = "http://www.fe.up.pt/";
         // baseURL = "http://en.wikipedia.org";
+        // baseURL = "http://www.facebook.com";
         // baseURL = "http://www.ebay.com/";
         // baseURL = "http://www.youtube.com/";
         // baseURL = "http://store.steampowered.com/";
-         baseURL = "http://www.geforce.com/";
+        // baseURL = "http://www.geforce.com/";
         // baseURL = "http://www.reddit.com/";
         // baseURL = "http://www.9gag.com/";
         // baseURL = "http://www.gamestop.com";
         // baseURL = "http://www.gamespot.com";
-        // baseURL = "http://www.mcgame.com/";
+         baseURL = "http://www.mcgame.com/";
 
         Configurator c = Configurator.getInstance();
         WebsiteExplorer we = WebsiteExplorer.getInstance();
@@ -87,20 +88,11 @@ public class ProcessStarter {
         c.loadConfig();
         WebsiteExplorer.setConfigurator(c);
 
-        try {
+       /* try {
             we.exploreWebsite();
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        try {
-            System.out.println("-------TESTING-------");
-            we.getTesting().setHistoryFilepath(we.getFilepath());
-            we.getTesting().escapeProcess();
-            System.out.println("-------TESTING-------");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        }*/
 
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);
@@ -154,7 +146,7 @@ public class ProcessStarter {
         }
 
         Configurator c = Configurator.getInstance();
-        WebsiteExplorer we = WebsiteExplorer.getInstance();
+        WebsiteExplorer.getInstance();
         if (!(f == null)) {
             WebsiteExplorer.initialize(baseURL, f.getAbsolutePath()
                     + File.separator);
@@ -167,9 +159,6 @@ public class ProcessStarter {
 
         LogProcessor.processHistoryFile();
         PatternInferrer.setBaseUrl(baseURL);
-        PatternInferrer.setMenuElements(we.menuElements);
-        PatternInferrer.setMasterElements(we.masterElements);
-        PatternInferrer.setDetailElements(we.detailElements);
         PatternInferrer.startInferringProcess();
     }
 }

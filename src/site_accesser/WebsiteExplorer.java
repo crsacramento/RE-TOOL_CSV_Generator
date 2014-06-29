@@ -19,7 +19,6 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.support.ui.Select;
 
-import prev_work.BrowserHandlerTesting;
 import configuration.Configurator;
 
 public class WebsiteExplorer {
@@ -29,7 +28,7 @@ public class WebsiteExplorer {
      */
     private String baseUrl = "";
     /**
-     * filepath to folder where all files produced will be written
+     * file path to folder where all files produced will be written
      */
     private static String folderpath = "";
 
@@ -70,10 +69,6 @@ public class WebsiteExplorer {
 
     /** web driver */
     private HtmlUnitDriver driver = null;
-
-    // private String lastAction = "NONE", currentAction = "NONE";
-
-    private BrowserHandlerTesting testing = new BrowserHandlerTesting();
 
     /**
      * @return the filepath
@@ -146,11 +141,6 @@ public class WebsiteExplorer {
      */
     public static void setConfigurator(Configurator configurator) {
         WebsiteExplorer.configurator = configurator;
-    }
-
-    public BrowserHandlerTesting getTesting() {
-        // TODO Auto-generated method stub
-        return testing;
     }
 
     public void handleError(String message, WebElement element) {
@@ -480,8 +470,6 @@ public class WebsiteExplorer {
      */
     public boolean goBackToHome() {
         driver.get(baseUrl);
-        // TODO remove - testing
-        testing.incrementHTML(driver.getPageSource(), driver.getCurrentUrl());
         saveRow("open", baseUrl, "EMPTY");
         wait = true;
         homeRedirections++;
@@ -531,11 +519,6 @@ public class WebsiteExplorer {
             e1.printStackTrace();
         }
 
-        // TODO remove, for testing
-        testing.init(driver.getCurrentUrl(), driver.getPageSource());
-        testing.setHistoryFilepath(new File(folderpath
-                + getConfigurator().getHistoryFilepath()).getAbsolutePath());
-
         // write 'open' action
         String r = baseUrl.replaceFirst(
                 "/^(\\w+:\\/\\/[\\w\\.-]+(:\\d+)?)\\/.*/", "");
@@ -576,9 +559,6 @@ public class WebsiteExplorer {
                     boolean processedLogin = processLogin(element);
                     if (processedLogin) {
                         driver.get(baseUrl);
-                        // TODO remove - testing
-                        testing.incrementHTML(driver.getPageSource(),
-                                driver.getCurrentUrl());
                         saveRow("open", baseUrl, "EMPTY");
                     }
 
@@ -645,9 +625,6 @@ public class WebsiteExplorer {
                 HTMLLocatorBuilder.getElementIdentifier(element), "EMPTY");
 
         element.click();
-        // TODO remove - testing
-        testing.incrementHTML(getDriver().getPageSource(), getDriver()
-                .getCurrentUrl());
     }
 
     /**
@@ -667,6 +644,12 @@ public class WebsiteExplorer {
             WebElement form = findParentForm(element);
             List<WebElement> children = findInputAndSelectChildNodesGivenParentForm(form);
 
+            System.out
+                    .println(getConfigurator().getLoginConfiguration().get(
+                            "username")
+                            + "|"
+                            + getConfigurator().getLoginConfiguration().get(
+                                    "password"));
             String username = "banana", password = "apple";
             if (!getConfigurator().getLoginConfiguration().isEmpty()) {
                 username = getConfigurator().getLoginConfiguration().get(
@@ -683,10 +666,8 @@ public class WebsiteExplorer {
                         case "text":
                         case "password":
                         case "email":
-                            if (e.toString()
-                                    .toLowerCase()
-                                    .matches(
-                                            ".*(user(\\s|_)?(name|id)?|e?mail|log(\\s|_)?in).*")) {
+                            if (e.toString().toLowerCase()
+                                    .matches(".*(user|email|login).*")) {
                                 content = username;
                             } else if (e.toString().toLowerCase()
                                     .matches(".*(pass(word)?).*")) {
@@ -700,8 +681,6 @@ public class WebsiteExplorer {
                             saveRow("type",
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     content);
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
                             // interact
                             e.clear();
                             e.sendKeys(content);
@@ -712,8 +691,6 @@ public class WebsiteExplorer {
                             saveRow("click",
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
                             // interact
                             e.click();
                             break;
@@ -728,8 +705,6 @@ public class WebsiteExplorer {
                         saveRow("select",
                                 HTMLLocatorBuilder.getElementIdentifier(e),
                                 "label=\"" + options.get(rand1).getText() + '"');
-                        // TODO remove - testing
-                        testing.incrementCorrelation();
                         // interact
                         select.selectByIndex(rand1);
                     }
@@ -763,8 +738,6 @@ public class WebsiteExplorer {
                 // it wants an integer value
                 int rand1 = (int) Math.round(Math.random() * 100) + 1;
                 saveRow("type", identifier, "" + rand1);
-                // TODO remove - testing
-                testing.incrementCorrelation();
 
                 // interact
                 element.clear();
@@ -776,8 +749,6 @@ public class WebsiteExplorer {
 
                 saveRow("type", identifier, getConfigurator()
                         .getTypedKeywords()[rand1]);
-                // TODO remove - testing
-                testing.incrementCorrelation();
 
                 // interact
                 element.clear();
@@ -792,8 +763,6 @@ public class WebsiteExplorer {
                 // it wants an integer value
                 int rand1 = (int) Math.round(Math.random() * 100) + 1;
                 saveRow("typeAndWait", identifier, "" + rand1);
-                // TODO remove - testing
-                testing.incrementCorrelation();
 
                 element.clear();
                 element.sendKeys(Integer.toString(rand1));
@@ -804,15 +773,9 @@ public class WebsiteExplorer {
 
                 saveRow("typeAndWait", identifier, getConfigurator()
                         .getTypedKeywords()[rand1]);
-                // TODO remove - testing
-
                 // interact
                 element.clear();
                 element.sendKeys(getConfigurator().getTypedKeywords()[rand1]);
-
-                // TODO
-                testing.incrementHTML(getDriver().getPageSource(), getDriver()
-                        .getCurrentUrl());
             }
             return false;
         }
@@ -828,14 +791,22 @@ public class WebsiteExplorer {
         // search for conventional submit elements
         List<WebElement> elems = element.findElements(By
                 .xpath("//input[@type='submit']"));
+        elems.addAll(element.findElements(By.xpath("//button[@type='submit']")));
+        elems.addAll(element.findElements(By
+                .xpath("//*[contains(@onclick,'submit')]")));
+        elems.addAll(element.findElements(By.xpath("//input")));
+        elems.addAll(element.findElements(By.xpath("//button")));
+
         List<WebElement> submit = new ArrayList<WebElement>();
         System.out.println("elems.size()=" + elems.size());
 
         if (elems.size() > 0) {
             for (WebElement e : elems)
-                if (WebElementOrganizer.itPassesAllGeneralChecks(e)) {
-                    System.out.println("SUBMIT: " + e.toString());
-                    submit.add(e);
+                if (WebElementOrganizer.itPassesAllGeneralChecks(e)){
+                        if(e.toString().matches(".*submit.*")) 
+                            submit.add(e);
+                        else if(e.toString().matches(".*"+getConfigurator().getSearchKeywords()+".*"))
+                            submit.add(e);
                 }
         }
         if (submit.size() > 0) {
@@ -845,40 +816,13 @@ public class WebsiteExplorer {
                     "EMPTY");
             // interact
             submit.get(0).click();
-            // TODO remove - testing
-            testing.incrementHTML(getDriver().getPageSource(), getDriver()
-                    .getCurrentUrl());
         } else {
-            // search for elements that dynamically submit forms
-            elems = element.findElements(By
-                    .xpath("//*[contains(@onclick,'submit')]"));
-            List<WebElement> dynamicSubmits = new ArrayList<WebElement>();
-            if (elems.size() > 0) {
-                for (WebElement sub : elems) {
-                    if (WebElementOrganizer.itPassesAllGeneralChecks(sub)) {
-                        System.out.println("DYN_SUBMIT: " + sub.toString());
-                        dynamicSubmits.add(sub);
-                    }
-                }
-            }
-            if (dynamicSubmits.size() > 0) {
-                System.out.println("DYN_SUBMIT=len:" + submit.size());
-                saveRow("clickAndWait",
-                        HTMLLocatorBuilder.getElementIdentifier(dynamicSubmits
-                                .get(0)), "EMPTY");
-
-                // interact
-                dynamicSubmits.get(0).click();
-                // TODO remove - testing
-                testing.incrementHTML(getDriver().getPageSource(), getDriver()
-                        .getCurrentUrl());
-            } else {
-                handleError("THERE ARE NO DYNAMIC OR STATIC SUBMITS", element);
-                return true;
-            }
+            handleError("THERE ARE NO DYNAMIC, BUTTON OR STATIC SUBMITS",
+                    element);
+            return true;
         }
-        return false;
 
+        return false;
     }
 
     /**
@@ -914,8 +858,6 @@ public class WebsiteExplorer {
                     // form manually
                     saveRow("select", identifier,
                             "label=\"" + options.get(rand1).getText() + '"');
-                    // TODO remove - testing
-                    testing.incrementCorrelation();
 
                     handleFormSubmission(element);
                 } else {
@@ -923,9 +865,6 @@ public class WebsiteExplorer {
                     saveRow("selectAndWait",// element.toString(),
                             identifier, "label=\""
                                     + options.get(rand1).getText() + '"');
-                    // TODO remove - testing
-                    testing.incrementHTML(getDriver().getPageSource(),
-                            getDriver().getCurrentUrl());
                 }
             }
         }
@@ -956,8 +895,6 @@ public class WebsiteExplorer {
                                     "type",// e.toString(),
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
                             break;
                         case "radio":
                         case "checkbox":
@@ -965,8 +902,6 @@ public class WebsiteExplorer {
                             saveRow("SIBLING:", "click",
                                     HTMLLocatorBuilder.getElementIdentifier(e),
                                     "EMPTY");
-                            // TODO remove - testing
-                            testing.incrementCorrelation();
                             break;
                     }
                 } else if (e.getTagName().toLowerCase().equals("select")) {
@@ -977,8 +912,6 @@ public class WebsiteExplorer {
                                 "select",// e.toString(),
                                 HTMLLocatorBuilder.getElementIdentifier(e),
                                 "EMPTY");
-                        // TODO remove - testing
-                        testing.incrementCorrelation();
                     }
                 }
             }

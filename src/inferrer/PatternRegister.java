@@ -340,7 +340,7 @@ public class PatternRegister {
             String field = "field_" + i;
             if (targets.get(i).matches(".*(submit).*"))
                 continue;
-            else if (targets.get(i).matches(".*(user|@type=email).*"))
+            else if (targets.get(i).matches(".*(user|email).*"))
                 field = "username";
             else if (targets.get(i).matches(".*(@type=password).*"))
                 field = "password";

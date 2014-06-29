@@ -262,14 +262,12 @@ public class PatternInferrer {
             ArrayList<String> actions, ArrayList<String> targets,
             ArrayList<String> parameters) {
         if (we.isSearchingForPattern(patternType)) {
-            ArrayList<String> cleanTargets = new ArrayList<String>(),
-                    cleanActions = new ArrayList<String>(),
-                    cleanParams = new ArrayList<String>();
+            ArrayList<String> cleanTargets = new ArrayList<String>(), cleanActions = new ArrayList<String>(), cleanParams = new ArrayList<String>();
             for (int i = 0; i < targets.size(); ++i) {
                 // ignore submits
                 if (targets.get(i).matches(".*(submit).*"))
                     continue;
-                
+
                 if (!PatternRegister.isAlreadyWritten(
                         patternType.toLowerCase(), targets.get(i))) {
                     cleanActions.add(actions.get(i));
@@ -281,10 +279,8 @@ public class PatternInferrer {
             if (cleanTargets.size() > 0) {
                 if (patternType.equals("input")) {
                     for (int i = 0; i < cleanActions.size(); ++i) {
-                        ArrayList<String> a = new ArrayList<String>(), 
-                                t = new ArrayList<String>(), 
-                                p = new ArrayList<String>();
-                        
+                        ArrayList<String> a = new ArrayList<String>(), t = new ArrayList<String>(), p = new ArrayList<String>();
+
                         a.add(cleanActions.get(i));
                         t.add(cleanTargets.get(i));
                         p.add(cleanParams.get(i));
@@ -304,7 +300,7 @@ public class PatternInferrer {
                                 cleanTargets, cleanParams);
                         PatternRegister.closePattern();
                         writtenPatternIndex++;
-                        
+
                     } else if (patternType.equals("search")) {
                         PatternRegister.startPattern(patternType,
                                 writtenPatternIndex);
@@ -312,7 +308,7 @@ public class PatternInferrer {
                                 cleanTargets, cleanParams);
                         PatternRegister.closePattern();
                         writtenPatternIndex++;
-                        
+
                     } else if (patternType.equals("sort")) {
                         PatternRegister.startPattern(patternType,
                                 writtenPatternIndex);
@@ -320,7 +316,7 @@ public class PatternInferrer {
                                 cleanTargets, cleanParams);
                         PatternRegister.closePattern();
                         writtenPatternIndex++;
-                        
+
                     } else if (patternType.equals("call")) {
                         if (cleanTargets.get(0).matches(".*href.*")) {
                             PatternRegister.startPattern(patternType,
@@ -383,10 +379,10 @@ public class PatternInferrer {
                 processSearch(words, lineNum);
             } else if (matchSort(words)) {
                 processSort(words, lineNum);
-            } else if (matchInput(words)) {
-                processInput(words, lineNum);
             } else if (matchLogin(words)) {
                 processLogin(words, lineNum);
+            } else if (matchInput(words)) {
+                processInput(words, lineNum);
             } else {
                 testForTrailingSort(lineNum);
                 testForTrailingSearch(lineNum);
@@ -577,7 +573,7 @@ public class PatternInferrer {
                         + firstIndex);
             }
         } else if (words.get(0).toLowerCase()
-                .matches(".*(login|auth|captcha).*")) {
+                .matches(".*(clicklogin|typeauth|typecaptcha).*")) {
             if (words.get(0).toLowerCase().equals("clicklogin"))
                 processLink(words, lineNum);
             if (firstIndex == 0) {
@@ -588,7 +584,8 @@ public class PatternInferrer {
                 lines.add(lineNum);
                 setStates(0, 0);
             }
-        } else if (words.get(0).toLowerCase().matches(".*type.*(user|email|login).*")) {
+        } else if (words.get(0).toLowerCase()
+                .matches(".*type.*(user|email|login).*")) {
             if (firstIndex == 0) {
                 if (secondIndex == 0) {// curr state LOGIN
                     setStates(0, 1);// LOGIN_USER
@@ -620,7 +617,6 @@ public class PatternInferrer {
                     setStates(0, 3);
                 } else if (secondIndex == 2) {// curr state LOGIN_PASS
                     // 2 passwords means it's a register instead of a login form
-                    // - reset
                     resetStates();
                 } else if (secondIndex == 3) {// curr state LOGIN_USER_PASS
                     // same as above
@@ -653,7 +649,7 @@ public class PatternInferrer {
 
     private static boolean matchLink(ArrayList<String> words) {
         return (words.size() == 1 ? false : words.get(0).toLowerCase()
-                .matches(".*click.*link.*")
+                .matches(".*click(.*link)?.*")
                 && words.get(1).toLowerCase().equals("pagechange"));
     }
 
@@ -664,7 +660,7 @@ public class PatternInferrer {
 
     private static boolean matchInput(ArrayList<String> words) {
         return (words.get(0).toLowerCase()
-                .matches(".*type(input|(first|last)name).*") && !words
+                .matches(".*type(input|(first|last)name)?.*") && !words
                 .get(0)
                 .toLowerCase()
                 .matches(

@@ -18,7 +18,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import processor.LogProcessor;
-import processor.PatternMapEntry;
 
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -63,7 +62,7 @@ public class Configurator {
     /** keywords that identify search elements */
     private String searchKeywords = "(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)";
     /** keywords that identify sort elements */
-    private String sortKeywords = "(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))";
+    private String sortKeywords = "((input|select|textarea).*sort)";
     /** keywords that identify login elements */
     private String loginKeywords = "(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))";
     /** keywords that identify elements that SHOULD NOT BE ACCESSED */
@@ -280,15 +279,15 @@ public class Configurator {
             boolean processed = processSimpleTag(tag.item(0).getNodeName(), tag
                     .item(0).getFirstChild().getNodeValue());
             if (!processed) {
-                if (s.toLowerCase().equals("typedKeywords")
-                        || s.toLowerCase().equals("menuIdentifiers")
-                        || s.toLowerCase().equals("masterIdentifiers")
-                        || s.toLowerCase().equals("detailIdentifiers")
-                        || s.toLowerCase().equals("patternsToFind")) {
+                if (s.equals("typedKeywords")
+                        || s.equals("menuIdentifiers")
+                        || s.equals("masterIdentifiers")
+                        || s.equals("detailIdentifiers")
+                        || s.equals("patternsToFind")) {
                     processItemListTag(tag);
-                } else if (s.toLowerCase().equals("tokenizerPatterns")) {
+                } else if (s.equals("tokenizerPatterns")) {
                     processTokenizerPatternList(tag);
-                } else if (s.toLowerCase().equals("loginConfiguration")) {
+                } else if (s.equals("loginConfiguration")) {
                     NodeList children = tag.item(0).getChildNodes();
                     String username = null, password = null;
                     for (int i = 0; i < children.getLength(); i++) {
@@ -327,7 +326,7 @@ public class Configurator {
         }
 
         boolean b = false;
-        ArrayList<PatternMapEntry> array = new ArrayList<PatternMapEntry>();
+        HashMap<String,String> array = new HashMap<String,String>();
         String regex = null, name = null;
 
         for (int i = 0; i < children.getLength(); ++i) {
@@ -350,7 +349,7 @@ public class Configurator {
                 if (name == null || regex == null) {
                     System.err.println("No name or regex, invalid");
                 } else {
-                    array.add(new PatternMapEntry(name, regex));
+                    array.put(name, regex);
                     b = true;
                 }
             }
@@ -389,15 +388,15 @@ public class Configurator {
 
         if (b) {
             String s = tag.item(0).getNodeName();
-            if (s.toLowerCase().equals("typedKeywords")) {
+            if (s.equals("typedKeywords")) {
                 typedKeywords = array;
-            } else if (s.toLowerCase().equals("menuIdentifiers")) {
+            } else if (s.equals("menuIdentifiers")) {
                 menuIdentifiers = array;
-            } else if (s.toLowerCase().equals("masterIdentifiers")) {
+            } else if (s.equals("masterIdentifiers")) {
                 masterIdentifiers = array;
-            } else if (s.toLowerCase().equals("detailIdentifiers")) {
+            } else if (s.equals("detailIdentifiers")) {
                 detailIdentifiers = array;
-            } else if (s.toLowerCase().equals("patternsToFind")) {
+            } else if (s.equals("patternsToFind")) {
                 // patternsToSearch = array;
                 ArrayList<String> arr2 = new ArrayList<String>();
                 boolean b1 = false;

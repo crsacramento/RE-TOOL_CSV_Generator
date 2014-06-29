@@ -32,7 +32,7 @@
 	<politenessDelay>500</politenessDelay>
 	<includeChildrenNodesOnInteraction>false</includeChildrenNodesOnInteraction>
 	<searchKeywords>(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)</searchKeywords>
-	<sortKeywords>(sort|(\\s|_)?asc(\\s|_)|(\\s|_)?desc(\\s|_))</sortKeywords>
+	<sortKeywords>((input|select|textarea).*sort)</sortKeywords>
 	<loginKeywords>(user(name)?|pass(word)?|e?mail|(sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)))</loginKeywords>
 	<generalWordsToExclude>(buy|sell|mailto|add(\\s|_)?to(\\s|_)?cart|checkout)</generalWordsToExclude>
 	<typedKeywords>
@@ -160,20 +160,20 @@
 			<regex>collapse</regex>
 		</patternEntry>
 		<patternEntry>
-			<name>firstName</name>
-			<regex>first(\\s|_)?name</regex>
+			<name>firstNameInput</name>
+			<regex>(input|textarea).*first(\\s|_)?name</regex>
 		</patternEntry>
 		<patternEntry>
-			<name>lastName</name>
-			<regex>last(\\s|_)?name</regex>
+			<name>lastNameInput</name>
+			<regex>(input|textarea).*last(\\s|_)?name</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>sort</name>
-			<regex>sort|asc(\\s|_)|desc(\\s|_)</regex>
+			<regex>((input|textarea|select).*sort)</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>search</name>
-			<regex>(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)</regex>
+			<regex>(input|select|textarea)(.*(=q\\s|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)</regex>
 		</patternEntry>
 		<patternEntry>
 			<name>captcha</name>
@@ -188,10 +188,6 @@
 			<regex>number|price|quantity|qty\\s|zip(\\s|_)?code</regex>
 		</patternEntry>
 		<patternEntry>
-			<name>input</name>
-			<regex>\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]</regex>
-		</patternEntry>
-		<patternEntry>
             <name>button</name>
             <regex>button</regex>
         </patternEntry>
@@ -199,5 +195,9 @@
 			<name>clear</name>
 			<regex>clear</regex>
 		</patternEntry>
+		<patternEntry>
+            <name>input</name>
+            <regex>\\/\\/(input|textarea).*text.*</regex>
+        </patternEntry>
 	</tokenizerPatterns>
 </conf>

@@ -8,7 +8,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,50 +22,50 @@ public class LogProcessor {
     private static Configurator conf;
     private static WebsiteExplorer we = WebsiteExplorer.getInstance();
 
-    private static ArrayList<PatternMapEntry> patterns;
+    private static HashMap<String,String> patterns;
 
     public static void defaultSetupPatternList() {
-        setPatterns(new ArrayList<PatternMapEntry>());
-        patterns.add(new PatternMapEntry("login",
-                "sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)"));
-        patterns.add(new PatternMapEntry("submit", "submit"));
-        patterns.add(new PatternMapEntry("homeLink",
-                "(home|main(\\s|_)?page|index|logo)"));
-        patterns.add(new PatternMapEntry("imageLink", "link(.*)img|img(.*)link"));
-        patterns.add(new PatternMapEntry("nextLink",
-                "(link(.*)next|next(.*)link)"));
-        patterns.add(new PatternMapEntry("prevLink",
-                "(prev(ious)?(.*)link|link(.*)prev(ious)?)"));
-        patterns.add(new PatternMapEntry("firstLink", "(first(.*)link)"));
-        patterns.add(new PatternMapEntry("lastLink", "(link(.*)last)"));
-        patterns.add(new PatternMapEntry("languageLink", "lang"));
-        patterns.add(new PatternMapEntry("buttonLink", "href.*(button|btn)"));
-        patterns.add(new PatternMapEntry("searchResultLink",
-                "search.*result(.*row)?"));
-        patterns.add(new PatternMapEntry("link", "link|href"));
-        patterns.add(new PatternMapEntry("option", "option"));
-        patterns.add(new PatternMapEntry("username", "user(\\s|_)?(name|id)?"));
-        patterns.add(new PatternMapEntry("verifyPassword",
-                "verify(\\s|_)?pass(word)?|pass(word)?(\\s|_)?confirm(ation)?"));
-        patterns.add(new PatternMapEntry("password", "pass(word)?"));
-        patterns.add(new PatternMapEntry("email", "e?mail"));
-        patterns.add(new PatternMapEntry("checkbox", "checkbox"));
-        patterns.add(new PatternMapEntry("collapseButton", "collapse"));
-        patterns.add(new PatternMapEntry("firstName", "first(\\s|_)?name"));
-        patterns.add(new PatternMapEntry("lastName", "last(\\s|_)?name"));
-        patterns.add(new PatternMapEntry("sort", "sort|asc(\\s|_)|desc(\\s|_)"));
-        patterns.add(new PatternMapEntry(
+        patterns = new HashMap<String,String>();
+        patterns.put("login",
+                "sign(ed)?(\\s|_)?(in|out)|log(ged)?(\\s|_)?(in|out)");
+        patterns.put("submit", "submit");
+        patterns.put("homeLink",
+                "(home|main(\\s|_)?page|index|logo)");
+        patterns.put("imageLink", "link(.*)img|img(.*)link");
+        patterns.put("nextLink",
+                "(link(.*)next|next(.*)link)");
+        patterns.put("prevLink",
+                "(prev(ious)?(.*)link|link(.*)prev(ious)?)");
+        patterns.put("firstLink", "(first(.*)link)");
+        patterns.put("lastLink", "(link(.*)last)");
+        patterns.put("languageLink", "lang");
+        patterns.put("buttonLink", "href.*(button|btn)");
+        patterns.put("searchResultLink",
+                "search.*result(.*row)?");
+        patterns.put("link", "link|href");
+        patterns.put("option", "option");
+        patterns.put("username", "user(\\s|_)?(name|id)?");
+        patterns.put("verifyPassword",
+                "verify(\\s|_)?pass(word)?|pass(word)?(\\s|_)?confirm(ation)?");
+        patterns.put("password", "pass(word)?");
+        patterns.put("email", "e?mail");
+        patterns.put("checkbox", "checkbox");
+        patterns.put("collapseButton", "collapse");
+        patterns.put("firstNameInput", "(input|textarea).*first(\\s|_)?name");
+        patterns.put("lastNameInput", "(input|textarea).*last(\\s|_)?name");
+        patterns.put("sort", "((input|select|textarea).*sort)");
+        patterns.put(
                 "search",
-                "(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)"));
-        patterns.add(new PatternMapEntry("captcha", "captcha"));
-        patterns.add(new PatternMapEntry("auth", "auth"));
-        patterns.add(new PatternMapEntry("numberInput",
-                "number|price|quantity|qty\\s|zip(\\s|_)?code"));
-        patterns.add(new PatternMapEntry(
+                "(input|select|textarea)(.*(=q|q(ue)?ry|s(ea)?rch|pesq(uisa)?|procura(r)?|busca(dor)?).*)");
+        patterns.put("captcha", "captcha");
+        patterns.put("auth", "auth");
+        patterns.put("numberInput",
+                "number|price|quantity|qty\\s|zip(\\s|_)?code");
+        patterns.put(
                 "input",
-                "\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]"));
-        patterns.add(new PatternMapEntry("button", "button"));
-        patterns.add(new PatternMapEntry("clear", "clear"));
+                "\\/\\/(input|textarea)\\[((?!(email|user|pass|search|sort|submit|checkbox|radio)).)*\\]");
+        patterns.put("button", "button");
+        patterns.put("clear", "clear");
 
     }
 
@@ -126,7 +129,7 @@ public class LogProcessor {
 
         // split by words, except first word
         while (matcher.find()) {
-            // Get the matching string, add in lower case, strip accents
+            // Get the matching string, put in lower case, strip accents
             if (first) {
                 action = org.apache.commons.lang3.StringUtils
                         .stripAccents(matcher.group());
@@ -141,12 +144,15 @@ public class LogProcessor {
         }
         // System.out.println("ORIGINAL_LINE="+words);
         // process all patterns
-        for (PatternMapEntry p : getPatterns()) {
-            if (words.matches(".*(" + p.getIdentifyingRegex() + ").*")) {
+        Iterator<Map.Entry<String, String>> it = patterns.entrySet().iterator();
+        while (it.hasNext()) {
+        //for (Map<K, V>.Entry<K, V> p : getPatterns()) {
+            Entry<String,String> p = it.next();
+            if (words.matches(".*(" + p.getValue() + ").*")) {
                 // build action type in camel case
                 line += action
-                        + Character.toUpperCase(p.getPatternName().charAt(0))
-                        + p.getPatternName().substring(1) + " ";
+                        + Character.toUpperCase(p.getKey().charAt(0))
+                        + p.getKey().substring(1) + " ";
                 // System.out.println("LINE="+line);
                 // words = words.replaceAll(
                 // "(" + p.getGarbageRemovalRegex() + ")", " ");
@@ -169,14 +175,19 @@ public class LogProcessor {
      * @param patterns
      *            the patterns to set
      */
-    public static void setPatterns(ArrayList<PatternMapEntry> patterns) {
-        LogProcessor.patterns = patterns;
+    public static void setPatterns(HashMap<String,String> _patterns) {
+        defaultSetupPatternList();
+        Iterator<Map.Entry<String, String>> it = _patterns.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<String,String> p = it.next();
+            patterns.put(p.getKey(),p.getValue());
+        }
     }
 
     /**
      * @return the patterns
      */
-    public static ArrayList<PatternMapEntry> getPatterns() {
+    public static HashMap<String,String> getPatterns() {
         return patterns;
     }
 
